@@ -8,9 +8,9 @@ This document provides a high-level overview of the Zero Trust Vulnerability Sca
 | :--- | :--- | :--- | :--- |
 | **0** | **Foundation** | Core architecture & directory layout | ✅ Completed |
 | **1** | **Reliability** | Handshake, Discovery, & Timeout support | ✅ Completed |
-| **2** | **Reporting** | Concurrency & Structured (JSON/SARIF) output | 📅 Planned |
-| **3** | **Security** | Capability enforcement & Plugin sandboxing | 📅 Planned |
-| **4** | **Platform** | Remote registry & Agent mode | 📅 Planned |
+| **2** | **Reporting** | Concurrency & Structured (JSON/SARIF) output | ✅ Completed |
+| **3** | **Security** | Capability enforcement & Plugin sandboxing | ✅ Completed |
+| **4** | **Platform** | Remote registry & Agent mode | ✅ Completed |
 
 ---
 
@@ -32,25 +32,27 @@ This document provides a high-level overview of the Zero Trust Vulnerability Sca
 - [x] Standardized RPC error propagation
 
 ### Phase 2: Enhanced Reporting & Concurrency
-- [ ] Parallel execution of checks via worker pool
-- [ ] Structured Terminal summary (pretty-printing findings)
-- [ ] JSON output reporter
-- [ ] SARIF export for CI/CD integration
-- [ ] Global configuration management (`~/.zt/config.yaml`)
+- [x] Parallel execution of checks via worker pool
+- [x] Structured Terminal summary (pretty-printing findings)
+- [x] JSON output reporter
+- [x] SARIF export for CI/CD integration
+- [ ] Global configuration management (`~/.ztvs/config.yaml`)
 
 ### Phase 3: Zero Trust & Security
-- [ ] Capability-based permission declaration in plugin manifests
-- [ ] Mandatory capability enforcement by the Host
-- [ ] Plugin binary signing and SHA-256 verification
-- [ ] Basic OS-level sandboxing for plugin processes
+- [x] Capability-based permission declaration in plugin manifests
+- [x] Mandatory capability enforcement by the Host
+- [x] Plugin binary integrity (SHA-256) validation
+- [x] Basic execution sandboxing (process isolation)
 
 ### Phase 4: Scaling & Distribution
-- [ ] Centralized Plugin Registry (`zt plugin install`)
-- [ ] Agent mode for periodic background scanning
-- [ ] Policy-as-Code engine (severity thresholds and filtering)
-- [ ] Cloud-native metadata discovery
+- [x] Centralized Plugin Registry (`zt plugin install`)
+- [x] Periodic background audit mode (`zt agent`)
+- [x] Host configuration management (`~/.ztvs/config.yaml`)
+- [x] Automated plugin manifest checksumming
+- [x] Policy-as-Code engine (severity thresholds and filtering)
+- [x] Cloud-native metadata discovery
 
 ---
 
-## 📈 Next Priority: Concurrency & Reports (Phase 2)
-The immediate focus is improving scanning performance by running checks in parallel and providing machine-readable outputs for automation.
+## 📈 Next Priority: Future Roadmap
+The immediate focus is expanding the plugin ecosystem and integrating with cloud-native security orchestration platforms.

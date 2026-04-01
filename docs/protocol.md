@@ -1,3 +1,5 @@
+🔙 [Back to Home](../README.md)
+
 # ZTVS JSON-RPC Protocol Specification
 
 Zero Trust Vulnerability Scanner (ZTVS) uses JSON-RPC 2.0 over standard streams (`stdin`/`stdout`) for communication between the host and plugins.
@@ -71,7 +73,7 @@ Execution of a specific security check.
 
 #### Result
 - `status` (string): Status of the check (`pass`, `fail`, `error`, `skipped`).
-- `finding` (object, nullable): The security finding details.
+- `finding` (object, nullable): The security finding details. If the check completes successfully without discovering any vulnerabilities, the plugin **must** return `null` for the finding instead of crashing or returning an empty object.
 
 #### Finding Schema
 ```json

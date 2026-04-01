@@ -7,10 +7,12 @@ build_host:
 
 build_plugins:
 	@mkdir -p plugins/plugin-os
-	go build -o plugins/plugin-os/plugin-os ./plugins/plugin-os
+	go build -C plugins/plugin-os -o plugin-os .
+	go build -C plugins/plugin-axios-mitigation -o plugin-axios-mitigation .
 
 sync_manifests:
 	go run ./tools/manifest-sync ./plugins/plugin-os
+	go run ./tools/manifest-sync ./plugins/plugin-axios-mitigation
 
 init: build_host
 	@mkdir -p $(HOME)/.ztvs/plugins
@@ -23,6 +25,7 @@ dev-setup: build init
 clean:
 	rm -f zt
 	rm -rf plugins/plugin-os/plugin-os
+	rm -rf plugins/plugin-axios-mitigation/plugin-axios-mitigation
 
 run-scan: build
 	./zt scan

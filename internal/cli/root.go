@@ -20,7 +20,7 @@ var rootCmd = &cobra.Command{
 			putils.LettersFromStringWithStyle("ZT", pterm.NewStyle(pterm.FgCyan)),
 			putils.LettersFromStringWithStyle("VS", pterm.NewStyle(pterm.FgMagenta))).
 			Srender()
-		return  logo + "\n" + pterm.DefaultHeader.WithFullWidth().WithBackgroundStyle(pterm.NewStyle(pterm.BgMagenta)).WithMargin(10).Sprint("THE INDEPENDENT AUDIT PLATFORM") + "\n\n" +
+		return logo + "\n" + pterm.DefaultHeader.WithFullWidth().WithBackgroundStyle(pterm.NewStyle(pterm.BgMagenta)).WithMargin(10).Sprint("THE INDEPENDENT AUDIT PLATFORM") + "\n\n" +
 			pterm.LightMagenta("ZTVS") + " is a high-fidelity, cross-platform security engine using isolated nodes for system auditing."
 	}(),
 }

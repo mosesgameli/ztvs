@@ -3,7 +3,7 @@ module github.com/mosesgameli/ztvs
 go 1.26.1
 
 require (
-	github.com/mosesgameli/ztvs-sdk-go v0.0.0-20260401135922-f6d9c728208c
+	github.com/mosesgameli/ztvs-sdk-go v0.0.0-20260401141939-b860acbcb67c
 	github.com/pterm/pterm v0.12.83
 	github.com/spf13/cobra v1.10.2
 	gopkg.in/yaml.v3 v3.0.1
@@ -25,5 +25,3 @@ require (
 	golang.org/x/term v0.40.0 // indirect
 	golang.org/x/text v0.34.0 // indirect
 )
-
-replace github.com/mosesgameli/ztvs-sdk-go => ../sdk/go

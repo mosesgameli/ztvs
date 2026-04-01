@@ -84,7 +84,7 @@ func (l *Lockfile) Set(name string, lock PluginLock) {
 func (l *Lockfile) All() map[string]PluginLock {
 	l.mu.RLock()
 	defer l.mu.RUnlock()
-	
+
 	// Return a copy to prevent external modification
 	tmp := make(map[string]PluginLock)
 	for k, v := range l.Plugins {

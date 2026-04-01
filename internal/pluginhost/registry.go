@@ -174,7 +174,7 @@ func (r *Registry) CheckAndUpdateAll(ctx context.Context, host *Host, mode strin
 	}
 
 	fmt.Printf("Checking for plugin updates (mode: %s)...\n", mode)
-	
+
 	// Set 15-second timeout as requested
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
@@ -248,12 +248,12 @@ func (r *Registry) PerformAtomicUpdate(ctx context.Context, name string, host *H
 	}
 
 	// 4. Atomic Swap
-	// On Unix, os.Rename is atomic. 
+	// On Unix, os.Rename is atomic.
 	// We need to move the old one aside or just replace it if we don't care about rollback for now.
 	// RFC says: "rename swap"
 	oldDir := finalDir + ".old"
 	_ = os.RemoveAll(oldDir)
-	
+
 	if _, err := os.Stat(finalDir); err == nil {
 		if err := os.Rename(finalDir, oldDir); err != nil {
 			return err

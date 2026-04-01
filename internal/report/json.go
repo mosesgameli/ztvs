@@ -9,8 +9,8 @@ import (
 )
 
 type JSONReport struct {
-	Timestamp time.Time                `json:"timestamp"`
-	Summary   map[string]int           `json:"summary"`
+	Timestamp time.Time                 `json:"timestamp"`
+	Summary   map[string]int            `json:"summary"`
 	Findings  map[string][]*rpc.Finding `json:"findings"`
 }
 

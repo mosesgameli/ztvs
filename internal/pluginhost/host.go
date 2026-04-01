@@ -6,10 +6,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mosesgameli/ztvs/internal/config"
-	"github.com/mosesgameli/ztvs/pkg/registry"
 	"github.com/mosesgameli/ztvs-sdk-go/rpc"
 	"github.com/mosesgameli/ztvs-sdk-go/sdk"
+	"github.com/mosesgameli/ztvs/internal/config"
+	"github.com/mosesgameli/ztvs/pkg/registry"
 	"gopkg.in/yaml.v3"
 )
 

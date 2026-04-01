@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mosesgameli/ztvs/pkg/sdk"
+	"github.com/mosesgameli/ztvs-sdk-go/sdk"
 )
 
 // HelloWorldCheck implements a simple check that greets the host.

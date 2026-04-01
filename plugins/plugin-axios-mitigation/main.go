@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mosesgameli/ztvs/pkg/sdk"
+	"github.com/mosesgameli/ztvs-sdk-go/sdk"
 )
 
 func main() {

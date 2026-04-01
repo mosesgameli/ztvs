@@ -2,6 +2,9 @@ module github.com/mosesgameli/ztvs/plugins/plugin-os
 
 go 1.26.1
 
-replace github.com/mosesgameli/ztvs => ../..
+replace (
+	github.com/mosesgameli/ztvs => ../..
+	github.com/mosesgameli/ztvs-sdk-go => ../../../sdk/go
+)
 
-require github.com/mosesgameli/ztvs v0.0.0-00010101000000-000000000000
+require github.com/mosesgameli/ztvs-sdk-go v0.0.0-20260401141939-b860acbcb67c

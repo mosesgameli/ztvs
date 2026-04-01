@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/mosesgameli/ztvs/pkg/sdk"
+	"github.com/mosesgameli/ztvs-sdk-go/sdk"
 )
 
 type NetworkCheck struct{}

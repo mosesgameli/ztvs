@@ -7,7 +7,6 @@
 
 Built for modern infrastructure, ZTVS natively supports polyglot plugins, allowing specialized security logic to be written in Go, Rust, Python, Node.js, and Java, all operating deterministically over our JSON-RPC 2.0 Subprocess Protocol.
 
----
 
 ## 🚀 Key Features
 
@@ -21,7 +20,6 @@ Built for modern infrastructure, ZTVS natively supports polyglot plugins, allowi
 *   **📦 Manifest-Driven Remote Registry**: Discover, cryptographically verify (via SHA-256 integrity), and install plugins safely using `zt plugin install`. Live atomic updates prevent failures during execution.
 *   **📊 Enterprise Reporting**: Fully structured output integrations for SIEM and CI/CD, including Terminal pretty-print, JSON, and full **SARIF 2.1.0**.
 
----
 
 ## 🧱 Architecture Details
 
@@ -34,7 +32,6 @@ ZTVS follows a deliberate Host + Plugin model:
 
 For rigorous details on the internal layout, request flows, and state machines, see [ZTVS Architecture](docs/architecture.md) and [Protocol Specification](docs/protocol.md).
 
----
 
 ## 🛠️ Installation
 
@@ -66,7 +63,6 @@ make build     # Builds host and all first-party plugins
 make install   # Places binaries in standard paths
 ```
 
----
 
 ## 📖 Usage Guide
 
@@ -101,7 +97,6 @@ zt plugin install plugin-axios-mitigation
 zt plugin update
 ```
 
----
 
 ## 🔌 Developing Plugins
 
@@ -114,7 +109,7 @@ package main
 
 import (
     "context"
-    "github.com/mosesgameli/ztvs/pkg/sdk"
+    "github.com/mosesgameli/ztvs-sdk-go/sdk"
 )
 
 type MyCheck struct{}
@@ -147,7 +142,6 @@ func main() {
 
 View the detailed guide at [Plugin Developer Docs](.agents/skills/plugin-dev/SKILL.md) and [RFC Specifications](docs/).
 
----
 
 ## 🗺️ Roadmap & Operational Vision
 

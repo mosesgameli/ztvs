@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mosesgameli/ztvs/pkg/rpc"
+	"github.com/mosesgameli/ztvs-sdk-go/rpc"
 )
 
 // Simplified SARIF structures

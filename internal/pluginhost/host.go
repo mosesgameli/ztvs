@@ -8,8 +8,8 @@ import (
 
 	"github.com/mosesgameli/ztvs/internal/config"
 	"github.com/mosesgameli/ztvs/pkg/registry"
-	"github.com/mosesgameli/ztvs/pkg/rpc"
-	"github.com/mosesgameli/ztvs/pkg/sdk"
+	"github.com/mosesgameli/ztvs-sdk-go/rpc"
+	"github.com/mosesgameli/ztvs-sdk-go/sdk"
 	"gopkg.in/yaml.v3"
 )
 

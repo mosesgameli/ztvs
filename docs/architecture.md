@@ -22,7 +22,9 @@ Zero Trust Vulnerability Scanner (ZTVS) is built with a host-and-plugin architec
 ### Plugin Infrastructure
 -   **Manifest (`plugin.yaml`)**: Declares the plugin's metadata, API version, and required system capabilities (e.g., `network_access`).
 -   **Runner Subsystem**: ZTVS uses a polyglot runner to execute plugins natively. For `Go` and `Rust`, binary execution is used. For `Python` and `Node.js`, the runner dynamically binds to the host runtime interpreter (`python3` / `node`).
--   **SDK (`pkg/sdk`)**: First-party Go library that handles JSON-RPC boilerplate for binary Go plugins. Other languages can implement the raw stdio protocol.
+-   **SDKs**: First-party Go and Python libraries that handle JSON-RPC boilerplate. These are maintained in separate repositories:
+    -   [ztvs-sdk-go](https://github.com/mosesgameli/ztvs-sdk-go)
+    -   [ztvs-sdk-python](https://github.com/mosesgameli/ztvs-sdk-python)
 
 ## Plugin Registry and Lifecycle
 ZTVS relies on `plugins.ztvs.dev` for managed plugin distribution:

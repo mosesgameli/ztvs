@@ -15,8 +15,8 @@ build_plugins:
 	go build -C plugins/plugin-axios-mitigation -ldflags="-s -w" -o plugin-axios-mitigation$(BIN_EXT) .
 
 sync_manifests:
-	go run ./tools/manifest-sync ./plugins/plugin-os $(BIN_EXT)
-	go run ./tools/manifest-sync ./plugins/plugin-axios-mitigation $(BIN_EXT)
+	GOOS="" GOARCH="" go run ./tools/manifest-sync ./plugins/plugin-os $(BIN_EXT)
+	GOOS="" GOARCH="" go run ./tools/manifest-sync ./plugins/plugin-axios-mitigation $(BIN_EXT)
 
 init: build_host
 	@mkdir -p $(HOME)/.ztvs/plugins

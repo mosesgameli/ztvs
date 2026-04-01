@@ -8,6 +8,6 @@ runtime:
 capabilities:
   - read_files
   - execute_commands
-checksum: 192e31089943fdcee4385edac24a38c25632185e5453e93625723b41526a1a98
+checksum: a4fdacc51873d20c3367de04d34eb89b42e03797e1d2a0fa248ed4bb1e30a11c
 checks_supported:
   - ssh_config

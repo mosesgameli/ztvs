@@ -1,6 +1,4 @@
----
 description: Stage, commit, and push local changes to a remote repository.
----
 
 1. Stage all changes:
 // turbo

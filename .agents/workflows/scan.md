@@ -1,6 +1,4 @@
----
 description: Build and run a vulnerability scan across all discovered plugins.
----
 
 1. Build the engine and all plugins:
 // turbo

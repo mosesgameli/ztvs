@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # ZTVS Project Rules & Standards
 
 These rules are NORMATIVE for all development on the Zero Trust Vulnerability Scanner (ZTVS).

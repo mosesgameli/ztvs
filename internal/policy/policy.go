@@ -2,6 +2,8 @@ package policy
 
 import (
 	"fmt"
+
+	"github.com/mosesgameli/ztvs/internal/config"
 )
 
 // Policy defines the host's security rules for plugin execution.
@@ -10,10 +12,10 @@ type Policy struct {
 	BlockedCapabilities []string
 }
 
-func NewDefault() *Policy {
+func New(cfg *config.Config) *Policy {
 	return &Policy{
-		AllowedCapabilities: []string{"read_files", "execute_commands", "system_info"},
-		BlockedCapabilities: []string{"network_access", "write_files"},
+		AllowedCapabilities: cfg.Policy.AllowedCapabilities,
+		BlockedCapabilities: cfg.Policy.BlockedCapabilities,
 	}
 }
 

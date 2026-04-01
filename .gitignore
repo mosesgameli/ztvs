@@ -1,0 +1,16 @@
+# Binaries
+zt
+plugin-os
+plugins/plugin-os/plugin-os
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Build artifacts
+*.exe
+*.test
+bin/

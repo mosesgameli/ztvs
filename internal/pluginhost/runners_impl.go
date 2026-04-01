@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 // BinaryRunner executes native binaries (Go, Rust).
@@ -44,7 +45,7 @@ func (r *BinaryRunner) Execute(ctx context.Context, entrypoint string, stdin []b
 // PythonRunner is a placeholder for Python support.
 type PythonRunner struct{}
 
-func (r *PythonRunner) Name() string { return "Python" }
+func (r *PythonRunner) Name() string { return "Python (uv)" }
 func (r *PythonRunner) Supports(runtimeType string) bool {
 	return runtimeType == "python"
 }
@@ -53,15 +54,37 @@ func (r *PythonRunner) Validate(entrypoint string) error {
 	if _, err := os.Stat(entrypoint); err != nil {
 		return fmt.Errorf("Python script not found: %s", entrypoint)
 	}
-	// Check for python3 in PATH
-	if _, err := exec.LookPath("python3"); err != nil {
-		return fmt.Errorf("Python 3 runtime not found in PATH")
+	// Check for uv in PATH
+	if _, err := exec.LookPath("uv"); err != nil {
+		return fmt.Errorf("uv runtime not found in PATH. Please install uv (https://astral.sh/uv)")
 	}
 	return nil
 }
 
 func (r *PythonRunner) Execute(ctx context.Context, entrypoint string, stdin []byte) ([]byte, error) {
-	return nil, fmt.Errorf("Python runtime is not yet supported in this version of ZTVS")
+	// 1. Find plugin root by searching for plugin.yaml upwards from entrypoint
+	pluginRoot := filepath.Dir(entrypoint)
+	for {
+		if _, err := os.Stat(filepath.Join(pluginRoot, "plugin.yaml")); err == nil {
+			break
+		}
+		parent := filepath.Dir(pluginRoot)
+		if parent == pluginRoot {
+			return nil, fmt.Errorf("failed to find plugin.yaml for entrypoint: %s", entrypoint)
+		}
+		pluginRoot = parent
+	}
+
+	// 2. Execute via uv run
+	// uv run python <entrypoint> --rpc
+	cmd := exec.CommandContext(ctx, "uv", "run", "python", entrypoint)
+	cmd.Dir = pluginRoot
+	cmd.Stdin = bytes.NewReader(stdin)
+
+	// Apply process isolation
+	setSysProcAttr(cmd)
+
+	return cmd.CombinedOutput()
 }
 
 // NodeRunner is a placeholder for Node.js support.

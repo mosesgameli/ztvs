@@ -24,7 +24,21 @@
 
 ## 🛠️ Installation
 
-### Prerequisites
+### One-liner install (Linux & macOS)
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/install.sh | sh
+```
+
+This will:
+1. Auto-detect your OS and architecture.
+2. Download the latest pre-built binary from [GitHub Releases](https://github.com/mosesgameli/ztvs/releases).
+3. Install `zt` to `/usr/local/bin` and first-party plugins to `~/.ztvs/plugins`.
+4. Bootstrap `~/.ztvs/config.yaml` on first run.
+
+> **Pin a specific version**: `ZTVS_VERSION=v1.0.0 curl -fsSL ... | sh`
+
+### Prerequisites (build from source only)
 *   [Go 1.24+](https://golang.org/dl/)
 *   `make` (optional, for builds)
 
@@ -36,6 +50,7 @@ make build
 ```
 
 ---
+
 
 ## 📖 Usage
 

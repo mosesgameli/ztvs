@@ -60,24 +60,12 @@ jobs:
           GOARCH: ${{ matrix.arch }}
           CGO_ENABLED: "0"
         run: |
-          make build \
-            VERSION=${{ github.ref_name }} \
-            BIN_EXT=${{ steps.ext.outputs.bin_ext }}
+          go build -ldflags="-s -w -X github.com/mosesgameli/ztvs/internal/cli.Version=${{ github.ref_name }}" -o zt${{ steps.ext.outputs.bin_ext }} ./cmd/zt
 
       - name: Prepare dist directory
         run: |
           mkdir -p dist
-          cp zt${{ steps.ext.outputs.bin_ext }} \
-            dist/zt${{ steps.ext.outputs.bin_ext }}
-          cp plugins/plugin-os/plugin-os${{ steps.ext.outputs.bin_ext }} \
-            dist/plugin-os${{ steps.ext.outputs.bin_ext }}
-          cp plugins/plugin-axios-mitigation/plugin-axios-mitigation${{ steps.ext.outputs.bin_ext }} \
-            dist/plugin-axios-mitigation${{ steps.ext.outputs.bin_ext }}
-
-      - name: Copy plugin manifests
-        run: |
-          cp plugins/plugin-os/plugin.yaml            dist/plugin-os.yaml
-          cp plugins/plugin-axios-mitigation/plugin.yaml dist/plugin-axios-mitigation.yaml
+          cp zt${{ steps.ext.outputs.bin_ext }} dist/
 
       - name: Package archive (tar.gz)
         if: matrix.os != 'windows'

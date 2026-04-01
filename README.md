@@ -12,8 +12,11 @@
 *   **⚡ High-Concurrency Scanning**: Parallel check execution via a Go-powered engine.
 *   **🛡️ Zero Trust Architecture**: Out-of-process plugin isolation with JSON-RPC 2.0 communication.
 *   **🔌 Easy Extensibility**: Simple-to-use Go SDK for building new custom security checks.
+*   **📈 Concurrent Engine**: High-performance parallel scanning via worker pools.
+*   **📡 Agent Mode**: Periodic background auditing for continuous visibility.
+*   **📦 Plugin Registry**: Managed installation and manifest-driven discovery.
 *   **📊 Multiple Output Formats**: Supports Terminal (Pretty-print), JSON, and **SARIF** for CI/CD integration.
-*   **🔍 Cross-Path Discovery**: Automatically discovers plugins in local, user, and system directories.
+*   **🔍 Cross-Path Discovery**: Automatically discovers plugins in local, user, and system directories (`~/.ztvs/plugins`).
 
 ---
 
@@ -36,13 +39,23 @@ make build
 
 Run a standard scan on the local host:
 ```bash
-./zt scan
-```
+# Initialize ZTVS environment
+make init
 
-### Advanced Options
-Export findings in JSON format for automation:
-```bash
+# Build host and all first-party plugins
+make build
+
+# Run a manual scan
+./zt scan
+
+# Run a scan with JSON output
 ./zt --format json scan
+
+# Manage plugins
+./zt plugin list
+
+# Start the continuous audit agent
+./zt agent
 ```
 
 Generate a SARIF report for GitHub Advanced Security:
@@ -108,8 +121,8 @@ Refer to the [.agents/skills/plugin-dev/SKILL.md](.agents/skills/plugin-dev/SKIL
 ---
 
 ## 🗺️ Roadmap
-The project is currently in **Phase 2 (Reporting & Concurrency)**.
-View the full [Detailed Roadamp](_/work/roadmap.md) and [Phased Delivery Plan](_/work/phases.md) for more details.
+The core development phases are now completed. ZTVS is a production-ready Zero Trust vulnerability platform.
+View the full [Detailed Roadamp](_/work/roadmap.md) and [Phased Delivery Plan](_/work/phases.md) for future vision.
 
 ---
 

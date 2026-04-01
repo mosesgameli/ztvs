@@ -1,3 +1,5 @@
+🔙 [Back to Home](../README.md)
+
 # ZTVS Architecture Overview
 
 Zero Trust Vulnerability Scanner (ZTVS) is built with a host-and-plugin architecture where the core engine manages the lifecycle, execution, and reporting of isolated security checks.
@@ -17,9 +19,15 @@ Zero Trust Vulnerability Scanner (ZTVS) is built with a host-and-plugin architec
 -   **Plugin Host**: Handles process spawning, handshake negotiation, and capability validation.
 -   **Reporting Engine**: Normalizes findings and emits reports in Terminal, JSON, or SARIF formats.
 
-### Plugin Architecture
--   **Manifest (`plugin.yaml`)**: Declares the plugin's metadata, supported checks, and required capabilities.
--   **SDK (`pkg/sdk`)**: A first-party Go library that handles the JSON-RPC boilerplate for plugin developers.
+### Plugin Infrastructure
+-   **Manifest (`plugin.yaml`)**: Declares the plugin's metadata, API version, and required system capabilities (e.g., `network_access`).
+-   **Runner Subsystem**: ZTVS uses a polyglot runner to execute plugins natively. For `Go` and `Rust`, binary execution is used. For `Python` and `Node.js`, the runner dynamically binds to the host runtime interpreter (`python3` / `node`).
+-   **SDK (`pkg/sdk`)**: First-party Go library that handles JSON-RPC boilerplate for binary Go plugins. Other languages can implement the raw stdio protocol.
+
+## Plugin Registry and Lifecycle
+ZTVS relies on `plugins.ztvs.dev` for managed plugin distribution:
+1.  **Verification**: Plugins are downloaded, securely built, and matched against SHA-256 binary checksums.
+2.  **Atomic Swaps**: When executing `zt plugin update`, the host downloads and compiles the new payload to a temporary cache, performing a fast atomic rename to prevent execution failures during live scans via locking.
 
 ## Execution Flow
 

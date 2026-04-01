@@ -1,3 +1,5 @@
+🔙 [Back to Home](../README.md)
+
 # ZTVS Plugin Development Guide
 
 ZTVS is designed to be truly language agnostic. Any language that can execute on the target platform and communicate via the JSON-RPC status standard is a first-class plugin developer.
@@ -14,7 +16,7 @@ ZTVS is designed to be truly language agnostic. Any language that can execute on
 -   [ ]   **Handshake**: Implement the `handshake` method. This is the first call made by the host.
 -   [ ]   **Check IDs**: Define unique check IDs that mapped to security validations.
 -   [ ]   **Run Check**: Implement the `run_check` method to execute security logic and return a passing or failing status.
--   [ ]   **Capabilities**: Only perform actions for which you have declared capabilities (e.g., world-writable file checks require `read_files` permissions).
+-   [ ]   **Capabilities**: Only perform actions for which you have declared capabilities. Users must explicitly whitelist required capabilities like `network_access` or `execute_commands` inside their global `~/.ztvs/config.yaml` before your plugin can function.
 
 ## Example Handshake (Raw)
 

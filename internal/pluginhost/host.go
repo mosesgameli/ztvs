@@ -72,28 +72,45 @@ func (h *Host) Discover(ctx context.Context) ([]string, error) {
 					continue
 				}
 
-				// 3. Resolve Runner & Entrypoint
-				runner, err := h.runners.GetRunner(manifest.Runtime.Type)
-				if err != nil {
+				// 3. Check for duplicate name early
+				duplicate := false
+				for _, existing := range h.plugins {
+					if existing.Manifest.Name == manifest.Name {
+						duplicate = true
+						break
+					}
+				}
+				if duplicate {
 					continue
 				}
 
-				entrypoint := filepath.Join(pluginDir, manifest.Runtime.Entrypoint)
-				if info, err := os.Stat(entrypoint); err == nil && !info.IsDir() {
-					// 4. Check lockfile (Enabled status)
-					enabled := true
-					if lock, ok := h.lockfile.Get(manifest.Name); ok {
-						enabled = lock.Enabled
-					}
-
-					h.plugins[entrypoint] = &PluginInfo{
-						Entrypoint: entrypoint,
-						Manifest:   manifest,
-						Enabled:    enabled,
-						Runner:     runner,
-					}
-					discovered = append(discovered, entrypoint)
+				// 4. Resolve Runner
+				runner, err := h.runners.GetRunner(manifest.Runtime.Type)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Warning: runtime type %s not supported for plugin %s\n", manifest.Runtime.Type, manifest.Name)
+					continue
 				}
+
+				// 5. Validate Entrypoint & Environment
+				entrypoint := filepath.Join(pluginDir, manifest.Runtime.Entrypoint)
+				if err := runner.Validate(entrypoint); err != nil {
+					fmt.Fprintf(os.Stderr, "Warning: skipping plugin %s: %v\n", manifest.Name, err)
+					continue
+				}
+
+				// 6. Check lockfile (Enabled status)
+				enabled := true
+				if lock, ok := h.lockfile.Get(manifest.Name); ok {
+					enabled = lock.Enabled
+				}
+
+				h.plugins[entrypoint] = &PluginInfo{
+					Entrypoint: entrypoint,
+					Manifest:   manifest,
+					Enabled:    enabled,
+					Runner:     runner,
+				}
+				discovered = append(discovered, entrypoint)
 			}
 		}
 	}

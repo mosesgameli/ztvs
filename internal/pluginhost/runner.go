@@ -9,6 +9,7 @@ import (
 type Runner interface {
 	Name() string
 	Supports(runtimeType string) bool
+	Validate(entrypoint string) error
 	Execute(ctx context.Context, entrypoint string, stdin []byte) ([]byte, error)
 }
 

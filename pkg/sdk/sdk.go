@@ -9,7 +9,7 @@ import (
 	"github.com/mosesgameli/ztvs/pkg/rpc"
 )
 
-func Run(checks []Check) {
+func Run(meta Metadata, checks []Check) {
 	var req rpc.Request
 	err := json.NewDecoder(os.Stdin).Decode(&req)
 	if err != nil {
@@ -18,6 +18,24 @@ func Run(checks []Check) {
 	}
 
 	switch req.Method {
+	case "handshake":
+		ids := make([]string, len(checks))
+		for i, c := range checks {
+			ids[i] = c.ID()
+		}
+
+		resp := rpc.Response[rpc.HandshakeResponse]{
+			JSONRPC: "2.0",
+			ID:      req.ID,
+			Result: rpc.HandshakeResponse{
+				Name:            meta.Name,
+				Version:         meta.Version,
+				APIVersion:      meta.APIVersion,
+				ChecksSupported: ids,
+			},
+		}
+		_ = json.NewEncoder(os.Stdout).Encode(resp)
+
 	case "run_check":
 		// Handle params unmarshaling
 		var runReq rpc.RunCheckRequest

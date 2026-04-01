@@ -10,6 +10,26 @@ import (
 	"github.com/mosesgameli/ztvs/pkg/rpc"
 )
 
+func (h *Host) Handshake(
+	ctx context.Context,
+	pluginPath string,
+) (*rpc.HandshakeResponse, error) {
+
+	req := rpc.Request{
+		JSONRPC: "2.0",
+		ID:      "handshake",
+		Method:  "handshake",
+		Params: rpc.HandshakeRequest{
+			HostVersion: "1.0.0",
+			APIVersion:  1,
+		},
+	}
+
+	var resp rpc.HandshakeResponse
+	err := h.callRPC(ctx, pluginPath, req, &resp)
+	return &resp, err
+}
+
 func (h *Host) runCheckProcess(
 	ctx context.Context,
 	pluginPath string,
@@ -25,31 +45,46 @@ func (h *Host) runCheckProcess(
 		},
 	}
 
+	var resp rpc.RunCheckResponse
+	err := h.callRPC(ctx, pluginPath, req, &resp)
+	return &resp, err
+}
+
+func (h *Host) callRPC(
+	ctx context.Context,
+	pluginPath string,
+	req rpc.Request,
+	result interface{},
+) error {
+
 	payload, err := json.Marshal(req)
 	if err != nil {
-		return nil, fmt.Errorf("marshal request: %v", err)
+		return fmt.Errorf("marshal request: %v", err)
 	}
 
-	cmd := exec.CommandContext(
-		ctx,
-		pluginPath,
-		"--rpc",
-	)
-
+	cmd := exec.CommandContext(ctx, pluginPath, "--rpc")
 	cmd.Stdin = bytes.NewReader(payload)
 
-	// In a real implementation, we'd handle stderr logs separately
 	out, err := cmd.Output()
 	if err != nil {
-		// Try to capture more context from stderr if needed
-		return nil, fmt.Errorf("execute plugin %s: %v", pluginPath, err)
+		if ctx.Err() == context.DeadlineExceeded {
+			return fmt.Errorf("plugin %s timed out", pluginPath)
+		}
+		return fmt.Errorf("execute plugin %s: %v", pluginPath, err)
 	}
 
-	var resp rpc.Response[rpc.RunCheckResponse]
-	err = json.Unmarshal(out, &resp)
-	if err != nil {
-		return nil, fmt.Errorf("unmarshal response from %s: %v", pluginPath, err)
+	var r rpc.Response[json.RawMessage]
+	if err := json.Unmarshal(out, &r); err != nil {
+		return fmt.Errorf("unmarshal envelope from %s: %v", pluginPath, err)
 	}
 
-	return &resp.Result, nil
+	if r.Error != nil {
+		return fmt.Errorf("plugin error [%d]: %s", r.Error.Code, r.Error.Message)
+	}
+
+	if err := json.Unmarshal(r.Result, result); err != nil {
+		return fmt.Errorf("unmarshal result from %s: %v", pluginPath, err)
+	}
+
+	return nil
 }

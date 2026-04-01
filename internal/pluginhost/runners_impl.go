@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"syscall"
 )
 
 // BinaryRunner executes native binaries (Go, Rust).
@@ -37,9 +36,7 @@ func (r *BinaryRunner) Execute(ctx context.Context, entrypoint string, stdin []b
 	cmd.Stdin = bytes.NewReader(stdin)
 
 	// Apply process isolation
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Setpgid: true,
-	}
+	setSysProcAttr(cmd)
 
 	return cmd.CombinedOutput()
 }

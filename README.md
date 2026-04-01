@@ -60,6 +60,20 @@ cd ztvs
 make build
 ```
 
+### Uninstallation
+
+To completely remove ZTVS from your system alongside its configuration and downloaded plugins:
+
+**Linux & macOS:**
+```sh
+curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/uninstall.sh | sh
+```
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/uninstall.ps1 | iex
+```
+
 ---
 
 

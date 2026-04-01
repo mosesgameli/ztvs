@@ -8,12 +8,14 @@ import (
 	"time"
 
 	"github.com/mosesgameli/ztvs/internal/pluginhost"
+	"github.com/mosesgameli/ztvs/internal/policy"
 	"github.com/mosesgameli/ztvs/internal/report"
 )
 
 type Engine struct {
 	host     *pluginhost.Host
 	reporter report.Reporter
+	policy   *policy.Policy
 	mutex    sync.Mutex
 }
 
@@ -21,6 +23,7 @@ func New(r report.Reporter) *Engine {
 	return &Engine{
 		host:     pluginhost.New(),
 		reporter: r,
+		policy:   policy.NewDefault(),
 	}
 }
 
@@ -47,7 +50,19 @@ func (e *Engine) Scan() error {
 }
 
 func (e *Engine) scanPlugin(ctx context.Context, p string) {
-	// 1. Handshake
+	// 1. Get Manifest & Enforce Policy (Phase 3)
+	manifest, ok := e.host.GetManifest(p)
+	if !ok {
+		log.Printf("Security alert: Plugin at %s has no manifest. Skipping.", p)
+		return
+	}
+
+	if err := e.policy.IsAllowed(manifest.Name, manifest.Capabilities); err != nil {
+		log.Printf("Policy rejection: %v. Skipping plugin %s.", err, manifest.Name)
+		return
+	}
+
+	// 2. Handshake (Active verification)
 	meta, err := e.host.Handshake(ctx, p)
 	if err != nil {
 		log.Printf("Plugin %s failed handshake: %v", p, err)
@@ -59,7 +74,7 @@ func (e *Engine) scanPlugin(ctx context.Context, p string) {
 		return
 	}
 
-	// 2. Run Checks
+	// 3. Run Checks
 	for _, checkID := range meta.ChecksSupported {
 		// Per-check timeout
 		checkCtx, cancel := context.WithTimeout(ctx, 30*time.Second)

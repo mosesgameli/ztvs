@@ -24,42 +24,76 @@ func (r *TerminalReporter) AddFinding(pluginName string, finding *rpc.Finding) {
 
 func (r *TerminalReporter) Flush() error {
 	if len(r.findings) == 0 {
+		pterm.DefaultSection.Println("Scan Results")
 		pterm.Success.Println("No vulnerabilities found! System is clean.")
 		return nil
 	}
 
-	for plugin, findings := range r.findings {
-		pterm.DefaultHeader.WithFullWidth().Printf("Plugin: %s (%d findings)", plugin, len(findings))
+	totalFindings := 0
+	criticals := 0
+	highs := 0
 
-		var tableData [][]string
-		tableData = append(tableData, []string{"Severity", "Title", "Description", "Remediation"})
+	for plugin, findings := range r.findings {
+		pterm.DefaultHeader.WithBackgroundStyle(pterm.NewStyle(pterm.BgCyan)).WithMargin(2).Printf("Source: %s", plugin)
+		fmt.Println()
 
 		for _, f := range findings {
+			totalFindings++
 			sev := strings.ToUpper(f.Severity)
-			var coloredSev string
+			
+			var sevBadge string
+			var accentStyle *pterm.Style
+			
 			switch sev {
 			case "CRITICAL":
-				coloredSev = pterm.BgRed.Sprint(pterm.FgBlack.Sprint(" " + sev + " "))
+				criticals++
+				sevBadge = pterm.BgRed.Sprint(pterm.FgBlack.Sprint(" ! CRITICAL "))
+				accentStyle = pterm.NewStyle(pterm.FgRed, pterm.Bold)
 			case "HIGH":
-				coloredSev = pterm.FgRed.Sprint(sev)
+				highs++
+				sevBadge = pterm.BgLightRed.Sprint(pterm.FgBlack.Sprint(" HIGH "))
+				accentStyle = pterm.NewStyle(pterm.FgLightRed)
 			case "MEDIUM":
-				coloredSev = pterm.FgYellow.Sprint(sev)
-			case "LOW":
-				coloredSev = pterm.FgCyan.Sprint(sev)
+				sevBadge = pterm.BgYellow.Sprint(pterm.FgBlack.Sprint(" MED "))
+				accentStyle = pterm.NewStyle(pterm.FgYellow)
 			default:
-				coloredSev = pterm.FgLightBlue.Sprint(sev)
+				sevBadge = pterm.BgCyan.Sprint(pterm.FgBlack.Sprint(" LOW "))
+				accentStyle = pterm.NewStyle(pterm.FgCyan)
 			}
 
-			tableData = append(tableData, []string{
-				coloredSev,
-				f.Title,
-				f.Description,
-				f.Remediation,
-			})
+			cardContent := fmt.Sprintf("%s %s\n\n", sevBadge, accentStyle.Sprint(f.Title))
+			cardContent += pterm.LightWhite(f.Description) + "\n"
+			if f.Remediation != "" {
+				cardContent += "\n" + pterm.BgGreen.Sprint(pterm.FgBlack.Sprint(" FIX ")) + " " + pterm.FgGreen.Sprint(f.Remediation)
+			}
+
+			pterm.DefaultPanel.WithPadding(1).WithPanels(pterm.Panels{
+				{{Data: cardContent}},
+			}).Render()
+			fmt.Println()
 		}
-		
-		pterm.DefaultTable.WithHasHeader().WithData(tableData).Render()
-		fmt.Println()
 	}
+
+	// Final Summary Dashboard
+	summaryTitle := pterm.Bold.Sprint("AUDIT SUMMARY")
+	stats, _ := pterm.DefaultTable.WithData([][]string{
+		{"Metric", "Value"},
+		{"Total Plugins Reporting", fmt.Sprintf("%d", len(r.findings))},
+		{"Total Findings Identified", fmt.Sprintf("%d", totalFindings)},
+		{"Critical Alerts", pterm.FgRed.Sprint(criticals)},
+		{"High Probability Risks", pterm.FgLightRed.Sprint(highs)},
+	}).Srender()
+
+	status := pterm.Success.Sprint("SECURE")
+	if criticals > 0 {
+		status = pterm.BgRed.Sprint(pterm.FgBlack.Sprint(" COMPROMISED "))
+	} else if highs > 0 {
+		status = pterm.FgRed.Sprint("VULNERABLE")
+	}
+
+	pterm.DefaultPanel.WithPadding(2).WithPanels(pterm.Panels{
+		{{Data: fmt.Sprintf("%s\n\n%s\nSystem Status: %s", summaryTitle, stats, status)}},
+	}).Render()
+
 	return nil
 }

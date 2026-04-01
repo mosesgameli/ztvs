@@ -62,15 +62,28 @@ func (e *Engine) RunLoop(ctx context.Context, interval time.Duration) error {
 func (e *Engine) Scan() error {
 	ctx := context.Background()
 
+	var spinner *pterm.SpinnerPrinter
+	if e.Interactive {
+		spinner, _ = pterm.DefaultSpinner.Start("Checking for registry updates...")
+	}
+
 	// Phase 4: Atomic Auto-Updates
 	reg := pluginhost.NewRegistry()
 	if err := reg.CheckAndUpdateAll(ctx, e.host, e.cfg.Update.Mode); err != nil {
-		fmt.Printf("Warning: plugin update check failed: %v\n", err)
+		if spinner != nil {
+			pterm.Warning.Printf("Update check bypassed: %v\n", err)
+		}
 	}
 
 	// 1. Discover plugins
+	if spinner != nil {
+		spinner.UpdateText("Discovering installed nodes...")
+	}
 	plugins, err := e.host.Discover(ctx)
 	if err != nil {
+		if spinner != nil {
+			spinner.Fail(fmt.Sprintf("Discovery error: %v", err))
+		}
 		return fmt.Errorf("discovery: %v", err)
 	}
 
@@ -79,9 +92,8 @@ func (e *Engine) Scan() error {
 
 	var wg sync.WaitGroup
 
-	var spinner *pterm.SpinnerPrinter
-	if e.Interactive {
-		spinner, _ = pterm.DefaultSpinner.Start(fmt.Sprintf("Scanning with %d permitted plugins...", len(plugins)))
+	if spinner != nil {
+		spinner.UpdateText(fmt.Sprintf("Auditing system with %d nodes...", len(plugins)))
 	}
 
 	for _, p := range plugins {
@@ -90,7 +102,7 @@ func (e *Engine) Scan() error {
 			defer wg.Done()
 			if spinner != nil {
 				if manifest, ok := e.host.GetManifest(path); ok {
-					spinner.UpdateText(fmt.Sprintf("Running %s checks...", manifest.Name))
+					spinner.UpdateText(fmt.Sprintf("Node [%s]: Executing checks...", manifest.Name))
 				}
 			}
 			e.scanPlugin(ctx, path)
@@ -100,7 +112,7 @@ func (e *Engine) Scan() error {
 	wg.Wait()
 	
 	if spinner != nil {
-		spinner.Success("Security scan complete")
+		spinner.Success("System audit finalized")
 	}
 
 	return e.reporter.Flush()

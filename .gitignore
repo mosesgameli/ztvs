@@ -3,9 +3,10 @@ _
 /Users/mosesgameli/MTN/
 # Binaries
 zt
+zt-*
 plugin-os
 plugins/plugin-os/plugin-os
-
+plugins/plugin-axios-mitigation/plugin-axios-mitigation
 # OS
 .DS_Store
 

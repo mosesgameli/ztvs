@@ -1,0 +1,9 @@
+name: hello-world
+version: 1.0.0
+api_version: 1
+runtime:
+  type: binary
+  language: go
+  entrypoint: hello-world
+capabilities: []
+description: A simple ZTVS plugin that greets the host to demonstrate SDK usage.

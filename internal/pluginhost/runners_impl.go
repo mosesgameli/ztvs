@@ -80,6 +80,7 @@ func (r *PythonRunner) Execute(ctx context.Context, entrypoint string, stdin []b
 	cmd := exec.CommandContext(ctx, "uv", "run", "python", entrypoint)
 	cmd.Dir = pluginRoot
 	cmd.Stdin = bytes.NewReader(stdin)
+	cmd.Env = append(os.Environ(), "PYTHONPATH="+filepath.Join(pluginRoot, "src"))
 
 	// Apply process isolation
 	setSysProcAttr(cmd)

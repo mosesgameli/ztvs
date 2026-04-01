@@ -189,10 +189,22 @@ func (r *Registry) Install(ctx context.Context, pluginName string, host *Host) e
 }
 
 func (r *Registry) buildPlugin(dir, name string) error {
+	// 1. Try building from cmd/ (standard layout)
+	cmdDir := filepath.Join(dir, "cmd")
+	if _, err := os.Stat(filepath.Join(cmdDir, "main.go")); err == nil {
+		cmd := exec.Command("go", "build", "-o", name, "./cmd/...")
+		cmd.Dir = dir
+		if output, err := cmd.CombinedOutput(); err != nil {
+			return fmt.Errorf("build error (cmd): %v\nOutput: %s", err, string(output))
+		}
+		return nil
+	}
+
+	// 2. Fallback to building from root
 	cmd := exec.Command("go", "build", "-o", name, ".")
 	cmd.Dir = dir
 	if output, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("build error: %v\nOutput: %s", err, string(output))
+		return fmt.Errorf("build error (root): %v\nOutput: %s", err, string(output))
 	}
 	return nil
 }
@@ -259,21 +271,42 @@ func (r *Registry) PerformAtomicUpdate(ctx context.Context, name string, host *H
 	}
 
 	// 1. Clone to tmp
-	if err := r.git.Clone(meta.Repo, tmpDir); err != nil {
+	tmpRepoDir := filepath.Join(configDir, "cache", "tmp", "ztvs-plugins-update")
+	_ = os.RemoveAll(tmpRepoDir)
+	if err := r.git.Clone(meta.Repo, tmpRepoDir); err != nil {
 		return err
 	}
+	defer os.RemoveAll(tmpRepoDir)
 
-	// 2. Build
-	if err := r.buildPlugin(tmpDir, name); err != nil {
-		_ = os.RemoveAll(tmpDir)
-		return err
+	pluginSrcDir := filepath.Join(tmpRepoDir, name)
+	if _, err := os.Stat(pluginSrcDir); err != nil {
+		return fmt.Errorf("plugin subdirectory %q not found in repository", name)
 	}
 
-	// 3. Verify
-	binPath := filepath.Join(tmpDir, name)
-	if err := VerifyIntegrity(binPath, meta.Checksum); err != nil {
-		_ = os.RemoveAll(tmpDir)
-		return err
+	// 2. Build (Go/binary plugins only)
+	needsBuild := true
+	manifestBytes, err := os.ReadFile(filepath.Join(pluginSrcDir, "plugin.yaml"))
+	if err == nil {
+		runtimeType := extractRuntimeType(manifestBytes)
+		if runtimeType != "" && runtimeType != "go" && runtimeType != "binary" {
+			needsBuild = false
+		}
+	}
+
+	if needsBuild {
+		fmt.Printf("Building plugin (Go)...\n")
+		if err := r.buildPlugin(pluginSrcDir, name); err != nil {
+			return err
+		}
+	}
+
+	// 3. Verify Integrity (Go/binary plugins only)
+	binPath := filepath.Join(pluginSrcDir, name)
+	if meta.Checksum != "" {
+		fmt.Printf("Verifying integrity...\n")
+		if err := VerifyIntegrity(binPath, meta.Checksum); err != nil {
+			return err
+		}
 	}
 
 	// 4. Atomic Swap
@@ -289,7 +322,7 @@ func (r *Registry) PerformAtomicUpdate(ctx context.Context, name string, host *H
 		}
 	}
 
-	if err := os.Rename(tmpDir, finalDir); err != nil {
+	if err := os.Rename(pluginSrcDir, finalDir); err != nil {
 		// Try to restore old one
 		_ = os.Rename(oldDir, finalDir)
 		return err

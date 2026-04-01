@@ -41,7 +41,7 @@ Choose the one-liner for your platform. This will download the latest binary, in
 
 #### Linux & macOS
 ```sh
-curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/scripts/install.sh | sh
 ```
 *Installs `zt` to `/usr/local/bin` and seeds plugins into `~/.ztvs/plugins`.*
 
@@ -51,7 +51,7 @@ curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/install.sh | 
 
 #### Windows (PowerShell)
 ```powershell
-irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/scripts/install.ps1 | iex
 ```
 *Installs `zt.exe` to `%LOCALAPPDATA%\Programs\ztvs`, updates your user `PATH`, and seeds plugins.*
 
@@ -63,12 +63,12 @@ Completely remove ZTVS binaries, plugins, and configurations from your system.
 
 #### Linux & macOS
 ```sh
-curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/uninstall.sh | sh
+curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/scripts/uninstall.sh | sh
 ```
 
 #### Windows (PowerShell)
 ```powershell
-irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/uninstall.ps1 | iex
+irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/scripts/uninstall.ps1 | iex
 ```
 
 ---

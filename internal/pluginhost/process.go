@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+	"syscall"
 
 	"github.com/mosesgameli/ztvs/pkg/rpc"
 )
@@ -56,6 +57,12 @@ func (h *Host) callRPC(
 	req rpc.Request,
 	result interface{},
 ) error {
+	// 1. Verify integrity before every call (Phase 3)
+	if manifest, ok := h.GetManifest(pluginPath); ok && manifest.Checksum != "" {
+		if err := VerifyIntegrity(pluginPath, manifest.Checksum); err != nil {
+			return fmt.Errorf("security violation: %v", err)
+		}
+	}
 
 	payload, err := json.Marshal(req)
 	if err != nil {
@@ -64,6 +71,11 @@ func (h *Host) callRPC(
 
 	cmd := exec.CommandContext(ctx, pluginPath, "--rpc")
 	cmd.Stdin = bytes.NewReader(payload)
+
+	// 2. Apply basic sandboxing (Process Isolation)
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setpgid: true, // Separate process group
+	}
 
 	out, err := cmd.Output()
 	if err != nil {

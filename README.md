@@ -33,34 +33,55 @@ ZTVS follows a deliberate Host + Plugin model:
 For rigorous details on the internal layout, request flows, and state machines, see [ZTVS Architecture](docs/architecture.md) and [Protocol Specification](docs/protocol.md).
 
 
-## 🛠️ Installation
+## 🛠️ Setup Guide
 
-### Linux & macOS
+### Installation
 
+Choose the one-liner for your platform. This will download the latest binary, install it, and seed the default first-party plugins.
+
+#### Linux & macOS
 ```sh
 curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/install.sh | sh
 ```
-*Installs `zt` binary to `/usr/local/bin` and provisions the system plugin dir at `~/.ztvs/plugins`.*
+*Installs `zt` to `/usr/local/bin` and seeds plugins into `~/.ztvs/plugins`.*
 
+> [!TIP]
 > **Pin a specific version:** 
 > `ZTVS_VERSION=v1.0.0 curl -fsSL ... | sh`
 
-### Windows (PowerShell)
-
+#### Windows (PowerShell)
 ```powershell
 irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/install.ps1 | iex
 ```
-*Installs `zt.exe` to `%LOCALAPPDATA%\Programs\ztvs` (no admin required) and updates user `PATH`.*
+*Installs `zt.exe` to `%LOCALAPPDATA%\Programs\ztvs`, updates your user `PATH`, and seeds plugins.*
+
+---
+
+### Uninstallation
+
+Completely remove ZTVS binaries, plugins, and configurations from your system.
+
+#### Linux & macOS
+```sh
+curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/uninstall.sh | sh
+```
+
+#### Windows (PowerShell)
+```powershell
+irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/uninstall.ps1 | iex
+```
+
+---
 
 ### Compilation from Source
 
-Requires [Go 1.24+](https://golang.org/dl/) and standard build tools:
+Requires [Go 1.26.1+](https://golang.org/dl/) and standard `make`:
 
 ```bash
-git clone git@github.com:mosesgameli/ztvs.git
-cd ztvs
+git clone https://github.com/mosesgameli/ztvs.git
+cd ztvs/zt
 make build     # Builds host and all first-party plugins
-make install   # Places binaries in standard paths
+make install   # Provisions ~/.ztvs/plugins and common paths
 ```
 
 

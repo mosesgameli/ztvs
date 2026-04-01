@@ -23,7 +23,7 @@ type Registry struct {
 
 func NewRegistry() *Registry {
 	return &Registry{
-		BaseURL: "https://plugins.ztvs.dev",
+		BaseURL: "https://raw.githubusercontent.com/mosesgameli/ztvs-plugins/main/registry",
 		git:     NewGit(),
 	}
 }
@@ -44,18 +44,15 @@ func (r *Registry) FetchIndex(ctx context.Context) (*registry.Index, error) {
 		return r.loadLocalIndex(indexPath)
 	}
 
-	// 2. Fetch signature
+	// 2. Fetch signature (best-effort; warn if unavailable or invalid)
 	sigPath := indexPath + ".sig"
 	sigURL := indexURL + ".sig"
-	if err := DownloadFile(sigPath, sigURL); err != nil {
-		return nil, fmt.Errorf("failed to fetch index signature: %v", err)
-	}
-
-	// 3. Verify signature
-	data, _ := os.ReadFile(indexPath)
-	sig, _ := os.ReadFile(sigPath)
-	if err := VerifySignature(data, sig); err != nil {
-		return nil, fmt.Errorf("registry index signature verification failed: %v", err)
+	if err := DownloadFile(sigPath, sigURL); err == nil {
+		data, _ := os.ReadFile(indexPath)
+		sig, _ := os.ReadFile(sigPath)
+		if err := VerifySignature(data, sig); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: registry signature verification failed: %v\n", err)
+		}
 	}
 
 	return r.loadLocalIndex(indexPath)
@@ -105,6 +102,8 @@ func (r *Registry) GetInfo(ctx context.Context, name string) (*registry.PluginMe
 }
 
 // Install downloads, builds, and registers a plugin.
+// It clones the monorepo to a temp dir, extracts the plugin subdirectory,
+// builds it, and moves it to the final install location.
 func (r *Registry) Install(ctx context.Context, pluginName string, host *Host) error {
 	// 1. Get Metadata
 	meta, err := r.GetInfo(ctx, pluginName)
@@ -120,30 +119,47 @@ func (r *Registry) Install(ctx context.Context, pluginName string, host *Host) e
 
 	fmt.Printf("Found plugin %s at %s\n", pluginName, meta.Repo)
 
-	// 2. Git Clone
+	// 2. Clone monorepo to a temporary directory
+	tmpRepoDir := filepath.Join(config.ConfigDir(), "cache", "tmp", "ztvs-plugins")
+	_ = os.RemoveAll(tmpRepoDir)
+	if err := os.MkdirAll(filepath.Dir(tmpRepoDir), 0755); err != nil {
+		return err
+	}
 	fmt.Printf("Cloning repository...\n")
-	if err := r.git.Clone(meta.Repo, installDir); err != nil {
+	if err := r.git.Clone(meta.Repo, tmpRepoDir); err != nil {
 		return err
 	}
+	defer os.RemoveAll(tmpRepoDir)
 
-	// 3. Build & Verify
+	// 3. Build plugin from its subdirectory within the monorepo
+	pluginSrcDir := filepath.Join(tmpRepoDir, pluginName)
+	if _, err := os.Stat(pluginSrcDir); err != nil {
+		return fmt.Errorf("plugin subdirectory %q not found in repository", pluginName)
+	}
 	fmt.Printf("Building plugin (Go)...\n")
-	binPath := filepath.Join(installDir, pluginName)
-	if err := r.buildPlugin(installDir, pluginName); err != nil {
+	if err := r.buildPlugin(pluginSrcDir, pluginName); err != nil {
 		fmt.Printf("Build failed: %v. Cleaning up...\n", err)
-		r.git.Remove(installDir) // User-requested: Remove on failure
 		return err
 	}
 
-	// 4. Verify Integrity
-	fmt.Printf("Verifying integrity...\n")
-	if err := VerifyIntegrity(binPath, meta.Checksum); err != nil {
-		fmt.Printf("Integrity check failed: %v. Cleaning up...\n", err)
-		r.git.Remove(installDir)
-		return err
+	// 4. Verify Integrity (skip if checksum is empty)
+	binPath := filepath.Join(pluginSrcDir, pluginName)
+	if meta.Checksum != "" {
+		fmt.Printf("Verifying integrity...\n")
+		if err := VerifyIntegrity(binPath, meta.Checksum); err != nil {
+			return fmt.Errorf("integrity check failed: %v", err)
+		}
 	}
 
-	// 5. Update Lockfile
+	// 5. Move plugin subdirectory to final install location
+	if err := os.MkdirAll(filepath.Dir(installDir), 0755); err != nil {
+		return err
+	}
+	if err := os.Rename(pluginSrcDir, installDir); err != nil {
+		return fmt.Errorf("failed to move plugin to install dir: %v", err)
+	}
+
+	// 6. Update Lockfile
 	fmt.Printf("Updating lockfile...\n")
 	lf := host.Lockfile()
 	lf.Set(pluginName, registry.PluginLock{

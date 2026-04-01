@@ -13,3 +13,5 @@ checks_supported:
   - axios_dependency_audit
   - axios_host_ioc
   - axios_c2_network
+
+checksum: 0a03f10039f3cd3c59dda3073ab69fcfe78218bf5ad16cf99d7e4d087b56cf07

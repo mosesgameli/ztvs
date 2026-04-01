@@ -14,21 +14,29 @@ import (
 )
 
 type PluginInfo struct {
-	BinaryPath string
+	Entrypoint string
 	Manifest   *sdk.Manifest
 	Enabled    bool
+	Runner     Runner
 }
 
 type Host struct {
 	paths    []string
 	plugins  map[string]*PluginInfo
 	lockfile *registry.Lockfile
+	runners  *RunnerRegistry
 }
 
 func New() *Host {
 	configDir := config.ConfigDir()
 	lockPath := filepath.Join(configDir, "plugins.lock")
 	lf, _ := registry.LoadLockfile(lockPath)
+
+	rr := NewRunnerRegistry()
+	rr.Register(&BinaryRunner{})
+	rr.Register(&PythonRunner{})
+	rr.Register(&NodeRunner{})
+	rr.Register(&JavaRunner{})
 
 	return &Host{
 		paths: []string{
@@ -38,6 +46,7 @@ func New() *Host {
 		},
 		plugins:  make(map[string]*PluginInfo),
 		lockfile: lf,
+		runners:  rr,
 	}
 }
 
@@ -63,21 +72,27 @@ func (h *Host) Discover(ctx context.Context) ([]string, error) {
 					continue
 				}
 
-				// 3. Look for binary
-				pluginBin := filepath.Join(pluginDir, entry.Name())
-				if info, err := os.Stat(pluginBin); err == nil && !info.IsDir() {
+				// 3. Resolve Runner & Entrypoint
+				runner, err := h.runners.GetRunner(manifest.Runtime.Type)
+				if err != nil {
+					continue
+				}
+
+				entrypoint := filepath.Join(pluginDir, manifest.Runtime.Entrypoint)
+				if info, err := os.Stat(entrypoint); err == nil && !info.IsDir() {
 					// 4. Check lockfile (Enabled status)
 					enabled := true
 					if lock, ok := h.lockfile.Get(manifest.Name); ok {
 						enabled = lock.Enabled
 					}
 
-					h.plugins[pluginBin] = &PluginInfo{
-						BinaryPath: pluginBin,
+					h.plugins[entrypoint] = &PluginInfo{
+						Entrypoint: entrypoint,
 						Manifest:   manifest,
 						Enabled:    enabled,
+						Runner:     runner,
 					}
-					discovered = append(discovered, pluginBin)
+					discovered = append(discovered, entrypoint)
 				}
 			}
 		}

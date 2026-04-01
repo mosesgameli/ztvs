@@ -1,0 +1,65 @@
+version: 2
+updates:
+  # ── Go modules (host + plugins) ──────────────────────────────────────────
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: UTC
+    labels:
+      - dependencies
+      - go
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      golang-x:
+        patterns:
+          - "golang.org/x/*"
+      pterm:
+        patterns:
+          - "github.com/pterm/*"
+          - "atomicgo.dev/*"
+
+  - package-ecosystem: gomod
+    directory: /plugins/plugin-os
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: UTC
+    labels:
+      - dependencies
+      - go
+      - plugin
+    commit-message:
+      prefix: "chore(deps/plugin-os)"
+
+  - package-ecosystem: gomod
+    directory: /plugins/plugin-axios-mitigation
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: UTC
+    labels:
+      - dependencies
+      - go
+      - plugin
+    commit-message:
+      prefix: "chore(deps/plugin-axios-mitigation)"
+
+  # ── GitHub Actions ────────────────────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: UTC
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: "chore(ci)"

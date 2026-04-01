@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -62,8 +63,13 @@ func (c *DependencyCheck) Run(ctx context.Context) (*sdk.Finding, error) {
 		// Check for malicious dependency within found node_modules
 		target := filepath.Join(path, "plain-crypto-js")
 		if _, err := os.Stat(target); err == nil {
-			finding.Title = "Malicious dependency 'plain-crypto-js' found on system"
-			finding.Evidence["malicious_package_path"] = target
+			absTarget, err := filepath.Abs(target)
+			if err != nil {
+				absTarget = target
+			}
+			finding.Title = fmt.Sprintf("Malicious dependency 'plain-crypto-js' found at: %s", absTarget)
+			finding.Description = fmt.Sprintf("Malicious package installed at full path: %s", absTarget)
+			finding.Evidence["malicious_package_path"] = absTarget
 			foundInLockfile = true
 		}
 	}

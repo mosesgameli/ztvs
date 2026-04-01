@@ -1,0 +1,136 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }}/${{ matrix.arch }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux
+          - os: linux
+            arch: amd64
+          - os: linux
+            arch: arm64
+          # macOS
+          - os: darwin
+            arch: amd64
+          - os: darwin
+            arch: arm64
+          # Windows
+          - os: windows
+            arch: amd64
+          - os: windows
+            arch: arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Set binary extension
+        id: ext
+        run: |
+          if [ "${{ matrix.os }}" = "windows" ]; then
+            echo "bin_ext=.exe" >> "$GITHUB_OUTPUT"
+            echo "archive_ext=zip"  >> "$GITHUB_OUTPUT"
+          else
+            echo "bin_ext="         >> "$GITHUB_OUTPUT"
+            echo "archive_ext=tar.gz" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build host binary
+        env:
+          GOOS: ${{ matrix.os }}
+          GOARCH: ${{ matrix.arch }}
+          CGO_ENABLED: "0"
+        run: |
+          go build \
+            -ldflags="-s -w -X main.version=${{ github.ref_name }}" \
+            -o dist/zt${{ steps.ext.outputs.bin_ext }} \
+            ./cmd/zt
+
+      - name: Build plugin-os
+        env:
+          GOOS: ${{ matrix.os }}
+          GOARCH: ${{ matrix.arch }}
+          CGO_ENABLED: "0"
+        run: |
+          go build \
+            -ldflags="-s -w" \
+            -C plugins/plugin-os \
+            -o ../dist/plugin-os${{ steps.ext.outputs.bin_ext }} \
+            .
+
+      - name: Build plugin-axios-mitigation
+        env:
+          GOOS: ${{ matrix.os }}
+          GOARCH: ${{ matrix.arch }}
+          CGO_ENABLED: "0"
+        run: |
+          go build \
+            -ldflags="-s -w" \
+            -C plugins/plugin-axios-mitigation \
+            -o ../dist/plugin-axios-mitigation${{ steps.ext.outputs.bin_ext }} \
+            .
+
+      - name: Copy plugin manifests
+        run: |
+          cp plugins/plugin-os/plugin.yaml            dist/plugin-os.yaml
+          cp plugins/plugin-axios-mitigation/plugin.yaml dist/plugin-axios-mitigation.yaml
+
+      - name: Package archive (tar.gz)
+        if: matrix.os != 'windows'
+        run: |
+          ARCHIVE="ztvs-${{ github.ref_name }}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz"
+          tar -czf "$ARCHIVE" -C dist .
+          echo "ASSET=$ARCHIVE" >> "$GITHUB_ENV"
+
+      - name: Package archive (zip)
+        if: matrix.os == 'windows'
+        run: |
+          ARCHIVE="ztvs-${{ github.ref_name }}-${{ matrix.os }}-${{ matrix.arch }}.zip"
+          cd dist && zip -r "../$ARCHIVE" . && cd ..
+          echo "ASSET=$ARCHIVE" >> "$GITHUB_ENV"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ztvs-${{ matrix.os }}-${{ matrix.arch }}
+          path: ${{ env.ASSET }}
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-assets/*
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}

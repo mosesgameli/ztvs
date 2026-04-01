@@ -1,0 +1,58 @@
+name: Feature Request
+description: Suggest a new feature or improvement.
+title: "[feat]: "
+labels: ["enhancement"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please be as specific as possible
+        so we can understand the use-case and prioritise accordingly.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of ZTVS does this relate to?
+      options:
+        - Host engine / core
+        - Plugin SDK / API
+        - Plugin registry
+        - CLI / UX
+        - CI/CD integration
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: Describe the problem you're trying to solve, or the use-case that prompted this request.
+      placeholder: "Currently there is no way to..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe the feature or change you'd like to see, including any API / CLI surface changes.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any alternative approaches or workarounds you've already tried.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched for existing feature requests before opening this one.
+          required: true

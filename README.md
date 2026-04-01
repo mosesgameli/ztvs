@@ -11,10 +11,12 @@
 
 *   **⚡ High-Concurrency Scanning**: Parallel check execution via a Go-powered engine.
 *   **🛡️ Zero Trust Architecture**: Out-of-process plugin isolation with JSON-RPC 2.0 communication.
+*   **🛠️ Polyglot Support**: Native execution for plugins written in Go, Python, Node.js, Rust, and Java.
+*   **🔒 Strict Capabilities**: Plugin permissions (e.g., `network_access`, `execute_commands`) are strictly enforced by global policy configurations (`~/.ztvs/config.yaml`).
+*   **🚨 Supply Chain & IOC Auditing**: Deep dependency validation (e.g., `plugin-axios-mitigation` for active supply chain compromises and RAT detection).
 *   **🔌 Easy Extensibility**: Simple-to-use Go SDK for building new custom security checks.
-*   **📈 Concurrent Engine**: High-performance parallel scanning via worker pools.
 *   **📡 Agent Mode**: Periodic background auditing for continuous visibility.
-*   **📦 Plugin Registry**: Managed installation and manifest-driven discovery.
+*   **📦 Plugin Registry**: Manifest-driven discovery with secure remote installation and atomic updates.
 *   **📊 Multiple Output Formats**: Supports Terminal (Pretty-print), JSON, and **SARIF** for CI/CD integration.
 *   **🔍 Cross-Path Discovery**: Automatically discovers plugins in local, user, and system directories (`~/.ztvs/plugins`).
 
@@ -51,8 +53,14 @@ make build
 # Run a scan with JSON output
 ./zt --format json scan
 
-# Manage plugins
+# Manage plugins locally
 ./zt plugin list
+
+# Install a plugin from the ZTVS remote registry
+./zt plugin install plugin-axios-mitigation
+
+# Automatically update all installed plugins
+./zt plugin update
 
 # Start the continuous audit agent
 ./zt agent
@@ -73,7 +81,7 @@ Generate a SARIF report for GitHub Advanced Security:
 | `internal/` | Core Engine, Plugin Host, and Reporting logic |
 | `pkg/sdk` | SDK for plugin developers |
 | `pkg/rpc` | JSON-RPC 2.0 message definitions |
-| `plugins/` | First-party security plugins (e.g., `plugin-os`) |
+| `plugins/` | First-party security plugins (e.g., `plugin-os`, `plugin-axios-mitigation`) and polyglot tests (`dummy-python`) |
 
 ---
 

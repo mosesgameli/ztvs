@@ -1,12 +1,9 @@
 package pluginhost
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"os/exec"
-	"syscall"
 
 	"github.com/mosesgameli/ztvs/pkg/rpc"
 )
@@ -69,15 +66,13 @@ func (h *Host) callRPC(
 		return fmt.Errorf("marshal request: %v", err)
 	}
 
-	cmd := exec.CommandContext(ctx, pluginPath, "--rpc")
-	cmd.Stdin = bytes.NewReader(payload)
-
-	// 2. Apply basic sandboxing (Process Isolation)
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Setpgid: true, // Separate process group
+	// 2. Get Runner for this plugin
+	info, ok := h.GetPluginInfo(pluginPath)
+	if !ok {
+		return fmt.Errorf("plugin info not found for %s", pluginPath)
 	}
 
-	out, err := cmd.Output()
+	out, err := info.Runner.Execute(ctx, pluginPath, payload)
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
 			return fmt.Errorf("plugin %s timed out", pluginPath)

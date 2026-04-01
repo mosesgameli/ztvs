@@ -1,0 +1,8 @@
+name: dummy-python
+version: 1.0.0
+api_version: 1
+runtime:
+  type: python
+  language: python
+  entrypoint: main.py
+capabilities: []

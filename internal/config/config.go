@@ -11,6 +11,11 @@ import (
 type Config struct {
 	Agent  AgentConfig  `yaml:"agent"`
 	Policy PolicyConfig `yaml:"policy"`
+	Update UpdateConfig `yaml:"update"`
+}
+
+type UpdateConfig struct {
+	Mode string `yaml:"mode"` // safe, always, locked
 }
 
 type AgentConfig struct {
@@ -22,13 +27,13 @@ type PolicyConfig struct {
 	BlockedCapabilities []string `yaml:"blocked_capabilities"`
 }
 
-func Load() (*Config, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return nil, fmt.Errorf("home: %v", err)
-	}
+func ConfigDir() string {
+	home, _ := os.UserHomeDir()
+	return filepath.Join(home, ".ztvs")
+}
 
-	configPath := filepath.Join(home, ".ztvs", "config.yaml")
+func Load() (*Config, error) {
+	configPath := filepath.Join(ConfigDir(), "config.yaml")
 
 	// 1. Create default config if missing
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
@@ -58,12 +63,14 @@ func DefaultConfig() *Config {
 			AllowedCapabilities: []string{"read_files", "execute_commands", "system_info"},
 			BlockedCapabilities: []string{"network_access", "write_files"},
 		},
+		Update: UpdateConfig{
+			Mode: "safe",
+		},
 	}
 }
 
 func (c *Config) Save() error {
-	home, _ := os.UserHomeDir()
-	configDir := filepath.Join(home, ".ztvs")
+	configDir := ConfigDir()
 	if err := os.MkdirAll(configDir, 0755); err != nil {
 		return err
 	}

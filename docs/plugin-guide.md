@@ -52,4 +52,4 @@ ZTVS is designed to be truly language agnostic. Any language that can execute on
 -   **Environment Agnostic**: Avoid hardcoded paths; use environment variables or capabilities to detect system resources.
 -   **Structured Evidence**: In the `evidence` field, return structured data (maps/objects) that the host can use for reporting.
 -   **Graceful Errors**: If a check fails due to an unexpected error, return a standard JSON-RPC error rather than a panic.
--   **Polyglot Examples**: Check our [examples/](../examples/) directory for reference implementations in Python, Rust, Node.js, and Java.
+-   **Polyglot Examples**: Check our [ztvs-plugins](https://github.com/mosesgameli/ztvs-plugins) repository for reference implementations in Python, Rust, Node.js, and Java.

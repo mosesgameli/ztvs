@@ -15,7 +15,7 @@ Built for modern infrastructure, ZTVS natively supports polyglot plugins, allowi
 *   **🛠️ Polyglot Runner Support**: Write checks in your language of choice. ZTVS dynamically binds to runtimes (`python3`, `node`) or executes natively compiled binaries (Go, Rust).
 *   **🔒 Strict Capability Controls**: Plugins must define exact capabilities in `plugin.yaml` (e.g., `network_access`, `read_fs`). Granular enforcement via `~/.ztvs/config.yaml` policies.
 *   **🚨 Sophisticated Supply Chain Auditing**: Native support for deep host dependency validation, mitigating targeted compromises like the 2026 Axios Supply Chain RAT attack out of the box (`plugin-axios-mitigation`).
-*   **🔌 Comprehensive Plugin SDKs**: Fast, integrated developer experience with our first-party Go SDK (`pkg/sdk`).
+*   **🔌 Comprehensive Plugin SDKs**: Fast, integrated developer experience with our first-party [Go SDK](https://github.com/mosesgameli/ztvs-sdk-go) and [Python SDK](https://github.com/mosesgameli/ztvs-sdk-python).
 *   **📡 Agent & One-Shot Modes**: Run dynamically as an isolated scheduled background daemon (`zt agent`) or on-demand (`zt scan`).
 *   **📦 Manifest-Driven Remote Registry**: Discover, cryptographically verify (via SHA-256 integrity), and install plugins safely using `zt plugin install`. Live atomic updates prevent failures during execution.
 *   **📊 Enterprise Reporting**: Fully structured output integrations for SIEM and CI/CD, including Terminal pretty-print, JSON, and full **SARIF 2.1.0**.
@@ -166,7 +166,7 @@ func main() {
 }
 ```
 
-View the detailed guide at [Plugin Developer Docs](.agents/skills/plugin-dev/SKILL.md) and [RFC Specifications](docs/).
+View the detailed guide at [Plugin Development Guide](docs/plugin-guide.md) and [RFC Specifications](docs/).
 
 
 ## 🗺️ Roadmap & Operational Vision

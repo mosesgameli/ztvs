@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # ZTVS Git Standards & Best Practices
 
 These rules govern the Git lifecycle for the ZTVS project to ensure a clean commit history and automated CI/CD compatibility.

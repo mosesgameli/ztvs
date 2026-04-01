@@ -6,7 +6,13 @@ The ZTVS Go SDK provides a robust, easy-to-use framework for building ZTVS-compa
 
 ## Installation
 
-The SDK is part of the first-party `pkg/sdk` package.
+The SDK is available as a separate repository:
+
+```bash
+go get github.com/mosesgameli/ztvs-sdk-go/sdk
+```
+
+Add the following to your `main.go`:
 
 ```go
 import "github.com/mosesgameli/ztvs-sdk-go/sdk"

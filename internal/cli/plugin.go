@@ -4,10 +4,13 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/mosesgameli/ztvs/internal/config"
 	"github.com/mosesgameli/ztvs/internal/pluginhost"
 	"github.com/mosesgameli/ztvs/pkg/registry"
+	"github.com/mosesgameli/ztvs/pkg/sdk"
+	"gopkg.in/yaml.v3"
 )
 
 func PluginCommand() {
@@ -137,10 +140,36 @@ func PluginCommand() {
 			fmt.Println("usage: zt plugin install <name>")
 			os.Exit(1)
 		}
-		registry := pluginhost.NewRegistry()
-		if err := registry.Install(os.Args[3]); err != nil {
+		name := os.Args[3]
+		registryClient := pluginhost.NewRegistry()
+		ctx := context.Background()
+
+		// 1. Get info to show capabilities before install (if possible)
+		// For now, we'll clone first then show capabilities from the manifest on disk.
+		// In a real registry, the index.json might include capabilities.
+
+		fmt.Printf("Attempting to install plugin: %s\n", name)
+
+		// 2. Install (which clones and builds)
+		if err := registryClient.Install(ctx, name, host); err != nil {
 			fmt.Printf("installation error: %v\n", err)
 			os.Exit(1)
+		}
+
+		// 3. Post-install capability check
+		// (Normally we'd do this BEFORE build/install, but for Phase 3 we'll do it post-clone)
+		configDir := config.ConfigDir()
+		manifestPath := filepath.Join(configDir, "plugins", name, "plugin.yaml")
+		data, err := os.ReadFile(manifestPath)
+		if err == nil {
+			var m sdk.Manifest
+			if err := yaml.Unmarshal(data, &m); err == nil {
+				fmt.Printf("\nPlugin '%s' requires the following capabilities:\n", m.Name)
+				for _, cap := range m.Capabilities {
+					fmt.Printf("  - %s\n", cap)
+				}
+				fmt.Printf("\n[NOTE] These capabilities are recorded and will be enforced by the ZTVS policy engine during scans.\n")
+			}
 		}
 	default:
 		fmt.Printf("unknown plugin subcommand: %s\n", subcommand)

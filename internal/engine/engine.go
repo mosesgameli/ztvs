@@ -17,6 +17,7 @@ type Engine struct {
 	host     *pluginhost.Host
 	reporter report.Reporter
 	policy   *policy.Policy
+	cfg      *config.Config
 	mutex    sync.Mutex
 }
 
@@ -25,6 +26,7 @@ func New(cfg *config.Config, r report.Reporter) *Engine {
 		host:     pluginhost.New(),
 		reporter: r,
 		policy:   policy.New(cfg),
+		cfg:      cfg,
 	}
 }
 
@@ -55,6 +57,13 @@ func (e *Engine) RunLoop(ctx context.Context, interval time.Duration) error {
 func (e *Engine) Scan() error {
 	ctx := context.Background()
 
+	// Phase 4: Atomic Auto-Updates
+	reg := pluginhost.NewRegistry()
+	if err := reg.CheckAndUpdateAll(ctx, e.host, e.cfg.Update.Mode); err != nil {
+		fmt.Printf("Warning: plugin update check failed: %v\n", err)
+	}
+
+	// 1. Discover plugins
 	plugins, err := e.host.Discover(ctx)
 	if err != nil {
 		return fmt.Errorf("discovery: %v", err)

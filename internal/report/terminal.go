@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mosesgameli/ztvs/pkg/rpc"
+	"github.com/mosesgameli/ztvs-sdk-go/rpc"
 	"github.com/pterm/pterm"
 )
 

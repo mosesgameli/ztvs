@@ -9,7 +9,7 @@ The ZTVS Go SDK provides a robust, easy-to-use framework for building ZTVS-compa
 The SDK is part of the first-party `pkg/sdk` package.
 
 ```go
-import "github.com/mosesgameli/ztvs/pkg/sdk"
+import "github.com/mosesgameli/ztvs-sdk-go/sdk"
 ```
 
 ## Basic Structure
@@ -31,7 +31,7 @@ package main
 
 import (
 	"context"
-	"github.com/mosesgameli/ztvs/pkg/sdk"
+	"github.com/mosesgameli/ztvs-sdk-go/sdk"
 )
 
 type MyCheck struct{}

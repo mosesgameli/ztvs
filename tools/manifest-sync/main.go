@@ -12,13 +12,17 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("usage: manifest-sync <plugin-dir>")
+		fmt.Println("usage: manifest-sync <plugin-dir> [bin-ext]")
 		os.Exit(1)
 	}
 
 	pluginDir := os.Args[1]
+	binExt := ""
+	if len(os.Args) > 2 {
+		binExt = os.Args[2]
+	}
 	pluginName := filepath.Base(pluginDir)
-	binPath := filepath.Join(pluginDir, pluginName)
+	binPath := filepath.Join(pluginDir, pluginName+binExt)
 	manifestPath := filepath.Join(pluginDir, "plugin.yaml")
 
 	// 1. Check if binary exists

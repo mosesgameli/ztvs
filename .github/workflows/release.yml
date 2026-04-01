@@ -54,41 +54,25 @@ jobs:
             echo "archive_ext=tar.gz" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Build host binary
+      - name: Build project
         env:
           GOOS: ${{ matrix.os }}
           GOARCH: ${{ matrix.arch }}
           CGO_ENABLED: "0"
+        run: |
+          make build \
+            VERSION=${{ github.ref_name }} \
+            BIN_EXT=${{ steps.ext.outputs.bin_ext }}
+
+      - name: Prepare dist directory
         run: |
           mkdir -p dist
-          go build \
-            -ldflags="-s -w -X main.version=${{ github.ref_name }}" \
-            -o dist/zt${{ steps.ext.outputs.bin_ext }} \
-            ./cmd/zt
-
-      - name: Build plugin-os
-        env:
-          GOOS: ${{ matrix.os }}
-          GOARCH: ${{ matrix.arch }}
-          CGO_ENABLED: "0"
-        run: |
-          cd plugins/plugin-os
-          go build \
-            -ldflags="-s -w" \
-            -o ../../dist/plugin-os${{ steps.ext.outputs.bin_ext }} \
-            .
-
-      - name: Build plugin-axios-mitigation
-        env:
-          GOOS: ${{ matrix.os }}
-          GOARCH: ${{ matrix.arch }}
-          CGO_ENABLED: "0"
-        run: |
-          cd plugins/plugin-axios-mitigation
-          go build \
-            -ldflags="-s -w" \
-            -o ../../dist/plugin-axios-mitigation${{ steps.ext.outputs.bin_ext }} \
-            .
+          cp zt${{ steps.ext.outputs.bin_ext }} \
+            dist/zt${{ steps.ext.outputs.bin_ext }}
+          cp plugins/plugin-os/plugin-os${{ steps.ext.outputs.bin_ext }} \
+            dist/plugin-os${{ steps.ext.outputs.bin_ext }}
+          cp plugins/plugin-axios-mitigation/plugin-axios-mitigation${{ steps.ext.outputs.bin_ext }} \
+            dist/plugin-axios-mitigation${{ steps.ext.outputs.bin_ext }}
 
       - name: Copy plugin manifests
         run: |

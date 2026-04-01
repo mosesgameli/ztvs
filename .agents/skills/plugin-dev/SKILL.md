@@ -12,13 +12,13 @@ Plugins MUST reside in `plugins/<plugin-name>/`.
 Create a `main.go` and a separate file for each security check (e.g., `ssh_check.go`).
 
 ### 2. Implementation using SDK
-Use `github.com/mosesgameli/ztvs/pkg/sdk` to simplify the build process.
+Use `github.com/mosesgameli/ztvs-sdk-go/sdk` to simplify the build process.
 
 ```go
 package main
 
 import (
-    "github.com/mosesgameli/ztvs/pkg/sdk"
+    "github.com/mosesgameli/ztvs-sdk-go/sdk"
     "context"
 )
 

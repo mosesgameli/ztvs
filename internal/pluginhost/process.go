@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/mosesgameli/ztvs/pkg/rpc"
+	"github.com/mosesgameli/ztvs-sdk-go/rpc"
 )
 
 func (h *Host) Handshake(

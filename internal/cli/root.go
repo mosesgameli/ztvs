@@ -8,9 +8,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Version is the current version of the application, injected during build.
+var Version = "dev"
+
 var rootCmd = &cobra.Command{
-	Use:   "zt",
-	Short: "Zero Trust Vulnerability Scanner",
+	Use:     "zt",
+	Version: Version,
+	Short:   "Zero Trust Vulnerability Scanner",
 	Long: func() string {
 		logo, _ := pterm.DefaultBigText.WithLetters(
 			putils.LettersFromStringWithStyle("ZT", pterm.NewStyle(pterm.FgCyan)),

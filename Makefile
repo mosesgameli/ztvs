@@ -1,18 +1,22 @@
+VERSION ?= dev
+BIN_EXT ?=
+LDFLAGS = -s -w -X github.com/mosesgameli/ztvs/internal/cli.Version=$(VERSION)
+
 .PHONY: build build_host build_plugins sync_manifests init clean run-scan
 
 build: build_host build_plugins sync_manifests
 
 build_host:
-	go build -o zt ./cmd/zt
+	go build -ldflags="$(LDFLAGS)" -o zt$(BIN_EXT) ./cmd/zt
 
 build_plugins:
 	@mkdir -p plugins/plugin-os
-	go build -C plugins/plugin-os -o plugin-os .
-	go build -C plugins/plugin-axios-mitigation -o plugin-axios-mitigation .
+	go build -C plugins/plugin-os -ldflags="-s -w" -o plugin-os$(BIN_EXT) .
+	go build -C plugins/plugin-axios-mitigation -ldflags="-s -w" -o plugin-axios-mitigation$(BIN_EXT) .
 
 sync_manifests:
-	go run ./tools/manifest-sync ./plugins/plugin-os
-	go run ./tools/manifest-sync ./plugins/plugin-axios-mitigation
+	go run ./tools/manifest-sync ./plugins/plugin-os $(BIN_EXT)
+	go run ./tools/manifest-sync ./plugins/plugin-axios-mitigation $(BIN_EXT)
 
 init: build_host
 	@mkdir -p $(HOME)/.ztvs/plugins

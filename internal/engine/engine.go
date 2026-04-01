@@ -63,6 +63,10 @@ func (e *Engine) Scan() error {
 	var wg sync.WaitGroup
 
 	for _, p := range plugins {
+		info, _ := e.host.GetPluginInfo(p)
+		if info != nil && !info.Enabled {
+			continue
+		}
 		wg.Add(1)
 		go func(path string) {
 			defer wg.Done()

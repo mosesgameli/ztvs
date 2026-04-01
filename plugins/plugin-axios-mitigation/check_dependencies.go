@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/mosesgameli/ztvs/pkg/sdk"
@@ -29,11 +31,11 @@ func (c *DependencyCheck) Run(ctx context.Context) (*sdk.Finding, error) {
 		Remediation: "Remove axios versions 1.14.1 or 0.30.4. Audit plain-crypto-js in your dependency tree. Rotate all secrets.",
 	}
 
-	// 1. Scan current and parent directories for lockfiles
-	lockfiles := []string{"package-lock.json", "yarn.lock", "bun.lockb", "bun.lock"}
-	cwd, _ := os.Getwd()
 	foundInLockfile := false
 
+	// 1. Scan current and parent directories for lockfiles (Immediate Workspace)
+	lockfiles := []string{"package-lock.json", "yarn.lock", "bun.lockb", "bun.lock"}
+	cwd, _ := os.Getwd()
 	dir := cwd
 	for {
 		for _, lf := range lockfiles {
@@ -51,56 +53,19 @@ func (c *DependencyCheck) Run(ctx context.Context) (*sdk.Finding, error) {
 		dir = parent
 	}
 
-	// 2. System-wide scan for plain-crypto-js in node_modules
-	// We scan common global paths and the user's home directory
-	commonPaths := []string{
-		"/usr/local/lib/node_modules",
-		"/usr/lib/node_modules",
-	}
-
-	home, _ := os.UserHomeDir()
-	if home != "" {
-		commonPaths = append(commonPaths, home)
-	}
-
-	for _, p := range commonPaths {
-		_ = filepath.WalkDir(p, func(path string, d os.DirEntry, err error) error {
-			if err != nil {
-				return nil // skip errors
-			}
-
-			// Respect timeout context
-			if ctx.Err() != nil {
-				return ctx.Err()
-			}
-
-			// Skip hidden directories to speed up search (e.g. .cache, .git, Library)
-			if d.IsDir() && strings.HasPrefix(d.Name(), ".") && path != p {
-				return filepath.SkipDir
-			}
-			if d.IsDir() && d.Name() == "Library" && path != p { // MacOS specific huge dir
-				return filepath.SkipDir
-			}
-
-			if d.IsDir() && d.Name() == "node_modules" {
-				// Check for plain-crypto-js
-				target := filepath.Join(path, "plain-crypto-js")
-				if _, err := os.Stat(target); err == nil {
-					finding.Title = "Malicious dependency 'plain-crypto-js' found on system"
-					finding.Evidence["malicious_package_path"] = target
-					foundInLockfile = true
-				}
-				return filepath.SkipDir // Don't recurse into node_modules
-			}
-			// Limit depth for home directory scan to avoid extreme slowdowns
-			if p == home {
-				rel, _ := filepath.Rel(home, path)
-				if strings.Count(rel, string(os.PathSeparator)) > 2 {
-					return filepath.SkipDir
-				}
-			}
-			return nil
-		})
+	// 2. System-wide scan for plain-crypto-js using native search tools
+	nodeModulesPaths := c.findNodeModules(ctx)
+	for _, path := range nodeModulesPaths {
+		if ctx.Err() != nil {
+			break
+		}
+		// Check for malicious dependency within found node_modules
+		target := filepath.Join(path, "plain-crypto-js")
+		if _, err := os.Stat(target); err == nil {
+			finding.Title = "Malicious dependency 'plain-crypto-js' found on system"
+			finding.Evidence["malicious_package_path"] = target
+			foundInLockfile = true
+		}
 	}
 
 	if foundInLockfile {
@@ -108,6 +73,70 @@ func (c *DependencyCheck) Run(ctx context.Context) (*sdk.Finding, error) {
 	}
 
 	return nil, nil
+}
+
+func (c *DependencyCheck) findNodeModules(ctx context.Context) []string {
+	var paths []string
+
+	// Tier 1: Spotlight (macOS)
+	if runtime.GOOS == "darwin" {
+		cmd := exec.CommandContext(ctx, "mdfind", "kMDItemFSName == 'node_modules' && kMDItemContentType == 'public.folder'")
+		output, err := cmd.Output()
+		if err == nil {
+			lines := strings.Split(string(output), "\n")
+			for _, line := range lines {
+				if trimmed := strings.TrimSpace(line); trimmed != "" {
+					paths = append(paths, trimmed)
+				}
+			}
+			return paths
+		}
+	}
+
+	// Tier 2: Locate (Linux/Unix)
+	if runtime.GOOS != "windows" {
+		// Try locate but filter specifically for directory endings
+		cmd := exec.CommandContext(ctx, "locate", "-r", "/node_modules$")
+		output, err := cmd.Output()
+		if err == nil {
+			lines := strings.Split(string(output), "\n")
+			for _, line := range lines {
+				if trimmed := strings.TrimSpace(line); trimmed != "" {
+					paths = append(paths, trimmed)
+				}
+			}
+			if len(paths) > 0 {
+				return paths
+			}
+		}
+	}
+
+	// Tier 3: Find (Comprehensive Fallback)
+	// We run this as a slower background walk if native indexed search failed
+	// but we prioritize home directory and /usr
+	searchRoots := []string{"/usr/local/lib", "/usr/lib"}
+	home, _ := os.UserHomeDir()
+	if home != "" {
+		searchRoots = append(searchRoots, home)
+	}
+
+	for _, root := range searchRoots {
+		_ = filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
+			if err != nil {
+				return nil
+			}
+			if ctx.Err() != nil {
+				return ctx.Err()
+			}
+			if d.IsDir() && d.Name() == "node_modules" {
+				paths = append(paths, path)
+				return filepath.SkipDir
+			}
+			return nil
+		})
+	}
+
+	return paths
 }
 
 func (c *DependencyCheck) scanLockfile(path string, finding *sdk.Finding) bool {
@@ -120,7 +149,7 @@ func (c *DependencyCheck) scanLockfile(path string, finding *sdk.Finding) bool {
 	scanner := bufio.NewScanner(f)
 	maliciousVersions := []string{"1.14.1", "0.30.4"}
 	maliciousDep := "plain-crypto-js"
-	
+
 	detected := false
 	for scanner.Scan() {
 		line := scanner.Text()

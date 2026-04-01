@@ -1,0 +1,15 @@
+name: plugin-axios-mitigation
+version: 1.0.0
+api_version: 1
+runtime:
+  type: binary
+  language: go
+  entrypoint: plugin-axios-mitigation
+capabilities:
+  - read_files
+  - execute_commands
+  - network_access
+checks_supported:
+  - axios_dependency_audit
+  - axios_host_ioc
+  - axios_c2_network

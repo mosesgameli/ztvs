@@ -50,20 +50,27 @@ func Run(meta Metadata, checks []Check) {
 					return
 				}
 
+				status := "pass"
+				var rpcFinding *rpc.Finding
+				if finding != nil {
+					status = "fail"
+					rpcFinding = &rpc.Finding{
+						ID:          finding.ID,
+						CheckID:     c.ID(),
+						Severity:    finding.Severity,
+						Title:       finding.Title,
+						Description: finding.Description,
+						Evidence:    finding.Evidence,
+						Remediation: finding.Remediation,
+					}
+				}
+
 				resp := rpc.Response[rpc.RunCheckResponse]{
 					JSONRPC: "2.0",
 					ID:      req.ID,
 					Result: rpc.RunCheckResponse{
-						Status: "fail", // Defaulting to fail if a finding is returned
-						Finding: &rpc.Finding{
-							ID:          finding.ID,
-							CheckID:     c.ID(),
-							Severity:    finding.Severity,
-							Title:       finding.Title,
-							Description: finding.Description,
-							Evidence:    finding.Evidence,
-							Remediation: finding.Remediation,
-						},
+						Status:  status,
+						Finding: rpcFinding,
 					},
 				}
 

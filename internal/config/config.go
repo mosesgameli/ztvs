@@ -11,6 +11,11 @@ import (
 type Config struct {
 	Agent  AgentConfig  `yaml:"agent"`
 	Policy PolicyConfig `yaml:"policy"`
+	Update UpdateConfig `yaml:"update"`
+}
+
+type UpdateConfig struct {
+	Mode string `yaml:"mode"` // safe, always, locked
 }
 
 type AgentConfig struct {
@@ -57,6 +62,9 @@ func DefaultConfig() *Config {
 		Policy: PolicyConfig{
 			AllowedCapabilities: []string{"read_files", "execute_commands", "system_info"},
 			BlockedCapabilities: []string{"network_access", "write_files"},
+		},
+		Update: UpdateConfig{
+			Mode: "safe",
 		},
 	}
 }

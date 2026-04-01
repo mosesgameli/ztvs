@@ -75,10 +75,22 @@ func (lf *Lockfile) Get(name string) (PluginLock, bool) {
 	return lock, ok
 }
 
-func (lf *Lockfile) Set(name string, lock PluginLock) {
-	lf.mu.Lock()
-	defer lf.mu.Unlock()
-	lf.Plugins[name] = lock
+func (l *Lockfile) Set(name string, lock PluginLock) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.Plugins[name] = lock
+}
+
+func (l *Lockfile) All() map[string]PluginLock {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	
+	// Return a copy to prevent external modification
+	tmp := make(map[string]PluginLock)
+	for k, v := range l.Plugins {
+		tmp[k] = v
+	}
+	return tmp
 }
 
 func (lf *Lockfile) Remove(name string) {

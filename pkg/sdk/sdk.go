@@ -57,6 +57,7 @@ func Run(meta Metadata, checks []Check) {
 						Status: "fail", // Defaulting to fail if a finding is returned
 						Finding: &rpc.Finding{
 							ID:          finding.ID,
+							CheckID:     c.ID(),
 							Severity:    finding.Severity,
 							Title:       finding.Title,
 							Description: finding.Description,

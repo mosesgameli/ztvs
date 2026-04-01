@@ -42,6 +42,7 @@ type RunCheckResponse struct {
 
 type Finding struct {
 	ID          string                 `json:"id"`
+	CheckID     string                 `json:"check_id"`
 	Severity    string                 `json:"severity"`
 	Title       string                 `json:"title"`
 	Description string                 `json:"description"`

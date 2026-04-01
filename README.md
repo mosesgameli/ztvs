@@ -80,8 +80,13 @@ Requires [Go 1.26.1+](https://golang.org/dl/) and standard `make`:
 ```bash
 git clone https://github.com/mosesgameli/ztvs.git
 cd ztvs/zt
-make build     # Builds host and all first-party plugins
-make install   # Provisions ~/.ztvs/plugins and common paths
+make build     # Builds the host engine
+make init      # Provisions ~/.ztvs/plugins and common paths
+
+# First-party plugins are compiled separately:
+git clone https://github.com/mosesgameli/ztvs-plugins.git
+cd ztvs-plugins
+make build
 ```
 
 

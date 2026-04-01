@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/mosesgameli/ztvs/pkg/rpc"
+	"github.com/pterm/pterm"
 )
 
 type TerminalReporter struct {
@@ -23,20 +24,42 @@ func (r *TerminalReporter) AddFinding(pluginName string, finding *rpc.Finding) {
 
 func (r *TerminalReporter) Flush() error {
 	if len(r.findings) == 0 {
-		fmt.Println("No findings found.")
+		pterm.Success.Println("No vulnerabilities found! System is clean.")
 		return nil
 	}
 
 	for plugin, findings := range r.findings {
-		fmt.Printf("\n--- Plugin: %s (%d findings) ---\n", plugin, len(findings))
+		pterm.DefaultHeader.WithFullWidth().Printf("Plugin: %s (%d findings)", plugin, len(findings))
+
+		var tableData [][]string
+		tableData = append(tableData, []string{"Severity", "Title", "Description", "Remediation"})
+
 		for _, f := range findings {
-			severity := strings.ToUpper(f.Severity)
-			fmt.Printf("[%s] %s: %s\n", severity, f.Title, f.Description)
-			if f.Remediation != "" {
-				fmt.Printf("      Remediation: %s\n", f.Remediation)
+			sev := strings.ToUpper(f.Severity)
+			var coloredSev string
+			switch sev {
+			case "CRITICAL":
+				coloredSev = pterm.BgRed.Sprint(pterm.FgBlack.Sprint(" " + sev + " "))
+			case "HIGH":
+				coloredSev = pterm.FgRed.Sprint(sev)
+			case "MEDIUM":
+				coloredSev = pterm.FgYellow.Sprint(sev)
+			case "LOW":
+				coloredSev = pterm.FgCyan.Sprint(sev)
+			default:
+				coloredSev = pterm.FgLightBlue.Sprint(sev)
 			}
+
+			tableData = append(tableData, []string{
+				coloredSev,
+				f.Title,
+				f.Description,
+				f.Remediation,
+			})
 		}
+		
+		pterm.DefaultTable.WithHasHeader().WithData(tableData).Render()
+		fmt.Println()
 	}
-	fmt.Println()
 	return nil
 }

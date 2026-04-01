@@ -14,6 +14,7 @@ import (
 	"github.com/mosesgameli/ztvs/internal/pluginhost"
 	"github.com/mosesgameli/ztvs/internal/policy"
 	"github.com/mosesgameli/ztvs/internal/report"
+	"github.com/pterm/pterm"
 )
 
 type Engine struct {
@@ -78,15 +79,30 @@ func (e *Engine) Scan() error {
 
 	var wg sync.WaitGroup
 
+	var spinner *pterm.SpinnerPrinter
+	if e.Interactive {
+		spinner, _ = pterm.DefaultSpinner.Start(fmt.Sprintf("Scanning with %d permitted plugins...", len(plugins)))
+	}
+
 	for _, p := range plugins {
 		wg.Add(1)
 		go func(path string) {
 			defer wg.Done()
+			if spinner != nil {
+				if manifest, ok := e.host.GetManifest(path); ok {
+					spinner.UpdateText(fmt.Sprintf("Running %s checks...", manifest.Name))
+				}
+			}
 			e.scanPlugin(ctx, path)
 		}(p)
 	}
 
 	wg.Wait()
+	
+	if spinner != nil {
+		spinner.Success("Security scan complete")
+	}
+
 	return e.reporter.Flush()
 }
 

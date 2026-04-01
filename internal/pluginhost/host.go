@@ -26,7 +26,7 @@ func New() *Host {
 	return &Host{
 		paths: []string{
 			"./plugins",
-			filepath.Join(home, ".zt", "plugins"),
+			filepath.Join(home, ".ztvs", "plugins"),
 			"/usr/local/lib/zt/plugins",
 		},
 		plugins: make(map[string]*PluginInfo),

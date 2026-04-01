@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mosesgameli/ztvs/internal/config"
 	"github.com/mosesgameli/ztvs/internal/pluginhost"
 	"github.com/mosesgameli/ztvs/internal/policy"
 	"github.com/mosesgameli/ztvs/internal/report"
@@ -19,11 +20,35 @@ type Engine struct {
 	mutex    sync.Mutex
 }
 
-func New(r report.Reporter) *Engine {
+func New(cfg *config.Config, r report.Reporter) *Engine {
 	return &Engine{
 		host:     pluginhost.New(),
 		reporter: r,
-		policy:   policy.NewDefault(),
+		policy:   policy.New(cfg),
+	}
+}
+
+func (e *Engine) RunLoop(ctx context.Context, interval time.Duration) error {
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	log.Printf("Starting background audit agent (interval: %v)", interval)
+
+	// First run
+	if err := e.Scan(); err != nil {
+		log.Printf("Initial scan error: %v", err)
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-ticker.C:
+			log.Printf("Periodic audit started...")
+			if err := e.Scan(); err != nil {
+				log.Printf("Audit scan error: %v", err)
+			}
+		}
 	}
 }
 

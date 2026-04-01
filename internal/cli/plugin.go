@@ -46,33 +46,35 @@ var pluginListCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		pterm.DefaultHeader.WithFullWidth().Printf("Installed Plugins (%d)", len(plugins))
+		pterm.DefaultHeader.WithBackgroundStyle(pterm.NewStyle(pterm.BgMagenta)).WithMargin(2).Printf("LOCAL NODE REGISTRY (%d)", len(plugins))
+		fmt.Println()
 
 		var tableData [][]string
-		tableData = append(tableData, []string{"Name", "Version", "Path", "Status"})
+		tableData = append(tableData, []string{"Node Name", "Version", "Status", "Filesystem Path"})
 
 		for _, p := range plugins {
 			if manifest, ok := host.GetManifest(p); ok {
-				status := "Enabled"
+				status := pterm.FgGreen.Sprint("● ACTIVE")
 				if lock, ok := host.Lockfile().Get(manifest.Name); ok {
 					if !lock.Enabled {
-						status = pterm.FgYellow.Sprint("Disabled")
-					} else {
-						status = pterm.FgGreen.Sprint("Enabled")
+						status = pterm.FgYellow.Sprint("○ DISABLED")
 					}
 				}
 				tableData = append(tableData, []string{
 					pterm.FgCyan.Sprint(manifest.Name),
-					manifest.Version,
-					p,
+					pterm.LightWhite(manifest.Version),
 					status,
+					pterm.FgGray.Sprint(p),
 				})
 			} else {
-				tableData = append(tableData, []string{pterm.FgRed.Sprint("unknown"), "", p, ""})
+				tableData = append(tableData, []string{pterm.FgRed.Sprint("unknown"), "", "", p})
 			}
 		}
 
-		pterm.DefaultTable.WithHasHeader().WithData(tableData).Render()
+		table, _ := pterm.DefaultTable.WithHasHeader().WithData(tableData).Srender()
+		pterm.DefaultPanel.WithPadding(1).WithPanels(pterm.Panels{
+			{{Data: table}},
+		}).Render()
 	},
 }
 
@@ -93,14 +95,19 @@ var pluginSearchCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		pterm.DefaultHeader.WithFullWidth().Printf("Found Plugins (%d)", len(results))
+		pterm.DefaultHeader.WithBackgroundStyle(pterm.NewStyle(pterm.BgCyan)).WithMargin(2).Printf("REMOTE CATALOG SEARCH (%d)", len(results))
+		fmt.Println()
 
 		var tableData [][]string
-		tableData = append(tableData, []string{"Name", "Latest Version", "Status"})
+		tableData = append(tableData, []string{"Plugin", "Version", "Audit Level"})
 		for _, r := range results {
-			tableData = append(tableData, []string{pterm.FgCyan.Sprint(r.Name), r.LatestVersion, r.AuditStatus})
+			auditLevel := pterm.BgBlue.Sprint(pterm.FgBlack.Sprint(" " + r.AuditStatus + " "))
+			tableData = append(tableData, []string{pterm.FgCyan.Sprint(r.Name), r.LatestVersion, auditLevel})
 		}
-		pterm.DefaultTable.WithHasHeader().WithData(tableData).Render()
+		table, _ := pterm.DefaultTable.WithHasHeader().WithData(tableData).Srender()
+		pterm.DefaultPanel.WithPadding(1).WithPanels(pterm.Panels{
+			{{Data: table}},
+		}).Render()
 	},
 }
 
@@ -118,11 +125,16 @@ var pluginInfoCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		pterm.DefaultHeader.Printf("Plugin: %s", meta.Name)
-		pterm.Println(pterm.LightBlue("Version: ") + meta.LatestVersion)
-		pterm.Println(pterm.LightBlue("Repository: ") + meta.Repo)
-		pterm.Println(pterm.LightBlue("Audit Status: ") + meta.AuditStatus)
-		pterm.Println(pterm.LightBlue("Checksum: ") + meta.Checksum)
+		pterm.DefaultSection.Printf("Node Manifest: %s", meta.Name)
+		
+		infoData := [][]string{
+			{"Field", "Value"},
+			{"Version", pterm.FgMagenta.Sprint(meta.LatestVersion)},
+			{"Remote Repository", pterm.FgCyan.Sprint(meta.Repo)},
+			{"Security Audit", pterm.BgGreen.Sprint(pterm.FgBlack.Sprint(" " + meta.AuditStatus + " "))},
+			{"Integrity Hash", pterm.FgGray.Sprint(meta.Checksum)},
+		}
+		pterm.DefaultTable.WithHasHeader().WithData(infoData).Render()
 	},
 }
 

@@ -24,23 +24,34 @@
 
 ## 🛠️ Installation
 
-### One-liner install (Linux & macOS)
+### Linux & macOS
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/install.sh | sh
 ```
 
-This will:
-1. Auto-detect your OS and architecture.
-2. Download the latest pre-built binary from [GitHub Releases](https://github.com/mosesgameli/ztvs/releases).
-3. Install `zt` to `/usr/local/bin` and first-party plugins to `~/.ztvs/plugins`.
-4. Bootstrap `~/.ztvs/config.yaml` on first run.
+Installs `zt` to `/usr/local/bin` and first-party plugins to `~/.ztvs/plugins`.
 
-> **Pin a specific version**: `ZTVS_VERSION=v1.0.0 curl -fsSL ... | sh`
+> **Pin a version**: `ZTVS_VERSION=v1.0.0 curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/install.sh | sh`
+
+### Windows (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/install.ps1 | iex
+```
+
+Installs `zt.exe` to `%LOCALAPPDATA%\Programs\ztvs` (no admin required), seeds first-party plugins to `%USERPROFILE%\.ztvs\plugins`, and adds the install directory to your user `PATH`.
+
+> **Pin a version**: `$env:ZTVS_VERSION="v1.0.0"; irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/install.ps1 | iex`
+
+Both scripts:
+1. Auto-detect your architecture (amd64 / arm64).
+2. Download the correct pre-built archive from [GitHub Releases](https://github.com/mosesgameli/ztvs/releases).
+3. Bootstrap `~/.ztvs/config.yaml` (or `%USERPROFILE%\.ztvs\config.yaml`) on first run.
 
 ### Prerequisites (build from source only)
 *   [Go 1.24+](https://golang.org/dl/)
-*   `make` (optional, for builds)
+*   `make` (Linux/macOS, optional)
 
 ### Build from Source
 ```bash

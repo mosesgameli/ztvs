@@ -18,6 +18,7 @@ func AgentCommand(cfg *config.Config) {
 
 	r := report.NewTerminal()
 	eng := engine.New(cfg, r)
+	eng.Interactive = false
 
 	interval, err := time.ParseDuration(cfg.Agent.Interval)
 	if err != nil {

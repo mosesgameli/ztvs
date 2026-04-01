@@ -20,12 +20,13 @@ func New(cfg *config.Config) *Policy {
 }
 
 // IsAllowed checks if a plugin's requested capabilities are permitted by the host.
-func (p *Policy) IsAllowed(pluginName string, requested []string) error {
+// It returns the specific capability that failed, and the error.
+func (p *Policy) IsAllowed(pluginName string, requested []string) (string, error) {
 	for _, cap := range requested {
 		// 1. Check if explicitly blocked
 		for _, blocked := range p.BlockedCapabilities {
 			if cap == blocked {
-				return fmt.Errorf("plugin %s requested blocked capability: %s", pluginName, cap)
+				return cap, fmt.Errorf("plugin %s requested blocked capability: %s", pluginName, cap)
 			}
 		}
 
@@ -39,9 +40,15 @@ func (p *Policy) IsAllowed(pluginName string, requested []string) error {
 				}
 			}
 			if !found {
-				return fmt.Errorf("plugin %s requested unauthorized capability: %s", pluginName, cap)
+				return cap, fmt.Errorf("plugin %s requested unauthorized capability: %s", pluginName, cap)
 			}
 		}
 	}
-	return nil
+	return "", nil
+}
+
+// Reload updates the in-memory policy with fresh configuration
+func (p *Policy) Reload(cfg *config.Config) {
+	p.AllowedCapabilities = cfg.Policy.AllowedCapabilities
+	p.BlockedCapabilities = cfg.Policy.BlockedCapabilities
 }

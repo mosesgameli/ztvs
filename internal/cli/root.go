@@ -46,6 +46,7 @@ func Execute() {
 		}
 
 		eng := engine.New(cfg, r)
+		eng.Interactive = true
 		if err := eng.Scan(); err != nil {
 			fmt.Printf("scan failed: %v\n", err)
 			os.Exit(1)

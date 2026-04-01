@@ -40,10 +40,10 @@ func (r *TerminalReporter) Flush() error {
 		for _, f := range findings {
 			totalFindings++
 			sev := strings.ToUpper(f.Severity)
-			
+
 			var sevBadge string
 			var accentStyle *pterm.Style
-			
+
 			switch sev {
 			case "CRITICAL":
 				criticals++

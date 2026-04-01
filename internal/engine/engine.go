@@ -110,7 +110,7 @@ func (e *Engine) Scan() error {
 	}
 
 	wg.Wait()
-	
+
 	if spinner != nil {
 		spinner.Success("System audit finalized")
 	}

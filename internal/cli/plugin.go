@@ -2,14 +2,14 @@ package cli
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
-	"fmt"
 
+	"github.com/mosesgameli/ztvs-sdk-go/sdk"
 	"github.com/mosesgameli/ztvs/internal/config"
 	"github.com/mosesgameli/ztvs/internal/pluginhost"
 	"github.com/mosesgameli/ztvs/pkg/registry"
-	"github.com/mosesgameli/ztvs-sdk-go/sdk"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -126,7 +126,7 @@ var pluginInfoCmd = &cobra.Command{
 		}
 
 		pterm.DefaultSection.Printf("Node Manifest: %s", meta.Name)
-		
+
 		infoData := [][]string{
 			{"Field", "Value"},
 			{"Version", pterm.FgMagenta.Sprint(meta.LatestVersion)},
@@ -186,7 +186,7 @@ func togglePlugin(name string, enabled bool) {
 		pterm.Error.Printf("Error saving lockfile: %v\n", err)
 		os.Exit(1)
 	}
-	
+
 	action := "disabled"
 	if enabled {
 		action = "enabled"

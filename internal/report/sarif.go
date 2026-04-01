@@ -30,9 +30,9 @@ type SARIFDriver struct {
 }
 
 type SARIFResult struct {
-	RuleID  string           `json:"ruleId"`
-	Message SARIFMessage     `json:"message"`
-	Level   string           `json:"level,omitempty"`
+	RuleID  string          `json:"ruleId"`
+	Message SARIFMessage    `json:"message"`
+	Level   string          `json:"level,omitempty"`
 	Places  []SARIFLocation `json:"locations,omitempty"`
 }
 

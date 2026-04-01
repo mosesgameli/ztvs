@@ -62,7 +62,6 @@ Handshake **must** be the first call between the host and the plugin.
 - `api_version` (integer): Plugin's supported protocol version.
 - `checks_supported` (array of strings): List of check IDs the plugin can run.
 
----
 
 ### 2. `run_check`
 
@@ -91,13 +90,11 @@ Execution of a specific security check.
 }
 ```
 
----
 
 ### 3. `shutdown` (Future)
 
 Plugin should gracefully terminate.
 
----
 
 ## Error Codes
 

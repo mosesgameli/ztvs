@@ -5,7 +5,6 @@
 
 **ZTVS** is a cross-platform, plugin-based host security scanner designed for high performance and strict isolation. It implements a Zero Trust execution model, ensuring security checks run in isolated environments with minimal privileges.
 
----
 
 ## 🚀 Key Features
 
@@ -20,7 +19,6 @@
 *   **📊 Multiple Output Formats**: Supports Terminal (Pretty-print), JSON, and **SARIF** for CI/CD integration.
 *   **🔍 Cross-Path Discovery**: Automatically discovers plugins in local, user, and system directories (`~/.ztvs/plugins`).
 
----
 
 ## 🛠️ Installation
 
@@ -74,7 +72,6 @@ curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/uninstall.sh 
 irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/uninstall.ps1 | iex
 ```
 
----
 
 
 ## 📖 Usage
@@ -111,7 +108,6 @@ Generate a SARIF report for GitHub Advanced Security:
 ./zt --format sarif scan
 ```
 
----
 
 ## 🧱 Project Structure
 
@@ -123,7 +119,6 @@ Generate a SARIF report for GitHub Advanced Security:
 | `pkg/rpc` | JSON-RPC 2.0 message definitions |
 | `plugins/` | First-party security plugins (e.g., `plugin-os`, `plugin-axios-mitigation`) and polyglot tests (`dummy-python`) |
 
----
 
 ## 🔌 Developing Plugins
 
@@ -166,13 +161,11 @@ func main() {
 
 Refer to the [.agents/skills/plugin-dev/SKILL.md](.agents/skills/plugin-dev/SKILL.md) for a full guide.
 
----
 
 ## 🗺️ Roadmap
 The core development phases are now completed. ZTVS is a production-ready Zero Trust vulnerability platform.
 View the full [Detailed Roadamp](_/work/roadmap.md) and [Phased Delivery Plan](_/work/phases.md) for future vision.
 
----
 
 ## 📄 License
 Distributed under the MIT License. See `LICENSE` for more information.

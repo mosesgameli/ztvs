@@ -89,6 +89,180 @@ cd ztvs-plugins
 make build
 ```
 
+---
+
+## 🔁 Automatic Scanning on Package Install
+
+ZTVS can hook into your shell so that `zt scan` runs automatically whenever you install packages — catching supply chain threats the moment new dependencies land on your machine.
+
+### Linux & macOS
+
+Add the following to your shell config file and reload it.
+
+**Zsh** (`~/.zshrc`) or **Bash** (`~/.bashrc` / `~/.bash_profile`):
+
+```sh
+# --- ZTVS: Auto-scan on package install ---
+
+npm() {
+  command npm "$@"
+  if [[ "$1" == "install" || "$1" == "i" || "$1" == "ci" ]]; then
+    echo "🔍 [ZTVS] Running security scan..."
+    zt scan
+  fi
+}
+
+pnpm() {
+  command pnpm "$@"
+  if [[ "$1" == "install" || "$1" == "i" || "$1" == "add" ]]; then
+    echo "🔍 [ZTVS] Running security scan..."
+    zt scan
+  fi
+}
+
+yarn() {
+  command yarn "$@"
+  if [[ "$1" == "install" || "$1" == "add" ]]; then
+    echo "🔍 [ZTVS] Running security scan..."
+    zt scan
+  fi
+}
+
+pip() {
+  command pip "$@"
+  if [[ "$1" == "install" ]]; then
+    echo "🔍 [ZTVS] Running security scan..."
+    zt scan
+  fi
+}
+
+pip3() {
+  command pip3 "$@"
+  if [[ "$1" == "install" ]]; then
+    echo "🔍 [ZTVS] Running security scan..."
+    zt scan
+  fi
+}
+
+brew() {
+  command brew "$@"
+  if [[ "$1" == "install" || "$1" == "upgrade" ]]; then
+    echo "🔍 [ZTVS] Running security scan..."
+    zt scan
+  fi
+}
+
+cargo() {
+  command cargo "$@"
+  if [[ "$1" == "install" || "$1" == "add" ]]; then
+    echo "🔍 [ZTVS] Running security scan..."
+    zt scan
+  fi
+}
+
+go() {
+  command go "$@"
+  if [[ "$1" == "get" || "$1" == "install" ]]; then
+    echo "🔍 [ZTVS] Running security scan..."
+    zt scan
+  fi
+}
+
+# --- End ZTVS hooks ---
+```
+
+Then reload your shell:
+
+```sh
+source ~/.zshrc   # or source ~/.bashrc
+```
+
+> [!NOTE]
+> Each wrapper calls `command <pkg-manager>` to invoke the real binary, avoiding infinite recursion. The scan runs **after** the install completes so newly downloaded packages are included in the sweep.
+
+---
+
+### Windows
+
+#### PowerShell (`$PROFILE`)
+
+Open your PowerShell profile (`notepad $PROFILE`) and add:
+
+```powershell
+# --- ZTVS: Auto-scan on package install ---
+
+function Invoke-NpmWithScan {
+    npm.cmd @args
+    if ($args[0] -in @('install','i','ci')) {
+        Write-Host "🔍 [ZTVS] Running security scan..."
+        zt scan
+    }
+}
+Set-Alias -Name npm -Value Invoke-NpmWithScan -Option AllScope -Force
+
+function Invoke-PnpmWithScan {
+    pnpm.cmd @args
+    if ($args[0] -in @('install','i','add')) {
+        Write-Host "🔍 [ZTVS] Running security scan..."
+        zt scan
+    }
+}
+Set-Alias -Name pnpm -Value Invoke-PnpmWithScan -Option AllScope -Force
+
+function Invoke-YarnWithScan {
+    yarn.cmd @args
+    if ($args[0] -in @('install','add')) {
+        Write-Host "🔍 [ZTVS] Running security scan..."
+        zt scan
+    }
+}
+Set-Alias -Name yarn -Value Invoke-YarnWithScan -Option AllScope -Force
+
+function Invoke-PipWithScan {
+    pip.exe @args
+    if ($args[0] -eq 'install') {
+        Write-Host "🔍 [ZTVS] Running security scan..."
+        zt scan
+    }
+}
+Set-Alias -Name pip -Value Invoke-PipWithScan -Option AllScope -Force
+
+function Invoke-CargoWithScan {
+    cargo.exe @args
+    if ($args[0] -in @('install','add')) {
+        Write-Host "🔍 [ZTVS] Running security scan..."
+        zt scan
+    }
+}
+Set-Alias -Name cargo -Value Invoke-CargoWithScan -Option AllScope -Force
+
+# --- End ZTVS hooks ---
+```
+
+Then reload your profile:
+
+```powershell
+. $PROFILE
+```
+
+> [!TIP]
+> If you see an execution policy error, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` first.
+
+---
+
+**Package managers covered by these hooks:**
+
+| Manager | Trigger commands | Ecosystem |
+|---|---|---|
+| `npm` | `install`, `i`, `ci` | Node.js |
+| `pnpm` | `install`, `i`, `add` | Node.js |
+| `yarn` | `install`, `add` | Node.js |
+| `pip` / `pip3` | `install` | Python |
+| `brew` | `install`, `upgrade` | macOS (Homebrew) |
+| `cargo` | `install`, `add` | Rust |
+| `go` | `get`, `install` | Go |
+
+---
 
 ## 📖 Usage Guide
 

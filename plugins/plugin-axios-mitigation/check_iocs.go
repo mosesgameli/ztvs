@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -44,7 +46,13 @@ func (c *HostIOCCheck) Run(ctx context.Context) (*sdk.Finding, error) {
 
 	if targetFile != "" {
 		if _, err := os.Stat(targetFile); err == nil {
-			finding.Evidence["malicious_file"] = targetFile
+			absPath, err := filepath.Abs(targetFile)
+			if err != nil {
+				absPath = targetFile
+			}
+			finding.Title = fmt.Sprintf("Axios RAT file detected: %s", absPath)
+			finding.Description = fmt.Sprintf("Malicious file found at full path: %s", absPath)
+			finding.Evidence["malicious_file"] = absPath
 			found = true
 		}
 	}
@@ -70,6 +78,8 @@ func (c *HostIOCCheck) checkWindowsProcess(finding *sdk.Finding) bool {
 	if err == nil && len(out) > 0 {
 		path := strings.TrimSpace(string(out))
 		if strings.Contains(path, "powershell") {
+			finding.Title = fmt.Sprintf("Axios RAT process detected: wt.exe (PowerShell masquerade) at %s", path)
+			finding.Description = fmt.Sprintf("Malicious process found at full path: %s", path)
 			finding.Evidence["malicious_process"] = "wt.exe (PowerShell masquerade)"
 			finding.Evidence["process_path"] = path
 			return true

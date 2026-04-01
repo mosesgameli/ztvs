@@ -60,6 +60,7 @@ jobs:
           GOARCH: ${{ matrix.arch }}
           CGO_ENABLED: "0"
         run: |
+          mkdir -p dist
           go build \
             -ldflags="-s -w -X main.version=${{ github.ref_name }}" \
             -o dist/zt${{ steps.ext.outputs.bin_ext }} \
@@ -71,10 +72,10 @@ jobs:
           GOARCH: ${{ matrix.arch }}
           CGO_ENABLED: "0"
         run: |
+          cd plugins/plugin-os
           go build \
             -ldflags="-s -w" \
-            -C plugins/plugin-os \
-            -o ../dist/plugin-os${{ steps.ext.outputs.bin_ext }} \
+            -o ../../dist/plugin-os${{ steps.ext.outputs.bin_ext }} \
             .
 
       - name: Build plugin-axios-mitigation
@@ -83,10 +84,10 @@ jobs:
           GOARCH: ${{ matrix.arch }}
           CGO_ENABLED: "0"
         run: |
+          cd plugins/plugin-axios-mitigation
           go build \
             -ldflags="-s -w" \
-            -C plugins/plugin-axios-mitigation \
-            -o ../dist/plugin-axios-mitigation${{ steps.ext.outputs.bin_ext }} \
+            -o ../../dist/plugin-axios-mitigation${{ steps.ext.outputs.bin_ext }} \
             .
 
       - name: Copy plugin manifests

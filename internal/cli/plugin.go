@@ -229,7 +229,27 @@ var pluginInstallCmd = &cobra.Command{
 	},
 }
 
+var pluginUpdateCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Update installed plugins to the latest version",
+	Run: func(cmd *cobra.Command, args []string) {
+		cfg, err := config.Load()
+		if err != nil {
+			pterm.Error.Printf("initialization error: %v\n", err)
+			os.Exit(1)
+		}
+		registryClient := pluginhost.NewRegistry()
+		ctx := context.Background()
+
+		if err := registryClient.CheckAndUpdateAll(ctx, host, cfg.Update.Mode); err != nil {
+			pterm.Error.Printf("update error: %v\n", err)
+			os.Exit(1)
+		}
+		pterm.Success.Println("All plugins are up to date.")
+	},
+}
+
 func init() {
-	pluginCmd.AddCommand(pluginInitCmd, pluginListCmd, pluginSearchCmd, pluginInfoCmd, pluginEnableCmd, pluginDisableCmd, pluginInstallCmd)
+	pluginCmd.AddCommand(pluginInitCmd, pluginListCmd, pluginSearchCmd, pluginInfoCmd, pluginEnableCmd, pluginDisableCmd, pluginInstallCmd, pluginUpdateCmd)
 	rootCmd.AddCommand(pluginCmd)
 }

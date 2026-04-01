@@ -131,15 +131,28 @@ func (r *Registry) Install(ctx context.Context, pluginName string, host *Host) e
 	}
 	defer os.RemoveAll(tmpRepoDir)
 
-	// 3. Build plugin from its subdirectory within the monorepo
+	// 3. Build plugin from its subdirectory within the monorepo (Go/binary plugins only)
 	pluginSrcDir := filepath.Join(tmpRepoDir, pluginName)
 	if _, err := os.Stat(pluginSrcDir); err != nil {
 		return fmt.Errorf("plugin subdirectory %q not found in repository", pluginName)
 	}
-	fmt.Printf("Building plugin (Go)...\n")
-	if err := r.buildPlugin(pluginSrcDir, pluginName); err != nil {
-		fmt.Printf("Build failed: %v. Cleaning up...\n", err)
-		return err
+
+	// Detect runtime from plugin.yaml to decide whether to build
+	needsBuild := true
+	manifestBytes, err := os.ReadFile(filepath.Join(pluginSrcDir, "plugin.yaml"))
+	if err == nil {
+		runtimeType := extractRuntimeType(manifestBytes)
+		if runtimeType != "" && runtimeType != "go" && runtimeType != "binary" {
+			needsBuild = false
+		}
+	}
+
+	if needsBuild {
+		fmt.Printf("Building plugin (Go)...\n")
+		if err := r.buildPlugin(pluginSrcDir, pluginName); err != nil {
+			fmt.Printf("Build failed: %v. Cleaning up...\n", err)
+			return err
+		}
 	}
 
 	// 4. Verify Integrity (skip if checksum is empty)
@@ -308,4 +321,28 @@ func DownloadFile(filepath string, url string) error {
 
 	_, err = io.Copy(out, resp.Body)
 	return err
+}
+
+// extractRuntimeType does a minimal parse of a plugin.yaml to extract the
+// runtime.type field without pulling in a full YAML dependency here.
+func extractRuntimeType(manifest []byte) string {
+	lines := strings.Split(string(manifest), "\n")
+	inRuntime := false
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "runtime:" {
+			inRuntime = true
+			continue
+		}
+		if inRuntime {
+			if strings.HasPrefix(trimmed, "type:") {
+				return strings.TrimSpace(strings.TrimPrefix(trimmed, "type:"))
+			}
+			// Stop if we hit another top-level key
+			if len(line) > 0 && line[0] != ' ' && line[0] != '\t' {
+				break
+			}
+		}
+	}
+	return ""
 }

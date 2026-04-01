@@ -64,11 +64,25 @@ func (c *DependencyCheck) Run(ctx context.Context) (*sdk.Finding, error) {
 	}
 
 	for _, p := range commonPaths {
-		_ = filepath.Walk(p, func(path string, info os.FileInfo, err error) error {
+		_ = filepath.WalkDir(p, func(path string, d os.DirEntry, err error) error {
 			if err != nil {
 				return nil // skip errors
 			}
-			if info.IsDir() && info.Name() == "node_modules" {
+
+			// Respect timeout context
+			if ctx.Err() != nil {
+				return ctx.Err()
+			}
+
+			// Skip hidden directories to speed up search (e.g. .cache, .git, Library)
+			if d.IsDir() && strings.HasPrefix(d.Name(), ".") && path != p {
+				return filepath.SkipDir
+			}
+			if d.IsDir() && d.Name() == "Library" && path != p { // MacOS specific huge dir
+				return filepath.SkipDir
+			}
+
+			if d.IsDir() && d.Name() == "node_modules" {
 				// Check for plain-crypto-js
 				target := filepath.Join(path, "plain-crypto-js")
 				if _, err := os.Stat(target); err == nil {
@@ -81,7 +95,7 @@ func (c *DependencyCheck) Run(ctx context.Context) (*sdk.Finding, error) {
 			// Limit depth for home directory scan to avoid extreme slowdowns
 			if p == home {
 				rel, _ := filepath.Rel(home, path)
-				if strings.Count(rel, string(os.PathSeparator)) > 3 {
+				if strings.Count(rel, string(os.PathSeparator)) > 2 {
 					return filepath.SkipDir
 				}
 			}

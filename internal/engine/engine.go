@@ -1,9 +1,22 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package engine
 
 import (
 	"bufio"
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -18,20 +31,24 @@ import (
 )
 
 type Engine struct {
-	host        *pluginhost.Host
+	host        pluginhost.PluginHost
 	reporter    report.Reporter
 	policy      *policy.Policy
 	cfg         *config.Config
 	mutex       sync.Mutex
 	Interactive bool
+	stdin       io.Reader
+	registry    pluginhost.Registry
 }
 
-func New(cfg *config.Config, r report.Reporter) *Engine {
+func New(cfg *config.Config, h pluginhost.PluginHost, r report.Reporter, reg pluginhost.Registry) *Engine {
 	return &Engine{
-		host:     pluginhost.New(),
+		host:     h,
 		reporter: r,
 		policy:   policy.New(cfg),
 		cfg:      cfg,
+		stdin:    os.Stdin,
+		registry: reg,
 	}
 }
 
@@ -68,7 +85,7 @@ func (e *Engine) Scan() error {
 	}
 
 	// Phase 4: Atomic Auto-Updates
-	reg := pluginhost.NewRegistry()
+	reg := e.registry
 	if err := reg.CheckAndUpdateAll(ctx, e.host, e.cfg.Update.Mode); err != nil {
 		if spinner != nil {
 			pterm.Warning.Printf("Update check bypassed: %v\n", err)
@@ -137,7 +154,7 @@ func (e *Engine) preflightCapabilityCheck(plugins []string) []string {
 				fmt.Printf("\n[SEC] Plugin '%s' requested blocked/unauthorized capability: %s\n", manifest.Name, cap)
 				fmt.Printf("      Do you want to permanently grant this capability in your global config? [y/N]: ")
 
-				reader := bufio.NewReader(os.Stdin)
+				reader := bufio.NewReader(e.stdin)
 				response, _ := reader.ReadString('\n')
 				response = strings.TrimSpace(strings.ToLower(response))
 

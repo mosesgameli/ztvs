@@ -1,3 +1,15 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package pluginhost
 
 import (
@@ -7,7 +19,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -16,19 +27,19 @@ import (
 	"github.com/mosesgameli/ztvs/pkg/registry"
 )
 
-type Registry struct {
+type hostRegistry struct {
 	BaseURL string
-	git     *Git
+	git     Git
 }
 
-func NewRegistry() *Registry {
-	return &Registry{
+func NewRegistry() Registry {
+	return &hostRegistry{
 		BaseURL: "https://raw.githubusercontent.com/mosesgameli/ztvs-plugins/main/registry",
 		git:     NewGit(),
 	}
 }
 
-func (r *Registry) FetchIndex(ctx context.Context) (*registry.Index, error) {
+func (r *hostRegistry) FetchIndex(ctx context.Context) (*registry.Index, error) {
 	configDir := config.ConfigDir()
 	cacheDir := filepath.Join(configDir, "cache")
 	indexPath := filepath.Join(cacheDir, "index.json")
@@ -58,7 +69,7 @@ func (r *Registry) FetchIndex(ctx context.Context) (*registry.Index, error) {
 	return r.loadLocalIndex(indexPath)
 }
 
-func (r *Registry) loadLocalIndex(path string) (*registry.Index, error) {
+func (r *hostRegistry) loadLocalIndex(path string) (*registry.Index, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -71,7 +82,7 @@ func (r *Registry) loadLocalIndex(path string) (*registry.Index, error) {
 	return &idx, nil
 }
 
-func (r *Registry) Search(ctx context.Context, query string) ([]registry.PluginMetadata, error) {
+func (r *hostRegistry) Search(ctx context.Context, query string) ([]registry.PluginMetadata, error) {
 	idx, err := r.FetchIndex(ctx)
 	if err != nil {
 		return nil, err
@@ -87,7 +98,7 @@ func (r *Registry) Search(ctx context.Context, query string) ([]registry.PluginM
 	return results, nil
 }
 
-func (r *Registry) GetInfo(ctx context.Context, name string) (*registry.PluginMetadata, error) {
+func (r *hostRegistry) GetInfo(ctx context.Context, name string) (*registry.PluginMetadata, error) {
 	idx, err := r.FetchIndex(ctx)
 	if err != nil {
 		return nil, err
@@ -104,7 +115,7 @@ func (r *Registry) GetInfo(ctx context.Context, name string) (*registry.PluginMe
 // Install downloads, builds, and registers a plugin.
 // It clones the monorepo to a temp dir, extracts the plugin subdirectory,
 // builds it, and moves it to the final install location.
-func (r *Registry) Install(ctx context.Context, pluginName string, host *Host) error {
+func (r *hostRegistry) Install(ctx context.Context, pluginName string, host PluginHost) error {
 	// 1. Get Metadata
 	meta, err := r.GetInfo(ctx, pluginName)
 	if err != nil {
@@ -188,16 +199,28 @@ func (r *Registry) Install(ctx context.Context, pluginName string, host *Host) e
 	return nil
 }
 
-func (r *Registry) buildPlugin(dir, name string) error {
-	cmd := exec.Command("go", "build", "-o", name, ".")
+func (r *hostRegistry) buildPlugin(dir, name string) error {
+	// 1. Try building from cmd/ (standard layout)
+	cmdDir := filepath.Join(dir, "cmd")
+	if _, err := os.Stat(filepath.Join(cmdDir, "main.go")); err == nil {
+		cmd := execCommand("go", "build", "-o", name, "./cmd/...")
+		cmd.Dir = dir
+		if output, err := cmd.CombinedOutput(); err != nil {
+			return fmt.Errorf("build error (cmd): %v\nOutput: %s", err, string(output))
+		}
+		return nil
+	}
+
+	// 2. Fallback to building from root
+	cmd := execCommand("go", "build", "-o", name, ".")
 	cmd.Dir = dir
 	if output, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("build error: %v\nOutput: %s", err, string(output))
+		return fmt.Errorf("build error (root): %v\nOutput: %s", err, string(output))
 	}
 	return nil
 }
 
-func (r *Registry) CheckAndUpdateAll(ctx context.Context, host *Host, mode string) error {
+func (r *hostRegistry) CheckAndUpdateAll(ctx context.Context, host PluginHost, mode string) error {
 	if mode == "locked" {
 		return nil
 	}
@@ -248,7 +271,7 @@ func (r *Registry) CheckAndUpdateAll(ctx context.Context, host *Host, mode strin
 	return nil
 }
 
-func (r *Registry) PerformAtomicUpdate(ctx context.Context, name string, host *Host, meta *registry.PluginMetadata) error {
+func (r *hostRegistry) PerformAtomicUpdate(ctx context.Context, name string, host PluginHost, meta *registry.PluginMetadata) error {
 	configDir := config.ConfigDir()
 	tmpDir := filepath.Join(configDir, "cache", "tmp", name)
 	finalDir := filepath.Join(configDir, "plugins", name)
@@ -259,21 +282,42 @@ func (r *Registry) PerformAtomicUpdate(ctx context.Context, name string, host *H
 	}
 
 	// 1. Clone to tmp
-	if err := r.git.Clone(meta.Repo, tmpDir); err != nil {
+	tmpRepoDir := filepath.Join(configDir, "cache", "tmp", "ztvs-plugins-update")
+	_ = os.RemoveAll(tmpRepoDir)
+	if err := r.git.Clone(meta.Repo, tmpRepoDir); err != nil {
 		return err
 	}
+	defer os.RemoveAll(tmpRepoDir)
 
-	// 2. Build
-	if err := r.buildPlugin(tmpDir, name); err != nil {
-		_ = os.RemoveAll(tmpDir)
-		return err
+	pluginSrcDir := filepath.Join(tmpRepoDir, name)
+	if _, err := os.Stat(pluginSrcDir); err != nil {
+		return fmt.Errorf("plugin subdirectory %q not found in repository", name)
 	}
 
-	// 3. Verify
-	binPath := filepath.Join(tmpDir, name)
-	if err := VerifyIntegrity(binPath, meta.Checksum); err != nil {
-		_ = os.RemoveAll(tmpDir)
-		return err
+	// 2. Build (Go/binary plugins only)
+	needsBuild := true
+	manifestBytes, err := os.ReadFile(filepath.Join(pluginSrcDir, "plugin.yaml"))
+	if err == nil {
+		runtimeType := extractRuntimeType(manifestBytes)
+		if runtimeType != "" && runtimeType != "go" && runtimeType != "binary" {
+			needsBuild = false
+		}
+	}
+
+	if needsBuild {
+		fmt.Printf("Building plugin (Go)...\n")
+		if err := r.buildPlugin(pluginSrcDir, name); err != nil {
+			return err
+		}
+	}
+
+	// 3. Verify Integrity (Go/binary plugins only)
+	binPath := filepath.Join(pluginSrcDir, name)
+	if meta.Checksum != "" {
+		fmt.Printf("Verifying integrity...\n")
+		if err := VerifyIntegrity(binPath, meta.Checksum); err != nil {
+			return err
+		}
 	}
 
 	// 4. Atomic Swap
@@ -289,7 +333,7 @@ func (r *Registry) PerformAtomicUpdate(ctx context.Context, name string, host *H
 		}
 	}
 
-	if err := os.Rename(tmpDir, finalDir); err != nil {
+	if err := os.Rename(pluginSrcDir, finalDir); err != nil {
 		// Try to restore old one
 		_ = os.Rename(oldDir, finalDir)
 		return err

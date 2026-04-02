@@ -1,0 +1,2737 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>zt: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/mosesgameli/ztvs/cmd/zt/main.go (100.0%)</option>
+				
+				<option value="file1">github.com/mosesgameli/ztvs/internal/cli/agent.go (91.7%)</option>
+				
+				<option value="file2">github.com/mosesgameli/ztvs/internal/cli/plugin.go (79.8%)</option>
+				
+				<option value="file3">github.com/mosesgameli/ztvs/internal/cli/root.go (100.0%)</option>
+				
+				<option value="file4">github.com/mosesgameli/ztvs/internal/cli/scan.go (76.5%)</option>
+				
+				<option value="file5">github.com/mosesgameli/ztvs/internal/config/config.go (95.2%)</option>
+				
+				<option value="file6">github.com/mosesgameli/ztvs/internal/engine/engine.go (91.8%)</option>
+				
+				<option value="file7">github.com/mosesgameli/ztvs/internal/pluginhost/git.go (75.0%)</option>
+				
+				<option value="file8">github.com/mosesgameli/ztvs/internal/pluginhost/host.go (93.1%)</option>
+				
+				<option value="file9">github.com/mosesgameli/ztvs/internal/pluginhost/integrity.go (92.3%)</option>
+				
+				<option value="file10">github.com/mosesgameli/ztvs/internal/pluginhost/plugin_registry.go (81.6%)</option>
+				
+				<option value="file11">github.com/mosesgameli/ztvs/internal/pluginhost/process.go (83.3%)</option>
+				
+				<option value="file12">github.com/mosesgameli/ztvs/internal/pluginhost/runner.go (100.0%)</option>
+				
+				<option value="file13">github.com/mosesgameli/ztvs/internal/pluginhost/runners_impl.go (85.1%)</option>
+				
+				<option value="file14">github.com/mosesgameli/ztvs/internal/pluginhost/sysprocattr_unix.go (100.0%)</option>
+				
+				<option value="file15">github.com/mosesgameli/ztvs/internal/pluginhost/trust.go (87.5%)</option>
+				
+				<option value="file16">github.com/mosesgameli/ztvs/internal/policy/policy.go (100.0%)</option>
+				
+				<option value="file17">github.com/mosesgameli/ztvs/internal/report/json.go (92.3%)</option>
+				
+				<option value="file18">github.com/mosesgameli/ztvs/internal/report/sarif.go (85.0%)</option>
+				
+				<option value="file19">github.com/mosesgameli/ztvs/internal/report/terminal.go (98.0%)</option>
+				
+				<option value="file20">github.com/mosesgameli/ztvs/pkg/registry/lockfile.go (94.6%)</option>
+				
+				<option value="file21">github.com/mosesgameli/ztvs/test/fixtures/go-fixture/main.go (80.0%)</option>
+				
+				<option value="file22">github.com/mosesgameli/ztvs/tools/manifest-sync/main.go (83.3%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package main
+
+import "github.com/mosesgameli/ztvs/internal/cli"
+
+func main() <span class="cov8" title="1">{
+        cli.Execute()
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package cli
+
+import (
+        "context"
+        "fmt"
+        "os"
+        "os/signal"
+        "syscall"
+        "time"
+
+        "github.com/mosesgameli/ztvs/internal/config"
+        "github.com/mosesgameli/ztvs/internal/engine"
+        "github.com/mosesgameli/ztvs/internal/report"
+        "github.com/pterm/pterm"
+        "github.com/spf13/cobra"
+)
+
+var agentCmd = &amp;cobra.Command{
+        Use:   "agent",
+        Short: "Start the background audit agent",
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                return runAgent(cmd.Context())
+        }</span>,
+}
+
+func runAgent(ctx context.Context) error <span class="cov8" title="1">{
+        cfg, err := config.Load()
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("config error: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">pterm.Success.Println("🚀 ZTVS Audit Agent starting...")
+
+        r := report.NewTerminal()
+        eng := engine.New(cfg, host, r, registryClient)
+        eng.Interactive = false
+
+        interval, err := time.ParseDuration(cfg.Agent.Interval)
+        if err != nil </span><span class="cov8" title="1">{
+                pterm.Warning.Printf("invalid agent interval %s: %v. falling back to 1h\n", cfg.Agent.Interval, err)
+                interval = time.Hour
+        }</span>
+
+        <span class="cov8" title="1">ctx, cancel := context.WithCancel(ctx)
+        defer cancel()
+
+        // Handle graceful shutdown
+        sigs := make(chan os.Signal, 1)
+        signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+        go func() </span><span class="cov8" title="1">{
+                &lt;-sigs
+                pterm.Warning.Println("\n🛑 Shutdown signal received. Exiting...")
+                cancel()
+        }</span>()
+
+        <span class="cov8" title="1">if err := eng.RunLoop(ctx, interval); err != nil &amp;&amp; err != context.Canceled </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func init() <span class="cov8" title="1">{
+        rootCmd.AddCommand(agentCmd)
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package cli
+
+import (
+        "context"
+        "fmt"
+        "os"
+        "path/filepath"
+
+        "github.com/mosesgameli/ztvs-sdk-go/sdk"
+        "github.com/mosesgameli/ztvs/internal/config"
+        "github.com/mosesgameli/ztvs/internal/pluginhost"
+        "github.com/mosesgameli/ztvs/pkg/registry"
+        "github.com/pterm/pterm"
+        "github.com/spf13/cobra"
+        "gopkg.in/yaml.v3"
+)
+
+var host pluginhost.PluginHost = pluginhost.New()
+var registryClient pluginhost.Registry = pluginhost.NewRegistry()
+
+var pluginCmd = &amp;cobra.Command{
+        Use:   "plugin",
+        Short: "Manage scanner plugins",
+}
+
+var pluginInitCmd = &amp;cobra.Command{
+        Use:   "init",
+        Short: "Initialize ZTVS configuration (~/.ztvs/config.yaml)",
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                return runPluginInit()
+        }</span>,
+}
+
+func runPluginInit() error <span class="cov8" title="1">{
+        cfg := config.DefaultConfig()
+        if err := cfg.Save(); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">pterm.Success.Printf("ZTVS initialized at %s\n", config.ConfigDir())
+        return nil</span>
+}
+
+var pluginListCmd = &amp;cobra.Command{
+        Use:   "list",
+        Short: "List installed plugins",
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                return runPluginList()
+        }</span>,
+}
+
+func runPluginList() error <span class="cov8" title="1">{
+        ctx := context.Background()
+        plugins, err := host.Discover(ctx)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">pterm.DefaultHeader.WithBackgroundStyle(pterm.NewStyle(pterm.BgMagenta)).WithMargin(2).Printf("LOCAL NODE REGISTRY (%d)", len(plugins))
+        fmt.Println()
+
+        var tableData [][]string
+        tableData = append(tableData, []string{"Node Name", "Version", "Status", "Filesystem Path"})
+
+        for _, p := range plugins </span><span class="cov8" title="1">{
+                if manifest, ok := host.GetManifest(p); ok </span><span class="cov0" title="0">{
+                        status := pterm.FgGreen.Sprint("● ACTIVE")
+                        if lock, ok := host.Lockfile().Get(manifest.Name); ok </span><span class="cov0" title="0">{
+                                if !lock.Enabled </span><span class="cov0" title="0">{
+                                        status = pterm.FgYellow.Sprint("○ DISABLED")
+                                }</span>
+                        }
+                        <span class="cov0" title="0">tableData = append(tableData, []string{
+                                pterm.FgCyan.Sprint(manifest.Name),
+                                pterm.LightWhite(manifest.Version),
+                                status,
+                                pterm.FgGray.Sprint(p),
+                        })</span>
+                } else<span class="cov8" title="1"> {
+                        tableData = append(tableData, []string{pterm.FgRed.Sprint("unknown"), "", "", p})
+                }</span>
+        }
+
+        <span class="cov8" title="1">table, _ := pterm.DefaultTable.WithHasHeader().WithData(tableData).Srender()
+        _ = pterm.DefaultPanel.WithPadding(1).WithPanels(pterm.Panels{
+                {{Data: table}},
+        }).Render()
+        return nil</span>
+}
+
+var pluginSearchCmd = &amp;cobra.Command{
+        Use:   "search [query]",
+        Short: "Search for remote plugins",
+        Args:  cobra.MaximumNArgs(1),
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                query := ""
+                if len(args) &gt; 0 </span><span class="cov8" title="1">{
+                        query = args[0]
+                }</span>
+                <span class="cov8" title="1">return runPluginSearch(registryClient, query)</span>
+        },
+}
+
+func runPluginSearch(reg pluginhost.Registry, query string) error <span class="cov8" title="1">{
+        ctx := context.Background()
+        results, err := reg.Search(ctx, query)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">pterm.DefaultHeader.WithBackgroundStyle(pterm.NewStyle(pterm.BgCyan)).WithMargin(2).Printf("REMOTE CATALOG SEARCH (%d)", len(results))
+        fmt.Println()
+
+        var tableData [][]string
+        tableData = append(tableData, []string{"Plugin", "Version", "Audit Level"})
+        for _, r := range results </span><span class="cov8" title="1">{
+                auditLevel := pterm.BgBlue.Sprint(pterm.FgBlack.Sprint(" " + r.AuditStatus + " "))
+                tableData = append(tableData, []string{pterm.FgCyan.Sprint(r.Name), r.LatestVersion, auditLevel})
+        }</span>
+        <span class="cov8" title="1">table, _ := pterm.DefaultTable.WithHasHeader().WithData(tableData).Srender()
+        _ = pterm.DefaultPanel.WithPadding(1).WithPanels(pterm.Panels{
+                {{Data: table}},
+        }).Render()
+        return nil</span>
+}
+
+var pluginInfoCmd = &amp;cobra.Command{
+        Use:   "info &lt;name&gt;",
+        Short: "Show remote plugin details",
+        Args:  cobra.ExactArgs(1),
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                return runPluginInfo(registryClient, args[0])
+        }</span>,
+}
+
+func runPluginInfo(reg pluginhost.Registry, name string) error <span class="cov8" title="1">{
+        ctx := context.Background()
+        meta, err := reg.GetInfo(ctx, name)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">pterm.DefaultSection.Printf("Node Manifest: %s", meta.Name)
+
+        infoData := [][]string{
+                {"Field", "Value"},
+                {"Version", pterm.FgMagenta.Sprint(meta.LatestVersion)},
+                {"Remote Repository", pterm.FgCyan.Sprint(meta.Repo)},
+                {"Security Audit", pterm.BgGreen.Sprint(pterm.FgBlack.Sprint(" " + meta.AuditStatus + " "))},
+                {"Integrity Hash", pterm.FgGray.Sprint(meta.Checksum)},
+        }
+        _ = pterm.DefaultTable.WithHasHeader().WithData(infoData).Render()
+        return nil</span>
+}
+
+var pluginEnableCmd = &amp;cobra.Command{
+        Use:   "enable &lt;name&gt;",
+        Short: "Enable a plugin",
+        Args:  cobra.ExactArgs(1),
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                return runPluginToggle(args[0], true)
+        }</span>,
+}
+
+var pluginDisableCmd = &amp;cobra.Command{
+        Use:   "disable &lt;name&gt;",
+        Short: "Disable a plugin",
+        Args:  cobra.ExactArgs(1),
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                return runPluginToggle(args[0], false)
+        }</span>,
+}
+
+func runPluginToggle(name string, enabled bool) error <span class="cov8" title="1">{
+        lf := host.Lockfile()
+        lock, ok := lf.Get(name)
+        if !ok </span><span class="cov8" title="1">{
+                ctx := context.Background()
+                plugins, _ := host.Discover(ctx)
+                found := false
+                for _, p := range plugins </span><span class="cov8" title="1">{
+                        if m, ok := host.GetManifest(p); ok &amp;&amp; m.Name == name </span><span class="cov8" title="1">{
+                                lock = registry.PluginLock{
+                                        Version: m.Version,
+                                        Enabled: enabled,
+                                }
+                                found = true
+                                break</span>
+                        }
+                }
+                <span class="cov8" title="1">if !found </span><span class="cov8" title="1">{
+                        return fmt.Errorf("plugin %s not found", name)
+                }</span>
+        } else<span class="cov0" title="0"> {
+                lock.Enabled = enabled
+        }</span>
+
+        <span class="cov8" title="1">lf.Set(name, lock)
+        if err := lf.Save(); err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("error saving lockfile: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">action := "disabled"
+        if enabled </span><span class="cov0" title="0">{
+                action = "enabled"
+        }</span>
+        <span class="cov0" title="0">pterm.Success.Printf("Plugin %s %s\n", name, action)
+        return nil</span>
+}
+
+var pluginInstallCmd = &amp;cobra.Command{
+        Use:   "install &lt;name&gt;",
+        Short: "Install a remote plugin",
+        Args:  cobra.ExactArgs(1),
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                return runPluginInstall(registryClient, args[0])
+        }</span>,
+}
+
+func runPluginInstall(reg pluginhost.Registry, name string) error <span class="cov8" title="1">{
+        ctx := context.Background()
+
+        spinner, _ := pterm.DefaultSpinner.Start(fmt.Sprintf("Installing plugin '%s'...", name))
+        if err := reg.Install(ctx, name, host); err != nil </span><span class="cov8" title="1">{
+                spinner.Fail(fmt.Sprintf("installation error: %v", err))
+                return err
+        }</span>
+        <span class="cov8" title="1">spinner.Success(fmt.Sprintf("Successfully installed plugin '%s'", name))
+
+        configDir := config.ConfigDir()
+        // #nosec G304 - name is a plugin name, and configDir is a trusted root.
+        manifestPath := filepath.Join(configDir, "plugins", filepath.Clean(name), "plugin.yaml")
+        data, err := os.ReadFile(manifestPath)
+        if err == nil </span><span class="cov0" title="0">{
+                var m sdk.Manifest
+                if err := yaml.Unmarshal(data, &amp;m); err == nil </span><span class="cov0" title="0">{
+                        pterm.Info.Printf("Plugin '%s' requires the following capabilities:\n", m.Name)
+                        var items []pterm.BulletListItem
+                        for _, cap := range m.Capabilities </span><span class="cov0" title="0">{
+                                items = append(items, pterm.BulletListItem{Level: 0, Text: cap})
+                        }</span>
+                        <span class="cov0" title="0">_ = pterm.DefaultBulletList.WithItems(items).Render()
+                        pterm.Println()
+                        pterm.Warning.Println("These capabilities are recorded and will be enforced by the ZTVS policy engine during scans.")</span>
+                }
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+
+var pluginUpdateCmd = &amp;cobra.Command{
+        Use:   "update",
+        Short: "Update installed plugins to the latest version",
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                return runPluginUpdate(registryClient)
+        }</span>,
+}
+
+func runPluginUpdate(reg pluginhost.Registry) error <span class="cov8" title="1">{
+        cfg, err := config.Load()
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">ctx := context.Background()
+
+        if err := reg.CheckAndUpdateAll(ctx, host, cfg.Update.Mode); err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">pterm.Success.Println("All plugins are up to date.")
+        return nil</span>
+}
+
+func init() <span class="cov8" title="1">{
+        pluginCmd.AddCommand(pluginInitCmd, pluginListCmd, pluginSearchCmd, pluginInfoCmd, pluginEnableCmd, pluginDisableCmd, pluginInstallCmd, pluginUpdateCmd)
+        rootCmd.AddCommand(pluginCmd)
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package cli
+
+import (
+        "os"
+
+        "github.com/pterm/pterm"
+        "github.com/pterm/pterm/putils"
+        "github.com/spf13/cobra"
+)
+
+// Version is the current version of the application, injected during build.
+var Version = "dev"
+
+func NewRootCmd() *cobra.Command <span class="cov8" title="1">{
+        cmd := &amp;cobra.Command{
+                Use:     "zt",
+                Version: Version,
+                Short:   "Zero Trust Vulnerability Scanner",
+                Args:    cobra.NoArgs,
+                Long: func() string </span><span class="cov8" title="1">{
+                        logo, _ := pterm.DefaultBigText.WithLetters(
+                                putils.LettersFromStringWithStyle("ZT", pterm.NewStyle(pterm.FgCyan)),
+                                putils.LettersFromStringWithStyle("VS", pterm.NewStyle(pterm.FgMagenta))).
+                                Srender()
+                        return logo + "\n" + pterm.DefaultHeader.WithFullWidth().WithBackgroundStyle(pterm.NewStyle(pterm.BgMagenta)).WithMargin(10).Sprint("THE INDEPENDENT AUDIT PLATFORM") + "\n\n" +
+                                pterm.LightMagenta("ZTVS") + " is a high-fidelity, cross-platform security engine using isolated nodes for system auditing."
+                }</span>(),
+        }
+        <span class="cov8" title="1">cmd.SetVersionTemplate("{{.Name}} {{.Version}}\n")
+        return cmd</span>
+}
+
+var rootCmd = NewRootCmd()
+var osExit = os.Exit
+
+// Execute triggers the overarching command line execution flow
+func Execute() <span class="cov8" title="1">{
+        if err := rootCmd.Execute(); err != nil </span><span class="cov8" title="1">{
+                pterm.Error.Prefix = pterm.Prefix{Text: "ALERT", Style: pterm.NewStyle(pterm.BgRed, pterm.FgBlack)}
+                pterm.Error.Println(err)
+                osExit(1)
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package cli
+
+import (
+        "context"
+        "fmt"
+
+        "github.com/mosesgameli/ztvs/internal/config"
+        "github.com/mosesgameli/ztvs/internal/engine"
+        "github.com/mosesgameli/ztvs/internal/report"
+        "github.com/pterm/pterm"
+        "github.com/spf13/cobra"
+)
+
+var formatFlag string
+
+var scanCmd = &amp;cobra.Command{
+        Use:   "scan",
+        Short: "Run vulnerability scans across all enabled plugins",
+        RunE: func(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+                return runScan(cmd.Context())
+        }</span>,
+}
+
+func runScan(ctx context.Context) error <span class="cov8" title="1">{
+        cfg, err := config.Load()
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("config error: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">var r report.Reporter
+        switch formatFlag </span>{
+        case "json":<span class="cov0" title="0">
+                r = report.NewJSON()</span>
+        case "sarif":<span class="cov0" title="0">
+                r = report.NewSARIF()</span>
+        default:<span class="cov8" title="1">
+                r = report.NewTerminal()</span>
+        }
+
+        <span class="cov8" title="1">eng := engine.New(cfg, host, r, registryClient)
+        eng.Interactive = true
+
+        pterm.Info.Println("Initializing global security scan...")
+
+        if err := eng.Scan(); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func init() <span class="cov8" title="1">{
+        scanCmd.Flags().StringVar(&amp;formatFlag, "format", "terminal", "Output format (terminal, json, sarif)")
+        rootCmd.AddCommand(scanCmd)
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package config
+
+import (
+        "fmt"
+        "os"
+        "path/filepath"
+
+        "gopkg.in/yaml.v3"
+)
+
+type Config struct {
+        Agent  AgentConfig  `yaml:"agent"`
+        Policy PolicyConfig `yaml:"policy"`
+        Update UpdateConfig `yaml:"update"`
+}
+
+type UpdateConfig struct {
+        Mode string `yaml:"mode"` // safe, always, locked
+}
+
+type AgentConfig struct {
+        Interval string `yaml:"interval"` // e.g., 1h
+}
+
+type PolicyConfig struct {
+        AllowedCapabilities []string `yaml:"allowed_capabilities"`
+        BlockedCapabilities []string `yaml:"blocked_capabilities"`
+}
+
+func ConfigDir() string <span class="cov8" title="1">{
+        home, _ := os.UserHomeDir()
+        return filepath.Join(home, ".ztvs")
+}</span>
+
+func Load() (*Config, error) <span class="cov8" title="1">{
+        configPath := filepath.Join(ConfigDir(), "config.yaml")
+
+        // 1. Create default config if missing
+        if _, err := os.Stat(configPath); os.IsNotExist(err) </span><span class="cov8" title="1">{
+                return DefaultConfig(), nil
+        }</span>
+
+        // 2. Read existing config
+        <span class="cov8" title="1">data, err := os.ReadFile(configPath)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("read config %s: %v", configPath, err)
+        }</span>
+
+        <span class="cov8" title="1">var cfg Config
+        if err := yaml.Unmarshal(data, &amp;cfg); err != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("parse config %s: %v", configPath, err)
+        }</span>
+
+        <span class="cov8" title="1">return &amp;cfg, nil</span>
+}
+
+func DefaultConfig() *Config <span class="cov8" title="1">{
+        return &amp;Config{
+                Agent: AgentConfig{
+                        Interval: "1h",
+                },
+                Policy: PolicyConfig{
+                        AllowedCapabilities: []string{"read_files", "execute_commands", "system_info"},
+                        BlockedCapabilities: []string{"network_access", "write_files"},
+                },
+                Update: UpdateConfig{
+                        Mode: "safe",
+                },
+        }
+}</span>
+
+func (c *Config) Save() error <span class="cov8" title="1">{
+        configDir := ConfigDir()
+        if err := os.MkdirAll(configDir, 0755); err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">configPath := filepath.Join(configDir, "config.yaml")
+        data, err := yaml.Marshal(c)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">return os.WriteFile(configPath, data, 0600)</span>
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package engine
+
+import (
+        "bufio"
+        "context"
+        "fmt"
+        "io"
+        "log"
+        "os"
+        "strings"
+        "sync"
+        "time"
+
+        "github.com/mosesgameli/ztvs/internal/config"
+        "github.com/mosesgameli/ztvs/internal/pluginhost"
+        "github.com/mosesgameli/ztvs/internal/policy"
+        "github.com/mosesgameli/ztvs/internal/report"
+        "github.com/pterm/pterm"
+)
+
+type Engine struct {
+        host        pluginhost.PluginHost
+        reporter    report.Reporter
+        policy      *policy.Policy
+        cfg         *config.Config
+        mutex       sync.Mutex
+        Interactive bool
+        stdin       io.Reader
+        registry    pluginhost.Registry
+}
+
+func New(cfg *config.Config, h pluginhost.PluginHost, r report.Reporter, reg pluginhost.Registry) *Engine <span class="cov8" title="1">{
+        return &amp;Engine{
+                host:     h,
+                reporter: r,
+                policy:   policy.New(cfg),
+                cfg:      cfg,
+                stdin:    os.Stdin,
+                registry: reg,
+        }
+}</span>
+
+func (e *Engine) RunLoop(ctx context.Context, interval time.Duration) error <span class="cov8" title="1">{
+        ticker := time.NewTicker(interval)
+        defer ticker.Stop()
+
+        log.Printf("Starting background audit agent (interval: %v)", interval)
+
+        // First run
+        if err := e.Scan(); err != nil </span><span class="cov0" title="0">{
+                log.Printf("Initial scan error: %v", err)
+        }</span>
+
+        <span class="cov8" title="1">for </span><span class="cov8" title="1">{
+                select </span>{
+                case &lt;-ctx.Done():<span class="cov8" title="1">
+                        return ctx.Err()</span>
+                case &lt;-ticker.C:<span class="cov8" title="1">
+                        log.Printf("Periodic audit started...")
+                        if err := e.Scan(); err != nil </span><span class="cov0" title="0">{
+                                log.Printf("Audit scan error: %v", err)
+                        }</span>
+                }
+        }
+}
+
+func (e *Engine) Scan() error <span class="cov8" title="1">{
+        ctx := context.Background()
+
+        var spinner *pterm.SpinnerPrinter
+        if e.Interactive </span><span class="cov8" title="1">{
+                spinner, _ = pterm.DefaultSpinner.Start("Checking for registry updates...")
+        }</span>
+
+        // Phase 4: Atomic Auto-Updates
+        <span class="cov8" title="1">reg := e.registry
+        if err := reg.CheckAndUpdateAll(ctx, e.host, e.cfg.Update.Mode); err != nil </span><span class="cov0" title="0">{
+                if spinner != nil </span><span class="cov0" title="0">{
+                        pterm.Warning.Printf("Update check bypassed: %v\n", err)
+                }</span>
+        }
+
+        // 1. Discover plugins
+        <span class="cov8" title="1">if spinner != nil </span><span class="cov8" title="1">{
+                spinner.UpdateText("Discovering installed nodes...")
+        }</span>
+        <span class="cov8" title="1">plugins, err := e.host.Discover(ctx)
+        if err != nil </span><span class="cov8" title="1">{
+                if spinner != nil </span><span class="cov8" title="1">{
+                        spinner.Fail(fmt.Sprintf("Discovery error: %v", err))
+                }</span>
+                <span class="cov8" title="1">return fmt.Errorf("discovery: %v", err)</span>
+        }
+
+        // Run pre-flight checks sequentially to present prompts cleanly
+        <span class="cov8" title="1">plugins = e.preflightCapabilityCheck(plugins)
+
+        var wg sync.WaitGroup
+
+        if spinner != nil </span><span class="cov8" title="1">{
+                spinner.UpdateText(fmt.Sprintf("Auditing system with %d nodes...", len(plugins)))
+        }</span>
+
+        <span class="cov8" title="1">for _, p := range plugins </span><span class="cov8" title="1">{
+                wg.Add(1)
+                go func(path string) </span><span class="cov8" title="1">{
+                        defer wg.Done()
+                        if spinner != nil </span><span class="cov8" title="1">{
+                                if manifest, ok := e.host.GetManifest(path); ok </span><span class="cov8" title="1">{
+                                        spinner.UpdateText(fmt.Sprintf("Node [%s]: Executing checks...", manifest.Name))
+                                }</span>
+                        }
+                        <span class="cov8" title="1">e.scanPlugin(ctx, path)</span>
+                }(p)
+        }
+
+        <span class="cov8" title="1">wg.Wait()
+
+        if spinner != nil </span><span class="cov8" title="1">{
+                spinner.Success("System audit finalized")
+        }</span>
+
+        <span class="cov8" title="1">return e.reporter.Flush()</span>
+}
+
+func (e *Engine) preflightCapabilityCheck(plugins []string) []string <span class="cov8" title="1">{
+        var allowed []string
+        for _, p := range plugins </span><span class="cov8" title="1">{
+                info, _ := e.host.GetPluginInfo(p)
+                if info != nil &amp;&amp; !info.Enabled </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">manifest, ok := e.host.GetManifest(p)
+                if !ok </span><span class="cov0" title="0">{
+                        log.Printf("Security alert: Plugin at %s has no manifest. Skipping.", p)
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">if cap, err := e.policy.IsAllowed(manifest.Name, manifest.Capabilities); err != nil </span><span class="cov8" title="1">{
+                        if e.Interactive </span><span class="cov8" title="1">{
+                                fmt.Printf("\n[SEC] Plugin '%s' requested blocked/unauthorized capability: %s\n", manifest.Name, cap)
+                                fmt.Printf("      Do you want to permanently grant this capability in your global config? [y/N]: ")
+
+                                reader := bufio.NewReader(e.stdin)
+                                response, _ := reader.ReadString('\n')
+                                response = strings.TrimSpace(strings.ToLower(response))
+
+                                if response == "y" || response == "yes" </span><span class="cov8" title="1">{
+                                        // 1. Remove from blocked
+                                        var newBlocked []string
+                                        for _, b := range e.cfg.Policy.BlockedCapabilities </span><span class="cov8" title="1">{
+                                                if b != cap </span><span class="cov0" title="0">{
+                                                        newBlocked = append(newBlocked, b)
+                                                }</span>
+                                        }
+                                        <span class="cov8" title="1">e.cfg.Policy.BlockedCapabilities = newBlocked
+
+                                        // 2. Add to allowed
+                                        e.cfg.Policy.AllowedCapabilities = append(e.cfg.Policy.AllowedCapabilities, cap)
+
+                                        // 3. Save to disk
+                                        if saveErr := e.cfg.Save(); saveErr != nil </span><span class="cov8" title="1">{
+                                                log.Printf("Failed to save config: %v", saveErr)
+                                                continue</span>
+                                        }
+
+                                        // 4. Reload in-memory
+                                        <span class="cov8" title="1">e.policy.Reload(e.cfg)
+                                        fmt.Printf("      Granted %s capability.\n\n", cap)
+
+                                        allowed = append(allowed, p)
+                                        continue</span>
+                                }
+                        }
+                        <span class="cov8" title="1">log.Printf("Policy rejection: %v. Skipping plugin %s.", err, manifest.Name)
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">allowed = append(allowed, p)</span>
+        }
+        <span class="cov8" title="1">return allowed</span>
+}
+
+func (e *Engine) scanPlugin(ctx context.Context, p string) <span class="cov8" title="1">{
+        manifest, _ := e.host.GetManifest(p)
+
+        // Final verification in case of race constraints
+        if _, err := e.policy.IsAllowed(manifest.Name, manifest.Capabilities); err != nil </span><span class="cov8" title="1">{
+                return
+        }</span>
+
+        // 2. Handshake (Active verification)
+        <span class="cov8" title="1">meta, err := e.host.Handshake(ctx, p)
+        if err != nil </span><span class="cov8" title="1">{
+                log.Printf("Plugin %s failed handshake: %v", p, err)
+                return
+        }</span>
+
+        <span class="cov8" title="1">if meta.APIVersion != 1 </span><span class="cov8" title="1">{
+                log.Printf("Plugin %s has unsupported API version: %d", meta.Name, meta.APIVersion)
+                return
+        }</span>
+
+        // 3. Run Checks
+        <span class="cov8" title="1">for _, checkID := range meta.ChecksSupported </span><span class="cov8" title="1">{
+                // Per-check timeout
+                checkCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+                defer cancel()
+
+                res, err := e.host.RunCheck(checkCtx, p, checkID)
+                if err != nil </span><span class="cov8" title="1">{
+                        log.Printf("  Check %s failed: %v", checkID, err)
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">if res.Finding != nil </span><span class="cov8" title="1">{
+                        e.mutex.Lock()
+                        e.reporter.AddFinding(meta.Name, res.Finding)
+                        e.mutex.Unlock()
+                }</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package pluginhost
+
+import (
+        "fmt"
+        "os"
+        "os/exec"
+)
+
+var execCommand = exec.Command
+
+// Git defines the interface for git operations.
+type Git interface {
+        Clone(url, dest string) error
+        Pull(dest string) error
+        Remove(dest string) error
+}
+
+type gitImpl struct{}
+
+func NewGit() Git <span class="cov8" title="1">{
+        return &amp;gitImpl{}
+}</span>
+
+func (g *gitImpl) Clone(url, dest string) error <span class="cov8" title="1">{
+        if _, err := exec.LookPath("git"); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("git not found in PATH: %v", err)
+        }</span>
+
+        <span class="cov8" title="1">cmd := execCommand("git", "clone", url, dest)
+        if output, err := cmd.CombinedOutput(); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("git clone failed: %v\nOutput: %s", err, string(output))
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (g *gitImpl) Pull(dest string) error <span class="cov8" title="1">{
+        cmd := execCommand("git", "-C", dest, "pull")
+        if output, err := cmd.CombinedOutput(); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("git pull failed: %v\nOutput: %s", err, string(output))
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (g *gitImpl) Remove(dest string) error <span class="cov8" title="1">{
+        return os.RemoveAll(dest)
+}</span>
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package pluginhost
+
+import (
+        "context"
+        "fmt"
+        "os"
+        "path/filepath"
+
+        "github.com/mosesgameli/ztvs-sdk-go/rpc"
+        "github.com/mosesgameli/ztvs-sdk-go/sdk"
+        "github.com/mosesgameli/ztvs/internal/config"
+        "github.com/mosesgameli/ztvs/pkg/registry"
+        "gopkg.in/yaml.v3"
+)
+
+type PluginInfo struct {
+        Entrypoint string
+        Manifest   *sdk.Manifest
+        Enabled    bool
+        Runner     Runner
+}
+
+type Host struct {
+        paths    []string
+        plugins  map[string]*PluginInfo
+        lockfile *registry.Lockfile
+        runners  *RunnerRegistry
+}
+
+func New() *Host <span class="cov8" title="1">{
+        configDir := config.ConfigDir()
+        lockPath := filepath.Join(configDir, "plugins.lock")
+        lf, _ := registry.LoadLockfile(lockPath)
+
+        rr := NewRunnerRegistry()
+        rr.Register(&amp;BinaryRunner{})
+        rr.Register(&amp;PythonRunner{})
+        rr.Register(&amp;NodeRunner{})
+        rr.Register(&amp;JavaRunner{})
+
+        return &amp;Host{
+                paths: []string{
+                        "./plugins",
+                        filepath.Join(configDir, "plugins"),
+                        "/usr/local/lib/zt/plugins",
+                },
+                plugins:  make(map[string]*PluginInfo),
+                lockfile: lf,
+                runners:  rr,
+        }
+}</span>
+
+func (h *Host) Discover(ctx context.Context) ([]string, error) <span class="cov8" title="1">{
+        var discovered []string
+
+        for _, path := range h.paths </span><span class="cov8" title="1">{
+                entries, err := os.ReadDir(path)
+                if err != nil </span><span class="cov0" title="0">{
+                        continue</span> // Skip missing directories
+                }
+
+                <span class="cov8" title="1">for _, entry := range entries </span><span class="cov8" title="1">{
+                        if entry.IsDir() </span><span class="cov8" title="1">{
+                                // 1. Located the plugin directory
+                                pluginDir := filepath.Join(path, entry.Name())
+
+                                // 2. Load manifest (Mandatory in Phase 1)
+                                manifestPath := filepath.Join(pluginDir, "plugin.yaml")
+                                manifest, err := h.loadManifest(manifestPath)
+                                if err != nil </span><span class="cov8" title="1">{
+                                        // STRICT VALIDATION: Ignore plugins without valid manifest
+                                        continue</span>
+                                }
+
+                                // 3. Check for duplicate name early
+                                <span class="cov8" title="1">duplicate := false
+                                for _, existing := range h.plugins </span><span class="cov8" title="1">{
+                                        if existing.Manifest.Name == manifest.Name </span><span class="cov8" title="1">{
+                                                duplicate = true
+                                                break</span>
+                                        }
+                                }
+                                <span class="cov8" title="1">if duplicate </span><span class="cov8" title="1">{
+                                        continue</span>
+                                }
+
+                                // 4. Resolve Runner
+                                <span class="cov8" title="1">runner, err := h.runners.GetRunner(manifest.Runtime.Type)
+                                if err != nil </span><span class="cov8" title="1">{
+                                        fmt.Fprintf(os.Stderr, "Warning: runtime type %s not supported for plugin %s\n", manifest.Runtime.Type, manifest.Name)
+                                        continue</span>
+                                }
+
+                                // 5. Validate Entrypoint &amp; Environment
+                                <span class="cov8" title="1">entrypoint := filepath.Join(pluginDir, manifest.Runtime.Entrypoint)
+                                if err := runner.Validate(entrypoint); err != nil </span><span class="cov0" title="0">{
+                                        fmt.Fprintf(os.Stderr, "Warning: skipping plugin %s: %v\n", manifest.Name, err)
+                                        continue</span>
+                                }
+
+                                // 6. Check lockfile (Enabled status)
+                                <span class="cov8" title="1">enabled := true
+                                if lock, ok := h.lockfile.Get(manifest.Name); ok </span><span class="cov0" title="0">{
+                                        enabled = lock.Enabled
+                                }</span>
+
+                                <span class="cov8" title="1">h.plugins[entrypoint] = &amp;PluginInfo{
+                                        Entrypoint: entrypoint,
+                                        Manifest:   manifest,
+                                        Enabled:    enabled,
+                                        Runner:     runner,
+                                }
+                                discovered = append(discovered, entrypoint)</span>
+                        }
+                }
+        }
+
+        <span class="cov8" title="1">return discovered, nil</span>
+}
+
+func (h *Host) loadManifest(path string) (*sdk.Manifest, error) <span class="cov8" title="1">{
+        data, err := os.ReadFile(path)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">var m sdk.Manifest
+        if err := yaml.Unmarshal(data, &amp;m); err != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("parse manifest %s: %v", path, err)
+        }</span>
+
+        <span class="cov8" title="1">return &amp;m, nil</span>
+}
+
+func (h *Host) GetPluginInfo(pluginPath string) (*PluginInfo, bool) <span class="cov8" title="1">{
+        info, ok := h.plugins[pluginPath]
+        return info, ok
+}</span>
+
+func (h *Host) GetManifest(pluginPath string) (*sdk.Manifest, bool) <span class="cov8" title="1">{
+        info, ok := h.plugins[pluginPath]
+        if !ok </span><span class="cov8" title="1">{
+                return nil, false
+        }</span>
+        <span class="cov8" title="1">return info.Manifest, true</span>
+}
+
+func (h *Host) RunCheck(
+        ctx context.Context,
+        pluginPath string,
+        checkID string,
+) (*rpc.RunCheckResponse, error) <span class="cov8" title="1">{
+        return h.runCheckProcess(ctx, pluginPath, checkID)
+}</span>
+
+func (h *Host) Lockfile() *registry.Lockfile <span class="cov8" title="1">{
+        return h.lockfile
+}</span>
+
+func (h *Host) RegisterRunner(r Runner) <span class="cov8" title="1">{
+        h.runners.Register(r)
+}</span>
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package pluginhost
+
+import (
+        "crypto/sha256"
+        "encoding/hex"
+        "fmt"
+        "io"
+        "os"
+)
+
+// VerifyIntegrity checks if the plug binary's SHA-256 hash matches the provided checksum.
+// checksum should be in format "f2416982..." or "sha256:f2416982..."
+func VerifyIntegrity(pluginPath, expectedChecksum string) error <span class="cov8" title="1">{
+        f, err := os.Open(pluginPath)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer f.Close()
+
+        h := sha256.New()
+        if _, err := io.Copy(h, f); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">actual := hex.EncodeToString(h.Sum(nil))
+
+        // Handle optional "sha256:" prefix
+        if len(expectedChecksum) &gt; 7 &amp;&amp; expectedChecksum[:7] == "sha256:" </span><span class="cov8" title="1">{
+                expectedChecksum = expectedChecksum[7:]
+        }</span>
+
+        <span class="cov8" title="1">if actual != expectedChecksum </span><span class="cov8" title="1">{
+                return fmt.Errorf("integrity violation: expected %s, got %s", expectedChecksum, actual)
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package pluginhost
+
+import (
+        "context"
+        "encoding/json"
+        "fmt"
+        "io"
+        "net/http"
+        "os"
+        "path/filepath"
+        "strings"
+        "time"
+
+        "github.com/mosesgameli/ztvs/internal/config"
+        "github.com/mosesgameli/ztvs/pkg/registry"
+)
+
+type hostRegistry struct {
+        BaseURL string
+        git     Git
+}
+
+func NewRegistry() Registry <span class="cov8" title="1">{
+        return &amp;hostRegistry{
+                BaseURL: "https://raw.githubusercontent.com/mosesgameli/ztvs-plugins/main/registry",
+                git:     NewGit(),
+        }
+}</span>
+
+func (r *hostRegistry) FetchIndex(ctx context.Context) (*registry.Index, error) <span class="cov8" title="1">{
+        configDir := config.ConfigDir()
+        cacheDir := filepath.Join(configDir, "cache")
+        indexPath := filepath.Join(cacheDir, "index.json")
+
+        if err := os.MkdirAll(cacheDir, 0755); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // 1. Fetch index.json
+        <span class="cov8" title="1">indexURL := fmt.Sprintf("%s/index.json", r.BaseURL)
+        if err := DownloadFile(indexPath, indexURL); err != nil </span><span class="cov8" title="1">{
+                // If offline, try to load from cache
+                return r.loadLocalIndex(indexPath)
+        }</span>
+
+        // 2. Fetch signature (best-effort; warn if unavailable or invalid)
+        <span class="cov8" title="1">sigPath := indexPath + ".sig"
+        sigURL := indexURL + ".sig"
+        if err := DownloadFile(sigPath, sigURL); err == nil </span><span class="cov8" title="1">{
+                data, _ := os.ReadFile(indexPath)
+                sig, _ := os.ReadFile(sigPath)
+                if err := VerifySignature(data, sig); err != nil </span><span class="cov8" title="1">{
+                        fmt.Fprintf(os.Stderr, "Warning: registry signature verification failed: %v\n", err)
+                }</span>
+        }
+
+        <span class="cov8" title="1">return r.loadLocalIndex(indexPath)</span>
+}
+
+func (r *hostRegistry) loadLocalIndex(path string) (*registry.Index, error) <span class="cov8" title="1">{
+        data, err := os.ReadFile(path)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">var idx registry.Index
+        if err := json.Unmarshal(data, &amp;idx); err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return &amp;idx, nil</span>
+}
+
+func (r *hostRegistry) Search(ctx context.Context, query string) ([]registry.PluginMetadata, error) <span class="cov8" title="1">{
+        idx, err := r.FetchIndex(ctx)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">var results []registry.PluginMetadata
+        query = strings.ToLower(query)
+        for _, m := range idx.Plugins </span><span class="cov8" title="1">{
+                if strings.Contains(strings.ToLower(m.Name), query) </span><span class="cov8" title="1">{
+                        results = append(results, m)
+                }</span>
+        }
+        <span class="cov8" title="1">return results, nil</span>
+}
+
+func (r *hostRegistry) GetInfo(ctx context.Context, name string) (*registry.PluginMetadata, error) <span class="cov8" title="1">{
+        idx, err := r.FetchIndex(ctx)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">for _, m := range idx.Plugins </span><span class="cov8" title="1">{
+                if m.Name == name </span><span class="cov8" title="1">{
+                        return &amp;m, nil
+                }</span>
+        }
+        <span class="cov8" title="1">return nil, fmt.Errorf("plugin %s not found in registry", name)</span>
+}
+
+// Install downloads, builds, and registers a plugin.
+// It clones the monorepo to a temp dir, extracts the plugin subdirectory,
+// builds it, and moves it to the final install location.
+func (r *hostRegistry) Install(ctx context.Context, pluginName string, host PluginHost) error <span class="cov8" title="1">{
+        // 1. Get Metadata
+        meta, err := r.GetInfo(ctx, pluginName)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">installDir := filepath.Join(config.ConfigDir(), "plugins", pluginName)
+        if _, err := os.Stat(installDir); err == nil </span><span class="cov0" title="0">{
+                fmt.Printf("Plugin %s is already installed. Use 'zt plugin update' to update.\n", pluginName)
+                return nil
+        }</span>
+
+        <span class="cov8" title="1">fmt.Printf("Found plugin %s at %s\n", pluginName, meta.Repo)
+
+        // 2. Clone monorepo to a temporary directory
+        tmpRepoDir := filepath.Join(config.ConfigDir(), "cache", "tmp", "ztvs-plugins")
+        _ = os.RemoveAll(tmpRepoDir)
+        if err := os.MkdirAll(filepath.Dir(tmpRepoDir), 0755); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">fmt.Printf("Cloning repository...\n")
+        if err := r.git.Clone(meta.Repo, tmpRepoDir); err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer os.RemoveAll(tmpRepoDir)
+
+        // 3. Build plugin from its subdirectory within the monorepo (Go/binary plugins only)
+        pluginSrcDir := filepath.Join(tmpRepoDir, pluginName)
+        if _, err := os.Stat(pluginSrcDir); err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("plugin subdirectory %q not found in repository", pluginName)
+        }</span>
+
+        // Detect runtime from plugin.yaml to decide whether to build
+        <span class="cov8" title="1">needsBuild := true
+        manifestBytes, err := os.ReadFile(filepath.Join(pluginSrcDir, "plugin.yaml"))
+        if err == nil </span><span class="cov8" title="1">{
+                runtimeType := extractRuntimeType(manifestBytes)
+                if runtimeType != "" &amp;&amp; runtimeType != "go" &amp;&amp; runtimeType != "binary" </span><span class="cov8" title="1">{
+                        needsBuild = false
+                }</span>
+        }
+
+        <span class="cov8" title="1">if needsBuild </span><span class="cov0" title="0">{
+                fmt.Printf("Building plugin (Go)...\n")
+                if err := r.buildPlugin(pluginSrcDir, pluginName); err != nil </span><span class="cov0" title="0">{
+                        fmt.Printf("Build failed: %v. Cleaning up...\n", err)
+                        return err
+                }</span>
+        }
+
+        // 4. Verify Integrity (skip if checksum is empty)
+        <span class="cov8" title="1">binPath := filepath.Join(pluginSrcDir, pluginName)
+        if meta.Checksum != "" </span><span class="cov0" title="0">{
+                fmt.Printf("Verifying integrity...\n")
+                if err := VerifyIntegrity(binPath, meta.Checksum); err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("integrity check failed: %v", err)
+                }</span>
+        }
+
+        // 5. Move plugin subdirectory to final install location
+        <span class="cov8" title="1">if err := os.MkdirAll(filepath.Dir(installDir), 0755); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">if err := os.Rename(pluginSrcDir, installDir); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to move plugin to install dir: %v", err)
+        }</span>
+
+        // 6. Update Lockfile
+        <span class="cov8" title="1">fmt.Printf("Updating lockfile...\n")
+        lf := host.Lockfile()
+        lf.Set(pluginName, registry.PluginLock{
+                Version:  meta.LatestVersion,
+                Enabled:  true,
+                Checksum: meta.Checksum,
+        })
+        if err := lf.Save(); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to save lockfile: %v", err)
+        }</span>
+
+        <span class="cov8" title="1">fmt.Printf("✓ Plugin %s installed successfully!\n", pluginName)
+        return nil</span>
+}
+
+func (r *hostRegistry) buildPlugin(dir, name string) error <span class="cov8" title="1">{
+        // 1. Try building from cmd/ (standard layout)
+        cmdDir := filepath.Join(dir, "cmd")
+        if _, err := os.Stat(filepath.Join(cmdDir, "main.go")); err == nil </span><span class="cov8" title="1">{
+                cmd := execCommand("go", "build", "-o", name, "./cmd/...")
+                cmd.Dir = dir
+                if output, err := cmd.CombinedOutput(); err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("build error (cmd): %v\nOutput: %s", err, string(output))
+                }</span>
+                <span class="cov8" title="1">return nil</span>
+        }
+
+        // 2. Fallback to building from root
+        <span class="cov8" title="1">cmd := execCommand("go", "build", "-o", name, ".")
+        cmd.Dir = dir
+        if output, err := cmd.CombinedOutput(); err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("build error (root): %v\nOutput: %s", err, string(output))
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (r *hostRegistry) CheckAndUpdateAll(ctx context.Context, host PluginHost, mode string) error <span class="cov8" title="1">{
+        if mode == "locked" </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+
+        <span class="cov8" title="1">fmt.Printf("Checking for plugin updates (mode: %s)...\n", mode)
+
+        // Set 15-second timeout as requested
+        ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
+        defer cancel()
+
+        idx, err := r.FetchIndex(ctx)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to fetch registry index: %v", err)
+        }</span>
+
+        <span class="cov8" title="1">lf := host.Lockfile()
+        plugins := lf.All()
+
+        for name, lock := range plugins </span><span class="cov8" title="1">{
+                // Find in index
+                var meta *registry.PluginMetadata
+                for _, m := range idx.Plugins </span><span class="cov8" title="1">{
+                        if m.Name == name </span><span class="cov8" title="1">{
+                                meta = &amp;m
+                                break</span>
+                        }
+                }
+
+                <span class="cov8" title="1">if meta == nil </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">needsUpdate := false
+                if mode == "always" </span><span class="cov0" title="0">{
+                        needsUpdate = true
+                }</span> else<span class="cov8" title="1"> if meta.LatestVersion != lock.Version </span><span class="cov8" title="1">{
+                        needsUpdate = true
+                }</span>
+
+                <span class="cov8" title="1">if needsUpdate </span><span class="cov8" title="1">{
+                        fmt.Printf("Updating plugin %s: %s -&gt; %s\n", name, lock.Version, meta.LatestVersion)
+                        if err := r.PerformAtomicUpdate(ctx, name, host, meta); err != nil </span><span class="cov0" title="0">{
+                                fmt.Printf("Failed to update %s: %v\n", name, err)
+                        }</span>
+                }
+        }
+
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (r *hostRegistry) PerformAtomicUpdate(ctx context.Context, name string, host PluginHost, meta *registry.PluginMetadata) error <span class="cov8" title="1">{
+        configDir := config.ConfigDir()
+        tmpDir := filepath.Join(configDir, "cache", "tmp", name)
+        finalDir := filepath.Join(configDir, "plugins", name)
+
+        _ = os.RemoveAll(tmpDir)
+        if err := os.MkdirAll(filepath.Dir(tmpDir), 0755); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // 1. Clone to tmp
+        <span class="cov8" title="1">tmpRepoDir := filepath.Join(configDir, "cache", "tmp", "ztvs-plugins-update")
+        _ = os.RemoveAll(tmpRepoDir)
+        if err := r.git.Clone(meta.Repo, tmpRepoDir); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer os.RemoveAll(tmpRepoDir)
+
+        pluginSrcDir := filepath.Join(tmpRepoDir, name)
+        if _, err := os.Stat(pluginSrcDir); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("plugin subdirectory %q not found in repository", name)
+        }</span>
+
+        // 2. Build (Go/binary plugins only)
+        <span class="cov8" title="1">needsBuild := true
+        manifestBytes, err := os.ReadFile(filepath.Join(pluginSrcDir, "plugin.yaml"))
+        if err == nil </span><span class="cov8" title="1">{
+                runtimeType := extractRuntimeType(manifestBytes)
+                if runtimeType != "" &amp;&amp; runtimeType != "go" &amp;&amp; runtimeType != "binary" </span><span class="cov8" title="1">{
+                        needsBuild = false
+                }</span>
+        }
+
+        <span class="cov8" title="1">if needsBuild </span><span class="cov8" title="1">{
+                fmt.Printf("Building plugin (Go)...\n")
+                if err := r.buildPlugin(pluginSrcDir, name); err != nil </span><span class="cov8" title="1">{
+                        return err
+                }</span>
+        }
+
+        // 3. Verify Integrity (Go/binary plugins only)
+        <span class="cov8" title="1">binPath := filepath.Join(pluginSrcDir, name)
+        if meta.Checksum != "" </span><span class="cov0" title="0">{
+                fmt.Printf("Verifying integrity...\n")
+                if err := VerifyIntegrity(binPath, meta.Checksum); err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        }
+
+        // 4. Atomic Swap
+        // On Unix, os.Rename is atomic.
+        // We need to move the old one aside or just replace it if we don't care about rollback for now.
+        // RFC says: "rename swap"
+        <span class="cov8" title="1">oldDir := finalDir + ".old"
+        _ = os.RemoveAll(oldDir)
+
+        if _, err := os.Stat(finalDir); err == nil </span><span class="cov8" title="1">{
+                if err := os.Rename(finalDir, oldDir); err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        }
+
+        <span class="cov8" title="1">if err := os.Rename(pluginSrcDir, finalDir); err != nil </span><span class="cov0" title="0">{
+                // Try to restore old one
+                _ = os.Rename(oldDir, finalDir)
+                return err
+        }</span>
+        <span class="cov8" title="1">_ = os.RemoveAll(oldDir)
+
+        // 5. Update Lockfile
+        lf := host.Lockfile()
+        lf.Set(name, registry.PluginLock{
+                Version:  meta.LatestVersion,
+                Enabled:  true,
+                Checksum: meta.Checksum,
+        })
+        return lf.Save()</span>
+}
+
+func DownloadFile(filepath string, url string) error <span class="cov8" title="1">{
+        resp, err := http.Get(url)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer resp.Body.Close()
+
+        out, err := os.Create(filepath)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer out.Close()
+
+        _, err = io.Copy(out, resp.Body)
+        return err</span>
+}
+
+// extractRuntimeType does a minimal parse of a plugin.yaml to extract the
+// runtime.type field without pulling in a full YAML dependency here.
+func extractRuntimeType(manifest []byte) string <span class="cov8" title="1">{
+        lines := strings.Split(string(manifest), "\n")
+        inRuntime := false
+        for _, line := range lines </span><span class="cov8" title="1">{
+                trimmed := strings.TrimSpace(line)
+                if trimmed == "runtime:" </span><span class="cov8" title="1">{
+                        inRuntime = true
+                        continue</span>
+                }
+                <span class="cov8" title="1">if inRuntime </span><span class="cov8" title="1">{
+                        if strings.HasPrefix(trimmed, "type:") </span><span class="cov8" title="1">{
+                                return strings.TrimSpace(strings.TrimPrefix(trimmed, "type:"))
+                        }</span>
+                        // Stop if we hit another top-level key
+                        <span class="cov0" title="0">if len(line) &gt; 0 &amp;&amp; line[0] != ' ' &amp;&amp; line[0] != '\t' </span><span class="cov0" title="0">{
+                                break</span>
+                        }
+                }
+        }
+        <span class="cov0" title="0">return ""</span>
+}
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package pluginhost
+
+import (
+        "context"
+        "encoding/json"
+        "fmt"
+
+        "github.com/mosesgameli/ztvs-sdk-go/rpc"
+)
+
+func (h *Host) Handshake(
+        ctx context.Context,
+        pluginPath string,
+) (*rpc.HandshakeResponse, error) <span class="cov8" title="1">{
+
+        req := rpc.Request{
+                JSONRPC: "2.0",
+                ID:      "handshake",
+                Method:  "handshake",
+                Params: rpc.HandshakeRequest{
+                        HostVersion: "1.0.0",
+                        APIVersion:  1,
+                },
+        }
+
+        var resp rpc.HandshakeResponse
+        err := h.callRPC(ctx, pluginPath, req, &amp;resp)
+        return &amp;resp, err
+}</span>
+
+func (h *Host) runCheckProcess(
+        ctx context.Context,
+        pluginPath string,
+        checkID string,
+) (*rpc.RunCheckResponse, error) <span class="cov8" title="1">{
+
+        req := rpc.Request{
+                JSONRPC: "2.0",
+                ID:      "1",
+                Method:  "run_check",
+                Params: rpc.RunCheckRequest{
+                        CheckID: checkID,
+                },
+        }
+
+        var resp rpc.RunCheckResponse
+        err := h.callRPC(ctx, pluginPath, req, &amp;resp)
+        return &amp;resp, err
+}</span>
+
+func (h *Host) callRPC(
+        ctx context.Context,
+        pluginPath string,
+        req rpc.Request,
+        result interface{},
+) error <span class="cov8" title="1">{
+        // 1. Verify integrity before every call (Phase 3)
+        if manifest, ok := h.GetManifest(pluginPath); ok &amp;&amp; manifest.Checksum != "" </span><span class="cov0" title="0">{
+                if err := VerifyIntegrity(pluginPath, manifest.Checksum); err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("security violation: %v", err)
+                }</span>
+        }
+
+        <span class="cov8" title="1">payload, err := json.Marshal(req)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("marshal request: %v", err)
+        }</span>
+
+        // 2. Get Runner for this plugin
+        <span class="cov8" title="1">info, ok := h.GetPluginInfo(pluginPath)
+        if !ok </span><span class="cov0" title="0">{
+                return fmt.Errorf("plugin info not found for %s", pluginPath)
+        }</span>
+
+        <span class="cov8" title="1">out, err := info.Runner.Execute(ctx, pluginPath, payload)
+        if err != nil </span><span class="cov8" title="1">{
+                if ctx.Err() == context.DeadlineExceeded </span><span class="cov0" title="0">{
+                        return fmt.Errorf("plugin %s timed out", pluginPath)
+                }</span>
+                <span class="cov8" title="1">return fmt.Errorf("execute plugin %s: %v", pluginPath, err)</span>
+        }
+
+        <span class="cov8" title="1">var r rpc.Response[json.RawMessage]
+        if err := json.Unmarshal(out, &amp;r); err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("unmarshal envelope from %s: %v", pluginPath, err)
+        }</span>
+
+        <span class="cov8" title="1">if r.Error != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("plugin error [%d]: %s", r.Error.Code, r.Error.Message)
+        }</span>
+
+        <span class="cov8" title="1">if err := json.Unmarshal(r.Result, result); err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("unmarshal result from %s: %v", pluginPath, err)
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package pluginhost
+
+import (
+        "context"
+        "fmt"
+)
+
+// Runner defines the interface for different plugin execution environments.
+type Runner interface {
+        Name() string
+        Supports(runtimeType string) bool
+        Validate(entrypoint string) error
+        Execute(ctx context.Context, entrypoint string, stdin []byte) ([]byte, error)
+}
+
+// RunnerRegistry manages the available plugin runners.
+type RunnerRegistry struct {
+        runners []Runner
+}
+
+func NewRunnerRegistry() *RunnerRegistry <span class="cov8" title="1">{
+        return &amp;RunnerRegistry{
+                runners: []Runner{},
+        }
+}</span>
+
+func (r *RunnerRegistry) Register(runner Runner) <span class="cov8" title="1">{
+        r.runners = append(r.runners, runner)
+}</span>
+
+func (r *RunnerRegistry) GetRunner(runtimeType string) (Runner, error) <span class="cov8" title="1">{
+        for _, runner := range r.runners </span><span class="cov8" title="1">{
+                if runner.Supports(runtimeType) </span><span class="cov8" title="1">{
+                        return runner, nil
+                }</span>
+        }
+        <span class="cov8" title="1">return nil, fmt.Errorf("no runner found for runtime type: %s", runtimeType)</span>
+}
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package pluginhost
+
+import (
+        "bytes"
+        "context"
+        "fmt"
+        "os"
+        "os/exec"
+        "path/filepath"
+)
+
+// BinaryRunner executes native binaries (Go, Rust).
+type BinaryRunner struct{}
+
+func (r *BinaryRunner) Name() string <span class="cov8" title="1">{ return "Binary" }</span>
+func (r *BinaryRunner) Supports(runtimeType string) bool <span class="cov8" title="1">{
+        return runtimeType == "binary"
+}</span>
+
+func (r *BinaryRunner) Validate(entrypoint string) error <span class="cov8" title="1">{
+        info, err := os.Stat(entrypoint)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">if info.IsDir() </span><span class="cov0" title="0">{
+                return fmt.Errorf("entrypoint is a directory: %s", entrypoint)
+        }</span>
+        // Check for executable bit (owner/group/others)
+        <span class="cov8" title="1">if info.Mode()&amp;0111 == 0 </span><span class="cov8" title="1">{
+                return fmt.Errorf("entrypoint is not executable: %s", entrypoint)
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (r *BinaryRunner) Execute(ctx context.Context, entrypoint string, stdin []byte) ([]byte, error) <span class="cov8" title="1">{
+        cmd := exec.CommandContext(ctx, entrypoint, "--rpc")
+        cmd.Stdin = bytes.NewReader(stdin)
+
+        // Apply process isolation
+        setSysProcAttr(cmd)
+
+        return cmd.CombinedOutput()
+}</span>
+
+// PythonRunner is a placeholder for Python support.
+type PythonRunner struct{}
+
+func (r *PythonRunner) Name() string <span class="cov8" title="1">{ return "Python (uv)" }</span>
+func (r *PythonRunner) Supports(runtimeType string) bool <span class="cov8" title="1">{
+        return runtimeType == "python"
+}</span>
+
+func (r *PythonRunner) Validate(entrypoint string) error <span class="cov8" title="1">{
+        if _, err := os.Stat(entrypoint); err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("Python script not found: %s", entrypoint)
+        }</span>
+        // Check for uv in PATH
+        <span class="cov8" title="1">if _, err := exec.LookPath("uv"); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("uv runtime not found in PATH. Please install uv (https://astral.sh/uv)")
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (r *PythonRunner) Execute(ctx context.Context, entrypoint string, stdin []byte) ([]byte, error) <span class="cov8" title="1">{
+        // 1. Find plugin root by searching for plugin.yaml upwards from entrypoint
+        pluginRoot := filepath.Dir(entrypoint)
+        for </span><span class="cov8" title="1">{
+                if _, err := os.Stat(filepath.Join(pluginRoot, "plugin.yaml")); err == nil </span><span class="cov8" title="1">{
+                        break</span>
+                }
+                <span class="cov0" title="0">parent := filepath.Dir(pluginRoot)
+                if parent == pluginRoot </span><span class="cov0" title="0">{
+                        return nil, fmt.Errorf("failed to find plugin.yaml for entrypoint: %s", entrypoint)
+                }</span>
+                <span class="cov0" title="0">pluginRoot = parent</span>
+        }
+
+        // 2. Execute via uv run
+        // uv run python &lt;entrypoint&gt; --rpc
+        <span class="cov8" title="1">cmd := exec.CommandContext(ctx, "uv", "run", "python", entrypoint)
+        cmd.Dir = pluginRoot
+        cmd.Stdin = bytes.NewReader(stdin)
+        cmd.Env = append(os.Environ(), "PYTHONPATH="+filepath.Join(pluginRoot, "src"))
+
+        // Apply process isolation
+        setSysProcAttr(cmd)
+
+        return cmd.CombinedOutput()</span>
+}
+
+// NodeRunner is a placeholder for Node.js support.
+type NodeRunner struct{}
+
+func (r *NodeRunner) Name() string <span class="cov8" title="1">{ return "Node.js" }</span>
+func (r *NodeRunner) Supports(runtimeType string) bool <span class="cov8" title="1">{
+        return runtimeType == "node"
+}</span>
+
+func (r *NodeRunner) Validate(entrypoint string) error <span class="cov8" title="1">{
+        if _, err := os.Stat(entrypoint); err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("Node.js script not found: %s", entrypoint)
+        }</span>
+        // Check for node in PATH
+        <span class="cov8" title="1">if _, err := exec.LookPath("node"); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("Node.js runtime not found in PATH")
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (r *NodeRunner) Execute(ctx context.Context, entrypoint string, stdin []byte) ([]byte, error) <span class="cov8" title="1">{
+        return nil, fmt.Errorf("Node.js runtime is not yet supported in this version of ZTVS")
+}</span>
+
+// JavaRunner is a placeholder for Java support.
+type JavaRunner struct{}
+
+func (r *JavaRunner) Name() string <span class="cov8" title="1">{ return "Java" }</span>
+func (r *JavaRunner) Supports(runtimeType string) bool <span class="cov8" title="1">{
+        return runtimeType == "java"
+}</span>
+
+func (r *JavaRunner) Validate(entrypoint string) error <span class="cov8" title="1">{
+        // For now, Java is purely placeholder
+        return fmt.Errorf("Java runtime is not yet supported in this version of ZTVS")
+}</span>
+
+func (r *JavaRunner) Execute(ctx context.Context, entrypoint string, stdin []byte) ([]byte, error) <span class="cov8" title="1">{
+        return nil, fmt.Errorf("Java runtime is not yet supported in this version of ZTVS")
+}</span>
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+//go:build !windows
+
+package pluginhost
+
+import (
+        "os/exec"
+        "syscall"
+)
+
+func setSysProcAttr(cmd *exec.Cmd) <span class="cov8" title="1">{
+        cmd.SysProcAttr = &amp;syscall.SysProcAttr{
+                Setpgid: true,
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package pluginhost
+
+import (
+        "crypto/ecdsa"
+        "crypto/sha256"
+        "crypto/x509"
+        "encoding/asn1"
+        "encoding/pem"
+        "errors"
+        "fmt"
+        "math/big"
+)
+
+// RegistryRootKey is the pinned public key for the ZTVS Registry.
+// In a production build, this would be a real ECDSA public key.
+var RegistryRootKey = `-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzt8mI+R0D/H7t1h6u1NfXpYv0h5q
+kK7z9Xp3oY6v+9X8kLz7X9Xp3oY6v+9X8kLz7X9Xp3oY6v+9X8kLz7Q==
+-----END PUBLIC KEY-----`
+
+type ecdsaSignature struct {
+        R, S *big.Int
+}
+
+// VerifySignature validates that the provided data was signed by the RegistryRootKey.
+func VerifySignature(data []byte, signature []byte) error <span class="cov8" title="1">{
+        block, _ := pem.Decode([]byte(RegistryRootKey))
+        if block == nil </span><span class="cov8" title="1">{
+                return errors.New("failed to parse root public key")
+        }</span>
+
+        <span class="cov8" title="1">pub, err := x509.ParsePKIXPublicKey(block.Bytes)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("parse public key: %v", err)
+        }</span>
+
+        <span class="cov8" title="1">ecdsaPub, ok := pub.(*ecdsa.PublicKey)
+        if !ok </span><span class="cov0" title="0">{
+                return errors.New("not an ECDSA public key")
+        }</span>
+
+        <span class="cov8" title="1">var sig ecdsaSignature
+        if _, err := asn1.Unmarshal(signature, &amp;sig); err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("unmarshal signature: %v", err)
+        }</span>
+
+        <span class="cov8" title="1">h := sha256.Sum256(data)
+        if !ecdsa.Verify(ecdsaPub, h[:], sig.R, sig.S) </span><span class="cov8" title="1">{
+                return errors.New("invalid signature")
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file16" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package policy
+
+import (
+        "fmt"
+
+        "github.com/mosesgameli/ztvs/internal/config"
+)
+
+// Policy defines the host's security rules for plugin execution.
+type Policy struct {
+        AllowedCapabilities []string
+        BlockedCapabilities []string
+}
+
+func New(cfg *config.Config) *Policy <span class="cov8" title="1">{
+        return &amp;Policy{
+                AllowedCapabilities: cfg.Policy.AllowedCapabilities,
+                BlockedCapabilities: cfg.Policy.BlockedCapabilities,
+        }
+}</span>
+
+// IsAllowed checks if a plugin's requested capabilities are permitted by the host.
+// It returns the specific capability that failed, and the error.
+func (p *Policy) IsAllowed(pluginName string, requested []string) (string, error) <span class="cov8" title="1">{
+        for _, cap := range requested </span><span class="cov8" title="1">{
+                // 1. Check if explicitly blocked
+                for _, blocked := range p.BlockedCapabilities </span><span class="cov8" title="1">{
+                        if cap == blocked </span><span class="cov8" title="1">{
+                                return cap, fmt.Errorf("plugin %s requested blocked capability: %s", pluginName, cap)
+                        }</span>
+                }
+
+                // 2. Check if not in allowed list (if allowed list is defined)
+                <span class="cov8" title="1">if len(p.AllowedCapabilities) &gt; 0 </span><span class="cov8" title="1">{
+                        found := false
+                        for _, allowed := range p.AllowedCapabilities </span><span class="cov8" title="1">{
+                                if cap == allowed </span><span class="cov8" title="1">{
+                                        found = true
+                                        break</span>
+                                }
+                        }
+                        <span class="cov8" title="1">if !found </span><span class="cov8" title="1">{
+                                return cap, fmt.Errorf("plugin %s requested unauthorized capability: %s", pluginName, cap)
+                        }</span>
+                }
+        }
+        <span class="cov8" title="1">return "", nil</span>
+}
+
+// Reload updates the in-memory policy with fresh configuration
+func (p *Policy) Reload(cfg *config.Config) <span class="cov8" title="1">{
+        p.AllowedCapabilities = cfg.Policy.AllowedCapabilities
+        p.BlockedCapabilities = cfg.Policy.BlockedCapabilities
+}</span>
+</pre>
+		
+		<pre class="file" id="file17" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package report
+
+import (
+        "encoding/json"
+        "io"
+        "os"
+        "sync"
+        "time"
+
+        "github.com/mosesgameli/ztvs-sdk-go/rpc"
+)
+
+type JSONReport struct {
+        Timestamp time.Time                 `json:"timestamp"`
+        Summary   map[string]int            `json:"summary"`
+        Findings  map[string][]*rpc.Finding `json:"findings"`
+}
+
+type JSONReporter struct {
+        report JSONReport
+        output io.Writer
+        mu     sync.RWMutex
+}
+
+func NewJSON() *JSONReporter <span class="cov8" title="1">{
+        return &amp;JSONReporter{
+                report: JSONReport{
+                        Timestamp: time.Now(),
+                        Summary:   make(map[string]int),
+                        Findings:  make(map[string][]*rpc.Finding),
+                },
+                output: os.Stdout,
+        }
+}</span>
+
+func (r *JSONReporter) AddFinding(pluginName string, finding *rpc.Finding) <span class="cov8" title="1">{
+        if finding == nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">r.mu.Lock()
+        defer r.mu.Unlock()
+        r.report.Findings[pluginName] = append(r.report.Findings[pluginName], finding)
+        r.report.Summary[finding.Severity]++</span>
+}
+
+func (r *JSONReporter) Flush() error <span class="cov8" title="1">{
+        r.mu.RLock()
+        defer r.mu.RUnlock()
+        encoder := json.NewEncoder(r.output)
+        encoder.SetIndent("", "  ")
+        return encoder.Encode(r.report)
+}</span>
+
+func (r *JSONReporter) SetOutput(w io.Writer) <span class="cov8" title="1">{
+        r.output = w
+}</span>
+</pre>
+		
+		<pre class="file" id="file18" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package report
+
+import (
+        "encoding/json"
+        "fmt"
+        "io"
+        "os"
+        "sync"
+
+        "github.com/mosesgameli/ztvs-sdk-go/rpc"
+)
+
+// Simplified SARIF structures
+type SARIFReport struct {
+        Version string     `json:"version"`
+        Schema  string     `json:"$schema"`
+        Runs    []SARIFRun `json:"runs"`
+}
+
+type SARIFRun struct {
+        Tool    SARIFTool     `json:"tool"`
+        Results []SARIFResult `json:"results"`
+}
+
+type SARIFTool struct {
+        Driver SARIFDriver `json:"driver"`
+}
+
+type SARIFDriver struct {
+        Name    string `json:"name"`
+        Version string `json:"version"`
+}
+
+type SARIFResult struct {
+        RuleID  string          `json:"ruleId"`
+        Message SARIFMessage    `json:"message"`
+        Level   string          `json:"level,omitempty"`
+        Places  []SARIFLocation `json:"locations,omitempty"`
+}
+
+type SARIFMessage struct {
+        Text string `json:"text"`
+}
+
+type SARIFLocation struct {
+        PhysicalLocation SARIFPhysicalLocation `json:"physicalLocation"`
+}
+
+type SARIFPhysicalLocation struct {
+        ArtifactLocation SARIFArtifactLocation `json:"artifactLocation"`
+}
+
+type SARIFArtifactLocation struct {
+        URI string `json:"uri"`
+}
+
+type SARIFReporter struct {
+        report SARIFReport
+        output io.Writer
+        mu     sync.RWMutex
+}
+
+func NewSARIF() *SARIFReporter <span class="cov8" title="1">{
+        return &amp;SARIFReporter{
+                report: SARIFReport{
+                        Version: "2.1.0",
+                        Schema:  "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+                        Runs: []SARIFRun{
+                                {
+                                        Tool: SARIFTool{
+                                                Driver: SARIFDriver{
+                                                        Name:    "ZTVS",
+                                                        Version: "1.0.0",
+                                                },
+                                        },
+                                        Results: []SARIFResult{},
+                                },
+                        },
+                },
+                output: os.Stdout,
+        }
+}</span>
+
+func (r *SARIFReporter) SetOutput(w io.Writer) <span class="cov8" title="1">{
+        r.output = w
+}</span>
+
+func (r *SARIFReporter) AddFinding(pluginName string, finding *rpc.Finding) <span class="cov8" title="1">{
+        if finding == nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov8" title="1">r.mu.Lock()
+        defer r.mu.Unlock()
+        level := "warning"
+        if finding.Severity == "critical" || finding.Severity == "high" </span><span class="cov0" title="0">{
+                level = "error"
+        }</span> else<span class="cov8" title="1"> if finding.Severity == "info" </span><span class="cov0" title="0">{
+                level = "note"
+        }</span>
+
+        <span class="cov8" title="1">result := SARIFResult{
+                RuleID: finding.CheckID,
+                Message: SARIFMessage{
+                        Text: fmt.Sprintf("%s: %s", finding.Title, finding.Description),
+                },
+                Level: level,
+        }
+
+        // Add evidence location if available
+        if file, ok := finding.Evidence["file"].(string); ok </span><span class="cov8" title="1">{
+                result.Places = []SARIFLocation{
+                        {
+                                PhysicalLocation: SARIFPhysicalLocation{
+                                        ArtifactLocation: SARIFArtifactLocation{
+                                                URI: file,
+                                        },
+                                },
+                        },
+                }
+        }</span>
+
+        <span class="cov8" title="1">r.report.Runs[0].Results = append(r.report.Runs[0].Results, result)</span>
+}
+
+func (r *SARIFReporter) Flush() error <span class="cov8" title="1">{
+        r.mu.RLock()
+        defer r.mu.RUnlock()
+        encoder := json.NewEncoder(r.output)
+        encoder.SetIndent("", "  ")
+        return encoder.Encode(r.report)
+}</span>
+</pre>
+		
+		<pre class="file" id="file19" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package report
+
+import (
+        "fmt"
+        "io"
+        "os"
+        "strings"
+
+        "github.com/mosesgameli/ztvs-sdk-go/rpc"
+        "github.com/pterm/pterm"
+        "sync"
+)
+
+type TerminalReporter struct {
+        findings map[string][]*rpc.Finding
+        output   io.Writer
+        mu       sync.RWMutex
+}
+
+func NewTerminal() *TerminalReporter <span class="cov8" title="1">{
+        return &amp;TerminalReporter{
+                findings: make(map[string][]*rpc.Finding),
+                output:   os.Stdout,
+        }
+}</span>
+
+func (r *TerminalReporter) SetOutput(w io.Writer) <span class="cov8" title="1">{
+        r.output = w
+}</span>
+
+func (r *TerminalReporter) AddFinding(pluginName string, finding *rpc.Finding) <span class="cov8" title="1">{
+        if finding == nil </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">r.mu.Lock()
+        defer r.mu.Unlock()
+        r.findings[pluginName] = append(r.findings[pluginName], finding)</span>
+}
+
+func (r *TerminalReporter) Flush() error <span class="cov8" title="1">{
+        r.mu.RLock()
+        defer r.mu.RUnlock()
+        pterm.SetDefaultOutput(r.output)
+        if len(r.findings) == 0 </span><span class="cov8" title="1">{
+                pterm.DefaultSection.Println("Scan Results")
+                pterm.Success.Println("No vulnerabilities found! System is clean.")
+                return nil
+        }</span>
+
+        <span class="cov8" title="1">totalFindings := 0
+        criticals := 0
+        highs := 0
+
+        for plugin, findings := range r.findings </span><span class="cov8" title="1">{
+                pterm.DefaultHeader.WithBackgroundStyle(pterm.NewStyle(pterm.BgCyan)).WithMargin(2).Printf("Source: %s", plugin)
+                fmt.Println()
+
+                for _, f := range findings </span><span class="cov8" title="1">{
+                        totalFindings++
+                        sev := strings.ToUpper(f.Severity)
+
+                        var sevBadge string
+                        var accentStyle *pterm.Style
+
+                        switch sev </span>{
+                        case "CRITICAL":<span class="cov8" title="1">
+                                criticals++
+                                sevBadge = pterm.BgRed.Sprint(pterm.FgBlack.Sprint(" ! CRITICAL "))
+                                accentStyle = pterm.NewStyle(pterm.FgRed, pterm.Bold)</span>
+                        case "HIGH":<span class="cov8" title="1">
+                                highs++
+                                sevBadge = pterm.BgLightRed.Sprint(pterm.FgBlack.Sprint(" HIGH "))
+                                accentStyle = pterm.NewStyle(pterm.FgLightRed)</span>
+                        case "MEDIUM":<span class="cov8" title="1">
+                                sevBadge = pterm.BgYellow.Sprint(pterm.FgBlack.Sprint(" MED "))
+                                accentStyle = pterm.NewStyle(pterm.FgYellow)</span>
+                        default:<span class="cov8" title="1">
+                                sevBadge = pterm.BgCyan.Sprint(pterm.FgBlack.Sprint(" LOW "))
+                                accentStyle = pterm.NewStyle(pterm.FgCyan)</span>
+                        }
+
+                        <span class="cov8" title="1">cardContent := fmt.Sprintf("%s [%s] %s\n\n", sevBadge, f.ID, accentStyle.Sprint(f.Title))
+                        cardContent += pterm.LightWhite(f.Description) + "\n"
+                        if f.Remediation != "" </span><span class="cov0" title="0">{
+                                cardContent += "\n" + pterm.BgGreen.Sprint(pterm.FgBlack.Sprint(" FIX ")) + " " + pterm.FgGreen.Sprint(f.Remediation)
+                        }</span>
+
+                        <span class="cov8" title="1">_ = pterm.DefaultPanel.WithPadding(1).WithPanels(pterm.Panels{
+                                {{Data: cardContent}},
+                        }).Render()
+                        fmt.Println()</span>
+                }
+        }
+
+        // Final Summary Dashboard
+        <span class="cov8" title="1">summaryTitle := pterm.Bold.Sprint("AUDIT SUMMARY")
+        stats, _ := pterm.DefaultTable.WithData([][]string{
+                {"Metric", "Value"},
+                {"Total Plugins Reporting", fmt.Sprintf("%d", len(r.findings))},
+                {"Total Findings Identified", fmt.Sprintf("%d", totalFindings)},
+                {"Critical Alerts", pterm.FgRed.Sprint(criticals)},
+                {"High Probability Risks", pterm.FgLightRed.Sprint(highs)},
+        }).Srender()
+
+        status := pterm.Success.Sprint("SECURE")
+        if criticals &gt; 0 </span><span class="cov8" title="1">{
+                status = pterm.BgRed.Sprint(pterm.FgBlack.Sprint(" COMPROMISED "))
+        }</span> else<span class="cov8" title="1"> if highs &gt; 0 </span><span class="cov8" title="1">{
+                status = pterm.FgRed.Sprint("VULNERABLE")
+        }</span>
+
+        <span class="cov8" title="1">_ = pterm.DefaultPanel.WithPadding(2).WithPanels(pterm.Panels{
+                {{Data: fmt.Sprintf("%s\n\n%s\nSystem Status: %s", summaryTitle, stats, status)}},
+        }).Render()
+
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file20" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package registry
+
+import (
+        "fmt"
+        "os"
+        "path/filepath"
+        "sync"
+
+        "gopkg.in/yaml.v3"
+)
+
+type PluginLock struct {
+        Version  string `yaml:"version"`
+        Enabled  bool   `yaml:"enabled"`
+        Checksum string `yaml:"checksum,omitempty"`
+}
+
+type Lockfile struct {
+        Version string                `yaml:"version"`
+        Plugins map[string]PluginLock `yaml:"plugins"`
+        path    string
+        mu      sync.RWMutex
+}
+
+func NewLockfile(path string) *Lockfile <span class="cov8" title="1">{
+        return &amp;Lockfile{
+                Version: "1.0",
+                Plugins: make(map[string]PluginLock),
+                path:    path,
+        }
+}</span>
+
+func LoadLockfile(path string) (*Lockfile, error) <span class="cov8" title="1">{
+        lf := NewLockfile(path)
+        data, err := os.ReadFile(path)
+        if err != nil </span><span class="cov8" title="1">{
+                if os.IsNotExist(err) </span><span class="cov8" title="1">{
+                        return lf, nil
+                }</span>
+                <span class="cov8" title="1">return nil, err</span>
+        }
+
+        <span class="cov8" title="1">if err := yaml.Unmarshal(data, lf); err != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("parse lockfile %s: %v", path, err)
+        }</span>
+
+        <span class="cov8" title="1">if lf.Plugins == nil </span><span class="cov0" title="0">{
+                lf.Plugins = make(map[string]PluginLock)
+        }</span>
+
+        <span class="cov8" title="1">return lf, nil</span>
+}
+
+func (lf *Lockfile) Save() error <span class="cov8" title="1">{
+        lf.mu.RLock()
+        defer lf.mu.RUnlock()
+
+        data, err := yaml.Marshal(lf)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">dir := filepath.Dir(lf.path)
+        if err := os.MkdirAll(dir, 0755); err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">return os.WriteFile(lf.path, data, 0644)</span>
+}
+
+func (lf *Lockfile) Get(name string) (PluginLock, bool) <span class="cov8" title="1">{
+        lf.mu.RLock()
+        defer lf.mu.RUnlock()
+        lock, ok := lf.Plugins[name]
+        return lock, ok
+}</span>
+
+func (l *Lockfile) Set(name string, lock PluginLock) <span class="cov8" title="1">{
+        l.mu.Lock()
+        defer l.mu.Unlock()
+        l.Plugins[name] = lock
+}</span>
+
+func (l *Lockfile) All() map[string]PluginLock <span class="cov8" title="1">{
+        l.mu.RLock()
+        defer l.mu.RUnlock()
+
+        // Return a copy to prevent external modification
+        tmp := make(map[string]PluginLock)
+        for k, v := range l.Plugins </span><span class="cov8" title="1">{
+                tmp[k] = v
+        }</span>
+        <span class="cov8" title="1">return tmp</span>
+}
+
+func (lf *Lockfile) Remove(name string) <span class="cov8" title="1">{
+        lf.mu.Lock()
+        defer lf.mu.Unlock()
+        delete(lf.Plugins, name)
+}</span>
+</pre>
+		
+		<pre class="file" id="file21" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package main
+
+import (
+        "context"
+        "github.com/mosesgameli/ztvs-sdk-go/sdk"
+)
+
+type GoCheck struct{}
+
+func (c *GoCheck) ID() string   <span class="cov8" title="1">{ return "go_test_check" }</span>
+func (c *GoCheck) Name() string <span class="cov8" title="1">{ return "Go Fixture Check" }</span>
+
+func (c *GoCheck) Run(ctx context.Context) (*sdk.Finding, error) <span class="cov8" title="1">{
+        return &amp;sdk.Finding{
+                ID:          "F-GO-001",
+                Severity:    "info",
+                Title:       "Go Fixture Executed",
+                Description: "This is a successful result from the Go polyglot fixture.",
+        }, nil
+}</span>
+
+func main() <span class="cov0" title="0">{
+        RunPlugin()
+}</span>
+
+func RunPlugin() <span class="cov8" title="1">{
+        sdk.Run(sdk.Metadata{
+                Name:       "go-fixture",
+                Version:    "1.0.0",
+                APIVersion: 1,
+        }, []sdk.Check{&amp;GoCheck{}})
+}</span>
+</pre>
+		
+		<pre class="file" id="file22" style="display: none">// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package main
+
+import (
+        "crypto/sha256"
+        "encoding/hex"
+        "fmt"
+        "io"
+        "os"
+        "path/filepath"
+        "strings"
+)
+
+func main() <span class="cov0" title="0">{
+        if err := run(os.Args); err != nil </span><span class="cov0" title="0">{
+                fmt.Printf("Error: %v\n", err)
+                os.Exit(1)
+        }</span>
+}
+
+func run(args []string) error <span class="cov8" title="1">{
+        if len(args) &lt; 2 </span><span class="cov8" title="1">{
+                return fmt.Errorf("usage: manifest-sync &lt;plugin-dir&gt; [bin-ext]")
+        }</span>
+
+        <span class="cov8" title="1">pluginDir := args[1]
+        binExt := ""
+        if len(args) &gt; 2 </span><span class="cov0" title="0">{
+                binExt = args[2]
+        }</span>
+        <span class="cov8" title="1">pluginName := filepath.Base(pluginDir)
+        binPath := filepath.Join(pluginDir, pluginName+binExt)
+        manifestPath := filepath.Join(pluginDir, "plugin.yaml")
+
+        // 1. Check if binary exists
+        f, err := os.Open(binPath)
+        if err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("binary not found at %s. Build it first", binPath)
+        }</span>
+        <span class="cov8" title="1">defer f.Close()
+
+        // 2. Compute SHA-256
+        h := sha256.New()
+        if _, err := io.Copy(h, f); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("computing hash: %v", err)
+        }</span>
+        <span class="cov8" title="1">checksum := hex.EncodeToString(h.Sum(nil))
+
+        // 3. Update manifest
+        data, err := os.ReadFile(manifestPath)
+        if err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("reading manifest: %v", err)
+        }</span>
+
+        <span class="cov8" title="1">lines := strings.Split(string(data), "\n")
+        found := false
+        for i, line := range lines </span><span class="cov8" title="1">{
+                if strings.HasPrefix(line, "checksum:") </span><span class="cov8" title="1">{
+                        lines[i] = fmt.Sprintf("checksum: %s", checksum)
+                        found = true
+                        break</span>
+                }
+        }
+
+        <span class="cov8" title="1">if !found </span><span class="cov8" title="1">{
+                lines = append(lines, fmt.Sprintf("checksum: %s", checksum))
+        }</span>
+
+        <span class="cov8" title="1">if err := os.WriteFile(manifestPath, []byte(strings.Join(lines, "\n")), 0644); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("writing manifest: %v", err)
+        }</span>
+
+        <span class="cov8" title="1">fmt.Printf("Updated %s with checksum %s\n", manifestPath, checksum)
+        return nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

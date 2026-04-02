@@ -1,28 +1,58 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package report
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"strings"
 
 	"github.com/mosesgameli/ztvs-sdk-go/rpc"
 	"github.com/pterm/pterm"
+	"sync"
 )
 
 type TerminalReporter struct {
 	findings map[string][]*rpc.Finding
+	output   io.Writer
+	mu       sync.RWMutex
 }
 
 func NewTerminal() *TerminalReporter {
 	return &TerminalReporter{
 		findings: make(map[string][]*rpc.Finding),
+		output:   os.Stdout,
 	}
 }
 
+func (r *TerminalReporter) SetOutput(w io.Writer) {
+	r.output = w
+}
+
 func (r *TerminalReporter) AddFinding(pluginName string, finding *rpc.Finding) {
+	if finding == nil {
+		return
+	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	r.findings[pluginName] = append(r.findings[pluginName], finding)
 }
 
 func (r *TerminalReporter) Flush() error {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	pterm.SetDefaultOutput(r.output)
 	if len(r.findings) == 0 {
 		pterm.DefaultSection.Println("Scan Results")
 		pterm.Success.Println("No vulnerabilities found! System is clean.")
@@ -61,13 +91,13 @@ func (r *TerminalReporter) Flush() error {
 				accentStyle = pterm.NewStyle(pterm.FgCyan)
 			}
 
-			cardContent := fmt.Sprintf("%s %s\n\n", sevBadge, accentStyle.Sprint(f.Title))
+			cardContent := fmt.Sprintf("%s [%s] %s\n\n", sevBadge, f.ID, accentStyle.Sprint(f.Title))
 			cardContent += pterm.LightWhite(f.Description) + "\n"
 			if f.Remediation != "" {
 				cardContent += "\n" + pterm.BgGreen.Sprint(pterm.FgBlack.Sprint(" FIX ")) + " " + pterm.FgGreen.Sprint(f.Remediation)
 			}
 
-			pterm.DefaultPanel.WithPadding(1).WithPanels(pterm.Panels{
+			_ = pterm.DefaultPanel.WithPadding(1).WithPanels(pterm.Panels{
 				{{Data: cardContent}},
 			}).Render()
 			fmt.Println()
@@ -91,7 +121,7 @@ func (r *TerminalReporter) Flush() error {
 		status = pterm.FgRed.Sprint("VULNERABLE")
 	}
 
-	pterm.DefaultPanel.WithPadding(2).WithPanels(pterm.Panels{
+	_ = pterm.DefaultPanel.WithPadding(2).WithPanels(pterm.Panels{
 		{{Data: fmt.Sprintf("%s\n\n%s\nSystem Status: %s", summaryTitle, stats, status)}},
 	}).Render()
 

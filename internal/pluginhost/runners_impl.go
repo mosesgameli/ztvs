@@ -1,3 +1,15 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package pluginhost
 
 import (
@@ -52,11 +64,11 @@ func (r *PythonRunner) Supports(runtimeType string) bool {
 
 func (r *PythonRunner) Validate(entrypoint string) error {
 	if _, err := os.Stat(entrypoint); err != nil {
-		return fmt.Errorf("Python script not found: %s", entrypoint)
+		return fmt.Errorf("python script not found: %s", entrypoint)
 	}
 	// Check for uv in PATH
 	if _, err := exec.LookPath("uv"); err != nil {
-		return fmt.Errorf("uv runtime not found in PATH. Please install uv (https://astral.sh/uv)")
+		return fmt.Errorf("uv runtime not found in PATH. please install uv (https://astral.sh/uv)")
 	}
 	return nil
 }
@@ -98,11 +110,11 @@ func (r *NodeRunner) Supports(runtimeType string) bool {
 
 func (r *NodeRunner) Validate(entrypoint string) error {
 	if _, err := os.Stat(entrypoint); err != nil {
-		return fmt.Errorf("Node.js script not found: %s", entrypoint)
+		return fmt.Errorf("node.js script not found: %s", entrypoint)
 	}
 	// Check for node in PATH
 	if _, err := exec.LookPath("node"); err != nil {
-		return fmt.Errorf("Node.js runtime not found in PATH")
+		return fmt.Errorf("node.js runtime not found in PATH")
 	}
 	return nil
 }

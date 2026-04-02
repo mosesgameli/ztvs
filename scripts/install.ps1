@@ -1,3 +1,15 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # ZTVS Windows installer
 # Downloads the latest release for your platform, installs the zt binary,
 # and seeds first-party plugins into %USERPROFILE%\.ztvs\plugins\.
@@ -16,9 +28,9 @@ $ErrorActionPreference = "Stop"
 
 # ── config ─────────────────────────────────────────────────────────────────
 $Repo      = "mosesgameli/ztvs"
-$InstallDir = "$env:LOCALAPPDATA\Programs\ztvs"   # no admin required
-$PluginDir  = "$env:USERPROFILE\.ztvs\plugins"
-$ConfigDir  = "$env:USERPROFILE\.ztvs"
+$InstallDir = if ($env:ZTVS_INSTALL_BIN) { $env:ZTVS_INSTALL_BIN } else { "$env:LOCALAPPDATA\Programs\ztvs" }
+$ConfigDir  = if ($env:ZTVS_HOME) { $env:ZTVS_HOME } else { "$env:USERPROFILE\.ztvs" }
+$PluginDir  = Join-Path $ConfigDir "plugins"
 
 # ── helpers ─────────────────────────────────────────────────────────────────
 function Write-Step  { param($msg) Write-Host "  -> $msg" -ForegroundColor Cyan   }

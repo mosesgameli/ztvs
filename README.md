@@ -30,7 +30,7 @@ ZTVS follows a deliberate Host + Plugin model:
 3. **Communication (`pkg/rpc`):** Fast JSON-RPC 2.0 messaging over standard `stdin`/`stdout`. Custom log streams are routed over `stderr`.
 4. **Sandboxing Constraints:** We prevent rogue plugins from lateral movement by tracking explicit permissions.
 
-For rigorous details on the internal layout, request flows, and state machines, see [ZTVS Architecture](docs/architecture.md) and [Protocol Specification](docs/protocol.md).
+For rigorous details on the internal layout, request flows, and state machines, see [ZTVS Architecture](docs/architecture/README.md) and [Protocol Specification](docs/protocol/README.md).
 
 
 ## 🛠️ Setup Guide
@@ -41,7 +41,7 @@ Choose the one-liner for your platform. This will download the latest binary, in
 
 #### Linux & macOS
 ```sh
-curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/scripts/install.sh | sh
 ```
 *Installs `zt` to `/usr/local/bin` and seeds plugins into `~/.ztvs/plugins`.*
 
@@ -51,11 +51,11 @@ curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/install.sh | 
 
 #### Windows (PowerShell)
 ```powershell
-irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/scripts/install.ps1 | iex
 ```
 *Installs `zt.exe` to `%LOCALAPPDATA%\Programs\ztvs`, updates your user `PATH`, and seeds plugins.*
 
----
+ 
 
 ### Uninstallation
 
@@ -63,15 +63,15 @@ Completely remove ZTVS binaries, plugins, and configurations from your system.
 
 #### Linux & macOS
 ```sh
-curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/uninstall.sh | sh
+curl -fsSL https://raw.githubusercontent.com/mosesgameli/ztvs/main/scripts/uninstall.sh | sh
 ```
 
 #### Windows (PowerShell)
 ```powershell
-irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/uninstall.ps1 | iex
+irm https://raw.githubusercontent.com/mosesgameli/ztvs/main/scripts/uninstall.ps1 | iex
 ```
 
----
+ 
 
 ### Compilation from Source
 
@@ -340,15 +340,9 @@ func main() {
 }
 ```
 
-View the detailed guide at [Plugin Development Guide](docs/plugin-guide.md) and [RFC Specifications](docs/).
+## 🤝 Contributing
 
-
-## 🗺️ Roadmap & Operational Vision
-
-While the core parallel JSON-RPC engine is stable, advanced functionality is under development:
-- [Detailed Roadmap](_/work/roadmap.md)
-- **Deep OS Sandboxing**: Migrating to `seccomp` (Linux), `Job Objects/AppContainers` (Windows), and `Sandbox.kext` (macOS).
-- **Cryptographic Plugin Trust**: Enforcing full x509/PKI signing of remote plugins vs standard SHA-256.
+We welcome community contributions. Please see our [Contributing Guidelines](CONTRIBUTING.md) for detailed technical guides on setup, style, and workflows.
 
 ## 📄 License
-Source code distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
+Source code distributed under the **Apache License 2.0**. See [`LICENSE`](LICENSE) for details.

@@ -1,4 +1,16 @@
 #!/usr/bin/env sh
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # ZTVS installer — downloads the latest release for your platform,
 # installs the zt binary to /usr/local/bin, and seeds first-party
 # plugins into ~/.ztvs/plugins.
@@ -9,8 +21,9 @@
 set -e
 
 REPO="mosesgameli/ztvs"
-INSTALL_BIN="/usr/local/bin"
-PLUGIN_DIR="$HOME/.ztvs/plugins"
+INSTALL_BIN="${ZTVS_INSTALL_BIN:-/usr/local/bin}"
+ZTVS_HOME="${ZTVS_HOME:-$HOME/.ztvs}"
+PLUGIN_DIR="$ZTVS_HOME/plugins"
 
 # ── helpers ────────────────────────────────────────────────────────────────
 red()   { printf '\033[0;31m%s\033[0m\n' "$*"; }
@@ -122,9 +135,8 @@ main() {
   done
 
   # ── bootstrap config if first install ────────────────────────────────────
-  CONFIG_DIR="$HOME/.ztvs"
-  if [ ! -f "${CONFIG_DIR}/config.yaml" ]; then
-    info "Bootstrapping ~/.ztvs/config.yaml ..."
+  if [ ! -f "${ZTVS_HOME}/config.yaml" ]; then
+    info "Bootstrapping ${ZTVS_HOME}/config.yaml ..."
     "${INSTALL_BIN}/zt${BIN_EXT}" plugin init 2>/dev/null || true
   fi
 

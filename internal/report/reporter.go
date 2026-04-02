@@ -13,6 +13,7 @@
 package report
 
 import (
+	"io"
 	"github.com/mosesgameli/ztvs-sdk-go/rpc"
 )
 
@@ -22,4 +23,6 @@ type Reporter interface {
 	AddFinding(pluginName string, finding *rpc.Finding)
 	// Flush finalizes the report and writes it to the output
 	Flush() error
+	// SetOutput sets the output writer for Flush
+	SetOutput(w io.Writer)
 }

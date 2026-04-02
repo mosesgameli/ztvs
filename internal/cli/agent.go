@@ -21,6 +21,7 @@ import (
 
 	"github.com/mosesgameli/ztvs/internal/config"
 	"github.com/mosesgameli/ztvs/internal/engine"
+	"github.com/mosesgameli/ztvs/internal/pluginhost"
 	"github.com/mosesgameli/ztvs/internal/report"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -39,7 +40,7 @@ var agentCmd = &cobra.Command{
 		pterm.Success.Println("🚀 ZTVS Audit Agent starting...")
 
 		r := report.NewTerminal()
-		eng := engine.New(cfg, r)
+		eng := engine.New(cfg, pluginhost.New(), r, pluginhost.NewRegistry())
 		eng.Interactive = false
 
 		interval, err := time.ParseDuration(cfg.Agent.Interval)

@@ -18,15 +18,20 @@ import (
 	"os/exec"
 )
 
-// Git handles git operations for plugin distribution.
-type Git struct{}
-
-func NewGit() *Git {
-	return &Git{}
+// Git defines the interface for git operations.
+type Git interface {
+	Clone(url, dest string) error
+	Pull(dest string) error
+	Remove(dest string) error
 }
 
-// Clone clones a git repository to the specified destination.
-func (g *Git) Clone(url, dest string) error {
+type gitImpl struct{}
+
+func NewGit() Git {
+	return &gitImpl{}
+}
+
+func (g *gitImpl) Clone(url, dest string) error {
 	if _, err := exec.LookPath("git"); err != nil {
 		return fmt.Errorf("git not found in PATH: %v", err)
 	}
@@ -38,8 +43,7 @@ func (g *Git) Clone(url, dest string) error {
 	return nil
 }
 
-// Pull updates an existing git repository in the specified destination.
-func (g *Git) Pull(dest string) error {
+func (g *gitImpl) Pull(dest string) error {
 	cmd := exec.Command("git", "-C", dest, "pull")
 	if output, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("git pull failed: %v\nOutput: %s", err, string(output))
@@ -47,7 +51,6 @@ func (g *Git) Pull(dest string) error {
 	return nil
 }
 
-// Remove cleans up a plugin directory (e.g., on build failure).
-func (g *Git) Remove(dest string) error {
+func (g *gitImpl) Remove(dest string) error {
 	return os.RemoveAll(dest)
 }

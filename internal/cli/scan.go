@@ -17,6 +17,7 @@ import (
 
 	"github.com/mosesgameli/ztvs/internal/config"
 	"github.com/mosesgameli/ztvs/internal/engine"
+	"github.com/mosesgameli/ztvs/internal/pluginhost"
 	"github.com/mosesgameli/ztvs/internal/report"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -44,7 +45,7 @@ var scanCmd = &cobra.Command{
 			r = report.NewTerminal()
 		}
 
-		eng := engine.New(cfg, r)
+		eng := engine.New(cfg, pluginhost.New(), r, pluginhost.NewRegistry())
 		eng.Interactive = true
 
 		pterm.Info.Println("Initializing global security scan...")

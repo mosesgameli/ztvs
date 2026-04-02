@@ -99,9 +99,9 @@ var pluginSearchCmd = &cobra.Command{
 		if len(args) > 0 {
 			query = args[0]
 		}
-		registry := pluginhost.NewRegistry()
+		regClient := pluginhost.NewRegistry()
 		ctx := context.Background()
-		results, err := registry.Search(ctx, query)
+		results, err := regClient.Search(ctx, query)
 		if err != nil {
 			pterm.Error.Printf("search error: %v\n", err)
 			os.Exit(1)
@@ -129,9 +129,9 @@ var pluginInfoCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		name := args[0]
-		registry := pluginhost.NewRegistry()
+		regClient := pluginhost.NewRegistry()
 		ctx := context.Background()
-		meta, err := registry.GetInfo(ctx, name)
+		meta, err := regClient.GetInfo(ctx, name)
 		if err != nil {
 			pterm.Error.Printf("info error: %v\n", err)
 			os.Exit(1)

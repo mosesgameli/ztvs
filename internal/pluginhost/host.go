@@ -168,3 +168,7 @@ func (h *Host) RunCheck(
 func (h *Host) Lockfile() *registry.Lockfile {
 	return h.lockfile
 }
+
+func (h *Host) RegisterRunner(r Runner) {
+	h.runners.Register(r)
+}

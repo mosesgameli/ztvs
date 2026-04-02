@@ -14,6 +14,8 @@ package report
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"strings"
 
 	"github.com/mosesgameli/ztvs-sdk-go/rpc"
@@ -22,12 +24,18 @@ import (
 
 type TerminalReporter struct {
 	findings map[string][]*rpc.Finding
+	output   io.Writer
 }
 
 func NewTerminal() *TerminalReporter {
 	return &TerminalReporter{
 		findings: make(map[string][]*rpc.Finding),
+		output:   os.Stdout,
 	}
+}
+
+func (r *TerminalReporter) SetOutput(w io.Writer) {
+	r.output = w
 }
 
 func (r *TerminalReporter) AddFinding(pluginName string, finding *rpc.Finding) {
@@ -35,6 +43,7 @@ func (r *TerminalReporter) AddFinding(pluginName string, finding *rpc.Finding) {
 }
 
 func (r *TerminalReporter) Flush() error {
+	pterm.SetDefaultOutput(r.output)
 	if len(r.findings) == 0 {
 		pterm.DefaultSection.Println("Scan Results")
 		pterm.Success.Println("No vulnerabilities found! System is clean.")
@@ -73,7 +82,7 @@ func (r *TerminalReporter) Flush() error {
 				accentStyle = pterm.NewStyle(pterm.FgCyan)
 			}
 
-			cardContent := fmt.Sprintf("%s %s\n\n", sevBadge, accentStyle.Sprint(f.Title))
+			cardContent := fmt.Sprintf("%s [%s] %s\n\n", sevBadge, f.ID, accentStyle.Sprint(f.Title))
 			cardContent += pterm.LightWhite(f.Description) + "\n"
 			if f.Remediation != "" {
 				cardContent += "\n" + pterm.BgGreen.Sprint(pterm.FgBlack.Sprint(" FIX ")) + " " + pterm.FgGreen.Sprint(f.Remediation)

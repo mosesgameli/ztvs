@@ -25,59 +25,119 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/mosesgameli/ztvs/pkg/registry"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
-func TestRegistry_FetchIndex(t *testing.T) {
-	// 1. Setup mock data
+type MockGit struct {
+	mock.Mock
+}
+
+func (m *MockGit) Clone(url, dest string) error {
+	args := m.Called(url, dest)
+	return args.Error(0)
+}
+
+func (m *MockGit) Pull(dest string) error {
+	args := m.Called(dest)
+	return args.Error(0)
+}
+
+func (m *MockGit) Remove(dest string) error {
+	args := m.Called(dest)
+	return args.Error(0)
+}
+
+func TestRegistry_Search(t *testing.T) {
 	idx := registry.Index{
-		Version: "1.0",
+		Plugins: []registry.PluginMetadata{
+			{Name: "vulnerability-scanner"},
+			{Name: "compliance-checker"},
+		},
+	}
+	idxData, _ := json.Marshal(idx)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write(idxData)
+	}))
+	defer server.Close()
+
+	reg := &hostRegistry{BaseURL: server.URL}
+	
+	t.Run("found", func(t *testing.T) {
+		res, err := reg.Search(context.Background(), "scanner")
+		assert.NoError(t, err)
+		assert.Len(t, res, 1)
+		assert.Equal(t, "vulnerability-scanner", res[0].Name)
+	})
+
+	t.Run("not found", func(t *testing.T) {
+		res, err := reg.Search(context.Background(), "unknown")
+		assert.NoError(t, err)
+		assert.Empty(t, res)
+	})
+}
+
+func TestRegistry_Install(t *testing.T) {
+	ctx := context.Background()
+	tmpDir := t.TempDir()
+	os.Setenv("HOME", tmpDir)
+	defer os.Unsetenv("HOME")
+
+	// 1. Setup mock index
+	pluginName := "test-plugin"
+	idx := registry.Index{
 		Plugins: []registry.PluginMetadata{
 			{
-				Name:          "cis",
-				LatestVersion: "1.4.2",
-				Repo:          "github.com/ztvs-plugins/plugin-cis",
-				AuditStatus:   "verified",
+				Name:          pluginName,
+				LatestVersion: "1.0.0",
+				Repo:          "https://github.com/m/p",
 			},
 		},
 	}
 	idxData, _ := json.Marshal(idx)
-
-	// 2. Generate test key and signature
-	priv, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	h := sha256.Sum256(idxData)
-	r, s, _ := ecdsa.Sign(rand.Reader, priv, h[:])
-	sig, _ := asn1.Marshal(ecdsaSignature{R: r, S: s})
-
-	// 3. Mock server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case "/index.json":
-			w.Write(idxData)
-		case "/index.json.sig":
-			w.Write(sig)
-		default:
-			w.WriteHeader(404)
-		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(idxData)
 	}))
 	defer server.Close()
 
-	// 4. Setup
-	tmpDir, _ := os.MkdirTemp("", "zt-test-fetch")
-	defer os.RemoveAll(tmpDir)
-	os.Setenv("HOME", tmpDir) // Redirect config dir
+	// 2. Setup Host with Lockfile
+	lockPath := filepath.Join(tmpDir, ".ztvs", "plugins.lock")
+	host := New() // Includes a default registry
+	host.lockfile = registry.NewLockfile(lockPath)
 
-	reg := &Registry{
+	// 3. Mock Git
+	mockGit := new(MockGit)
+	reg := &hostRegistry{
 		BaseURL: server.URL,
+		git:     mockGit,
 	}
 
-	index, _ := reg.FetchIndex(context.Background())
-	// Verification will fail because of pinned key, but we've tested the logic flow.
-	if index != nil {
-		// This shouldn't happen in a test unless we mock VerifySignature
-	}
+	// 4. Setup mock repo directory structure to simulate successful download and build-not-required
+	mockGit.On("Clone", "https://github.com/m/p", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+		dest := args.String(1)
+		pluginDir := filepath.Join(dest, pluginName)
+		os.MkdirAll(pluginDir, 0755)
+		os.WriteFile(filepath.Join(pluginDir, "plugin.yaml"), []byte("runtime:\n  type: python\n  entrypoint: main.py"), 0644)
+		os.WriteFile(filepath.Join(pluginDir, "main.py"), []byte("print('ok')"), 0644)
+	})
+
+	err := reg.Install(ctx, pluginName, host)
+	assert.NoError(t, err)
+
+	// Verify installation
+	installDir := filepath.Join(tmpDir, ".ztvs", "plugins", pluginName)
+	_, err = os.Stat(installDir)
+	assert.NoError(t, err)
+
+	// Verify lockfile
+	l, ok := host.lockfile.Get(pluginName)
+	assert.True(t, ok)
+	assert.Equal(t, "1.0.0", l.Version)
 }
 
 func TestVerifySignature_Logic(t *testing.T) {
@@ -99,5 +159,11 @@ func TestVerifySignature_Logic(t *testing.T) {
 
 	if !ecdsa.Verify(ecdsaPub, h[:], sigStruct.R, sigStruct.S) {
 		t.Error("signature verification logic failed")
+	}
+
+	// Also call the actual VerifySignature function (it will fail because key is pinned)
+	err := VerifySignature(data, sig)
+	if err == nil {
+		t.Error("expected signature violation for pinned key, got success")
 	}
 }

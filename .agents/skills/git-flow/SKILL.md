@@ -1,3 +1,8 @@
+---
+name: git-flow
+description: A structured methodology for managing version control, remotes, and pull requests within the ZTVS repository.
+---
+
 # Skill: Git Flow for ZTVS
 
 This skill provides a structured methodology for managing version control, remotes, and pull requests within the Zero Trust Vulnerability Scanner (ZTVS) repository.

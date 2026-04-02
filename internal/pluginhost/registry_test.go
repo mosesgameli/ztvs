@@ -66,7 +66,7 @@ func TestRegistry_Search(t *testing.T) {
 	defer server.Close()
 
 	reg := &hostRegistry{BaseURL: server.URL}
-	
+
 	t.Run("found", func(t *testing.T) {
 		res, err := reg.Search(context.Background(), "scanner")
 		assert.NoError(t, err)
@@ -84,8 +84,9 @@ func TestRegistry_Search(t *testing.T) {
 func TestRegistry_Install(t *testing.T) {
 	ctx := context.Background()
 	tmpDir := t.TempDir()
+	originalHome := os.Getenv("HOME")
 	os.Setenv("HOME", tmpDir)
-	defer os.Unsetenv("HOME")
+	defer os.Setenv("HOME", originalHome)
 
 	// 1. Setup mock index
 	pluginName := "test-plugin"
@@ -138,6 +139,105 @@ func TestRegistry_Install(t *testing.T) {
 	l, ok := host.lockfile.Get(pluginName)
 	assert.True(t, ok)
 	assert.Equal(t, "1.0.0", l.Version)
+}
+
+func TestRegistry_CheckAndUpdateAll(t *testing.T) {
+	ctx := context.Background()
+	tmpDir := t.TempDir()
+	originalHome := os.Getenv("HOME")
+	os.Setenv("HOME", tmpDir)
+	defer os.Setenv("HOME", originalHome)
+
+	pluginName := "test-plugin"
+	idx := registry.Index{
+		Plugins: []registry.PluginMetadata{
+			{
+				Name:          pluginName,
+				LatestVersion: "1.1.0",
+				Repo:          "https://github.com/m/p",
+			},
+		},
+	}
+	idxData, _ := json.Marshal(idx)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write(idxData)
+	}))
+	defer server.Close()
+
+	host := New()
+	lockPath := filepath.Join(tmpDir, ".ztvs", "plugins.lock")
+	host.lockfile = registry.NewLockfile(lockPath)
+	host.lockfile.Set(pluginName, registry.PluginLock{
+		Version: "1.0.0",
+		Enabled: true,
+	})
+
+	// Ensure the plugins directory exists for atomic rename
+	os.MkdirAll(filepath.Join(tmpDir, ".ztvs", "plugins"), 0755)
+
+	mockGit := new(MockGit)
+	reg := &hostRegistry{
+		BaseURL: server.URL,
+		git:     mockGit,
+	}
+
+	mockGit.On("Clone", "https://github.com/m/p", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+		dest := args.String(1)
+		pluginDir := filepath.Join(dest, pluginName)
+		os.MkdirAll(pluginDir, 0755)
+		os.WriteFile(filepath.Join(pluginDir, "plugin.yaml"), []byte("runtime:\n  type: python"), 0644)
+	})
+
+	err := reg.CheckAndUpdateAll(ctx, host, "safe")
+	assert.NoError(t, err)
+
+	l, _ := host.lockfile.Get(pluginName)
+	assert.Equal(t, "1.1.0", l.Version)
+}
+
+func TestRegistry_PerformAtomicUpdate(t *testing.T) {
+	ctx := context.Background()
+	tmpDir := t.TempDir()
+	originalHome := os.Getenv("HOME")
+	os.Setenv("HOME", tmpDir)
+	defer os.Setenv("HOME", originalHome)
+
+	pluginName := "test-plugin"
+	meta := &registry.PluginMetadata{
+		Name:          pluginName,
+		LatestVersion: "1.1.0",
+		Repo:          "https://github.com/m/p",
+	}
+
+	host := New()
+	lockPath := filepath.Join(tmpDir, ".ztvs", "plugins.lock")
+	host.lockfile = registry.NewLockfile(lockPath)
+
+	// Create existing plugin dir
+	pluginDir := filepath.Join(tmpDir, ".ztvs", "plugins", pluginName)
+	os.MkdirAll(pluginDir, 0755)
+	os.WriteFile(filepath.Join(pluginDir, "old.txt"), []byte("old"), 0644)
+
+	mockGit := new(MockGit)
+	reg := &hostRegistry{git: mockGit}
+
+	mockGit.On("Clone", "https://github.com/m/p", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+		dest := args.String(1)
+		pluginSrcDir := filepath.Join(dest, pluginName)
+		os.MkdirAll(pluginSrcDir, 0755)
+		os.WriteFile(filepath.Join(pluginSrcDir, "new.txt"), []byte("new"), 0644)
+		os.WriteFile(filepath.Join(pluginSrcDir, "plugin.yaml"), []byte("runtime:\n  type: python"), 0644)
+	})
+
+	err := reg.PerformAtomicUpdate(ctx, pluginName, host, meta)
+	assert.NoError(t, err)
+
+	// Verify new file exists, old file is gone
+	assert.FileExists(t, filepath.Join(pluginDir, "new.txt"))
+	assert.NoFileExists(t, filepath.Join(pluginDir, "old.txt"))
+
+	l, _ := host.lockfile.Get(pluginName)
+	assert.Equal(t, "1.1.0", l.Version)
 }
 
 func TestVerifySignature_Logic(t *testing.T) {

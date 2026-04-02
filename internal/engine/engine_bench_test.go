@@ -27,7 +27,7 @@ func BenchmarkScan(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Note: This benchmarks the Scan orchestration. 
+		// Note: This benchmarks the Scan orchestration.
 		// Real performance depends on plugin execution overhead.
 		_ = e.Scan()
 	}

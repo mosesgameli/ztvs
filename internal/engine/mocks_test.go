@@ -28,7 +28,7 @@ type MockRunner struct {
 	mock.Mock
 }
 
-func (m *MockRunner) Name() string { return "mock" }
+func (m *MockRunner) Name() string                 { return "mock" }
 func (m *MockRunner) Supports(runtime string) bool { return runtime == "mock" }
 func (m *MockRunner) Validate(path string) error {
 	args := m.Called(path)

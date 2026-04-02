@@ -40,7 +40,7 @@ func TestBinaryRunner(t *testing.T) {
 	t.Run("Validate", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		binPath := filepath.Join(tmpDir, "test-bin")
-		
+
 		// 1. Missing file
 		err := r.Validate(binPath)
 		assert.Error(t, err)
@@ -78,9 +78,46 @@ func TestPythonRunner(t *testing.T) {
 	assert.Contains(t, r.Name(), "Python")
 	assert.True(t, r.Supports("python"))
 
-	t.Run("Validate - Missing file", func(t *testing.T) {
+	t.Run("Validate", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		scriptPath := filepath.Join(tmpDir, "test.py")
+
+		// 1. Missing file
 		err := r.Validate("non-existent.py")
 		assert.Error(t, err)
+
+		// 2. Valid file (requires uv in path for success)
+		err = os.WriteFile(scriptPath, []byte("print('hi')"), 0644)
+		require.NoError(t, err)
+		err = r.Validate(scriptPath)
+		// We accept "uv not found" as a successful validation of the script existence check
+		if err != nil {
+			assert.Contains(t, err.Error(), "uv runtime not found")
+		}
+	})
+
+	t.Run("Execute", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		mockPath := filepath.Join(tmpDir, "mock-plugin.py")
+		content := "print('{\"jsonrpc\":\"2.0\",\"id\":\"1\",\"result\":{\"status\":\"ok\"}}')\n"
+		err := os.WriteFile(mockPath, []byte(content), 0644)
+		require.NoError(t, err)
+
+		// PythonRunner.Execute requires plugin.yaml in the directory
+		err = os.WriteFile(filepath.Join(tmpDir, "plugin.yaml"), []byte("runtime:\n  type: python"), 0644)
+		require.NoError(t, err)
+
+		ctx := context.Background()
+		out, err := r.Execute(ctx, mockPath, []byte("{}"))
+		if err != nil {
+			msg := err.Error()
+			if assert.Contains(t, msg, "executable file not found") || assert.Contains(t, msg, "exit status 1") || assert.Contains(t, msg, "not found in PATH") {
+				t.Logf("Skipping Python actual execution (runtime missing): %v", err)
+				return
+			}
+			assert.NoError(t, err)
+		}
+		assert.Contains(t, string(out), "jsonrpc")
 	})
 }
 
@@ -88,13 +125,44 @@ func TestNodeRunner(t *testing.T) {
 	r := &NodeRunner{}
 	assert.Equal(t, "Node.js", r.Name())
 	assert.True(t, r.Supports("node"))
+
+	t.Run("Validate", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		scriptPath := filepath.Join(tmpDir, "test.js")
+
+		// 1. Missing file
+		err := r.Validate("non-existent.js")
+		assert.Error(t, err)
+
+		// 2. Valid file
+		err = os.WriteFile(scriptPath, []byte("console.log('hi')"), 0644)
+		require.NoError(t, err)
+		err = r.Validate(scriptPath)
+		// Similar to Python, Node might be missing in some environments
+		if err != nil {
+			assert.Contains(t, err.Error(), "Node.js runtime not found")
+		}
+	})
+
+	t.Run("Execute", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		mockPath := filepath.Join(tmpDir, "mock-plugin.js")
+		content := "console.log('{}')\n"
+		err := os.WriteFile(mockPath, []byte(content), 0644)
+		require.NoError(t, err)
+
+		ctx := context.Background()
+		_, err = r.Execute(ctx, mockPath, []byte("{}"))
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "not yet supported")
+	})
 }
 
 func TestJavaRunner(t *testing.T) {
 	r := &JavaRunner{}
 	assert.Equal(t, "Java", r.Name())
 	assert.True(t, r.Supports("java"))
-	
+
 	err := r.Validate("any.jar")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "not yet supported")

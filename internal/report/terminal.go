@@ -88,7 +88,7 @@ func (r *TerminalReporter) Flush() error {
 				cardContent += "\n" + pterm.BgGreen.Sprint(pterm.FgBlack.Sprint(" FIX ")) + " " + pterm.FgGreen.Sprint(f.Remediation)
 			}
 
-			pterm.DefaultPanel.WithPadding(1).WithPanels(pterm.Panels{
+			_ = pterm.DefaultPanel.WithPadding(1).WithPanels(pterm.Panels{
 				{{Data: cardContent}},
 			}).Render()
 			fmt.Println()
@@ -112,7 +112,7 @@ func (r *TerminalReporter) Flush() error {
 		status = pterm.FgRed.Sprint("VULNERABLE")
 	}
 
-	pterm.DefaultPanel.WithPadding(2).WithPanels(pterm.Panels{
+	_ = pterm.DefaultPanel.WithPadding(2).WithPanels(pterm.Panels{
 		{{Data: fmt.Sprintf("%s\n\n%s\nSystem Status: %s", summaryTitle, stats, status)}},
 	}).Render()
 

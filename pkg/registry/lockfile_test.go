@@ -1,9 +1,24 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package registry
 
 import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestLockfile(t *testing.T) {
@@ -52,5 +67,36 @@ func TestLockfile(t *testing.T) {
 	lock3, _ := lf3.Get("test-plugin")
 	if lock3.Enabled {
 		t.Error("expected plugin to be disabled")
+	}
+
+	// Test All/Remove
+	all := lf3.All()
+	assert.Len(t, all, 1)
+
+	lf3.Remove("test-plugin")
+	all = lf3.All()
+	assert.Empty(t, all)
+
+	// Test non-existent file load
+	lf4, err := LoadLockfile("non-existent.lock")
+	require.NoError(t, err)
+	assert.NotNil(t, lf4)
+	assert.Empty(t, lf4.Plugins)
+
+	// Test invalid YAML load
+	invalidPath := filepath.Join(tmpDir, "invalid.lock")
+	os.WriteFile(invalidPath, []byte("invalid: yaml: :"), 0644)
+	_, err = LoadLockfile(invalidPath)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "parse lockfile")
+
+	// Test Save error (Permission Denied)
+	if os.Getuid() != 0 { // Skip if running as root
+		readOnlyDir := filepath.Join(tmpDir, "readonly")
+		os.MkdirAll(readOnlyDir, 0555)
+		badPath := filepath.Join(readOnlyDir, "plugins.lock")
+		lfBad := NewLockfile(badPath)
+		err = lfBad.Save()
+		assert.Error(t, err)
 	}
 }

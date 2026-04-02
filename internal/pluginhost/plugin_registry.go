@@ -28,19 +28,19 @@ import (
 	"github.com/mosesgameli/ztvs/pkg/registry"
 )
 
-type Registry struct {
+type hostRegistry struct {
 	BaseURL string
-	git     *Git
+	git     Git
 }
 
-func NewRegistry() *Registry {
-	return &Registry{
+func NewRegistry() Registry {
+	return &hostRegistry{
 		BaseURL: "https://raw.githubusercontent.com/mosesgameli/ztvs-plugins/main/registry",
 		git:     NewGit(),
 	}
 }
 
-func (r *Registry) FetchIndex(ctx context.Context) (*registry.Index, error) {
+func (r *hostRegistry) FetchIndex(ctx context.Context) (*registry.Index, error) {
 	configDir := config.ConfigDir()
 	cacheDir := filepath.Join(configDir, "cache")
 	indexPath := filepath.Join(cacheDir, "index.json")
@@ -70,7 +70,7 @@ func (r *Registry) FetchIndex(ctx context.Context) (*registry.Index, error) {
 	return r.loadLocalIndex(indexPath)
 }
 
-func (r *Registry) loadLocalIndex(path string) (*registry.Index, error) {
+func (r *hostRegistry) loadLocalIndex(path string) (*registry.Index, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -83,7 +83,7 @@ func (r *Registry) loadLocalIndex(path string) (*registry.Index, error) {
 	return &idx, nil
 }
 
-func (r *Registry) Search(ctx context.Context, query string) ([]registry.PluginMetadata, error) {
+func (r *hostRegistry) Search(ctx context.Context, query string) ([]registry.PluginMetadata, error) {
 	idx, err := r.FetchIndex(ctx)
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func (r *Registry) Search(ctx context.Context, query string) ([]registry.PluginM
 	return results, nil
 }
 
-func (r *Registry) GetInfo(ctx context.Context, name string) (*registry.PluginMetadata, error) {
+func (r *hostRegistry) GetInfo(ctx context.Context, name string) (*registry.PluginMetadata, error) {
 	idx, err := r.FetchIndex(ctx)
 	if err != nil {
 		return nil, err
@@ -116,7 +116,7 @@ func (r *Registry) GetInfo(ctx context.Context, name string) (*registry.PluginMe
 // Install downloads, builds, and registers a plugin.
 // It clones the monorepo to a temp dir, extracts the plugin subdirectory,
 // builds it, and moves it to the final install location.
-func (r *Registry) Install(ctx context.Context, pluginName string, host *Host) error {
+func (r *hostRegistry) Install(ctx context.Context, pluginName string, host PluginHost) error {
 	// 1. Get Metadata
 	meta, err := r.GetInfo(ctx, pluginName)
 	if err != nil {
@@ -200,7 +200,7 @@ func (r *Registry) Install(ctx context.Context, pluginName string, host *Host) e
 	return nil
 }
 
-func (r *Registry) buildPlugin(dir, name string) error {
+func (r *hostRegistry) buildPlugin(dir, name string) error {
 	// 1. Try building from cmd/ (standard layout)
 	cmdDir := filepath.Join(dir, "cmd")
 	if _, err := os.Stat(filepath.Join(cmdDir, "main.go")); err == nil {
@@ -221,7 +221,7 @@ func (r *Registry) buildPlugin(dir, name string) error {
 	return nil
 }
 
-func (r *Registry) CheckAndUpdateAll(ctx context.Context, host *Host, mode string) error {
+func (r *hostRegistry) CheckAndUpdateAll(ctx context.Context, host PluginHost, mode string) error {
 	if mode == "locked" {
 		return nil
 	}
@@ -272,7 +272,7 @@ func (r *Registry) CheckAndUpdateAll(ctx context.Context, host *Host, mode strin
 	return nil
 }
 
-func (r *Registry) PerformAtomicUpdate(ctx context.Context, name string, host *Host, meta *registry.PluginMetadata) error {
+func (r *hostRegistry) PerformAtomicUpdate(ctx context.Context, name string, host PluginHost, meta *registry.PluginMetadata) error {
 	configDir := config.ConfigDir()
 	tmpDir := filepath.Join(configDir, "cache", "tmp", name)
 	finalDir := filepath.Join(configDir, "plugins", name)

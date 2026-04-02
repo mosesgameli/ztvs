@@ -14,6 +14,7 @@ package report
 
 import (
 	"encoding/json"
+	"io"
 	"os"
 	"time"
 
@@ -28,6 +29,7 @@ type JSONReport struct {
 
 type JSONReporter struct {
 	report JSONReport
+	output io.Writer
 }
 
 func NewJSON() *JSONReporter {
@@ -37,6 +39,7 @@ func NewJSON() *JSONReporter {
 			Summary:   make(map[string]int),
 			Findings:  make(map[string][]*rpc.Finding),
 		},
+		output: os.Stdout,
 	}
 }
 
@@ -46,7 +49,11 @@ func (r *JSONReporter) AddFinding(pluginName string, finding *rpc.Finding) {
 }
 
 func (r *JSONReporter) Flush() error {
-	encoder := json.NewEncoder(os.Stdout)
+	encoder := json.NewEncoder(r.output)
 	encoder.SetIndent("", "  ")
 	return encoder.Encode(r.report)
+}
+
+func (r *JSONReporter) SetOutput(w io.Writer) {
+	r.output = w
 }

@@ -1,3 +1,8 @@
+---
+name: plugin-dev
+description: A skill for developing and integrating new vulnerability scanning plugins for the Zero Trust Vulnerability Scanner (ZTVS).
+---
+
 # Skill: Developing ZTVS Plugins
 
 This skill enables the development and integration of new vulnerability scanning plugins for the Zero Trust Vulnerability Scanner (ZTVS).

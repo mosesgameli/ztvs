@@ -13,8 +13,8 @@
 package report
 
 import (
-	"io"
 	"github.com/mosesgameli/ztvs-sdk-go/rpc"
+	"io"
 )
 
 // Reporter defines the interface for different output formats

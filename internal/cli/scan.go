@@ -13,6 +13,8 @@
 package cli
 
 import (
+	"context"
+	"fmt"
 	"os"
 
 	"github.com/mosesgameli/ztvs/internal/config"
@@ -29,32 +31,38 @@ var scanCmd = &cobra.Command{
 	Use:   "scan",
 	Short: "Run vulnerability scans across all enabled plugins",
 	Run: func(cmd *cobra.Command, args []string) {
-		cfg, err := config.Load()
-		if err != nil {
-			pterm.Error.Printf("config error: %v\n", err)
-			os.Exit(1)
-		}
-
-		var r report.Reporter
-		switch formatFlag {
-		case "json":
-			r = report.NewJSON()
-		case "sarif":
-			r = report.NewSARIF()
-		default:
-			r = report.NewTerminal()
-		}
-
-		eng := engine.New(cfg, pluginhost.New(), r, pluginhost.NewRegistry())
-		eng.Interactive = true
-
-		pterm.Info.Println("Initializing global security scan...")
-
-		if err := eng.Scan(); err != nil {
-			pterm.Error.Printf("Scan failed: %v\n", err)
+		if err := runScan(cmd.Context()); err != nil {
+			pterm.Error.Printf("scan failure: %v\n", err)
 			os.Exit(1)
 		}
 	},
+}
+
+func runScan(ctx context.Context) error {
+	cfg, err := config.Load()
+	if err != nil {
+		return fmt.Errorf("config error: %w", err)
+	}
+
+	var r report.Reporter
+	switch formatFlag {
+	case "json":
+		r = report.NewJSON()
+	case "sarif":
+		r = report.NewSARIF()
+	default:
+		r = report.NewTerminal()
+	}
+
+	eng := engine.New(cfg, pluginhost.New(), r, pluginhost.NewRegistry())
+	eng.Interactive = true
+
+	pterm.Info.Println("Initializing global security scan...")
+
+	if err := eng.Scan(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func init() {

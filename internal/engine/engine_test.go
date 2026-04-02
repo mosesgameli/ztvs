@@ -158,7 +158,7 @@ func TestEngine_All(t *testing.T) {
 		mockHost.On("GetManifest", "/p3").Return(&sdk.Manifest{Name: "p3"}, true)
 		mockHost.On("Handshake", mock.Anything, "/p3").Return(&rpc.HandshakeResponse{APIVersion: 2}, nil)
 		e.scanPlugin(context.Background(), "/p3")
-		
+
 		// 4. RunCheck error
 		mockHost.On("GetManifest", "/p4").Return(&sdk.Manifest{Name: "p4"}, true)
 		mockHost.On("Handshake", mock.Anything, "/p4").Return(&rpc.HandshakeResponse{APIVersion: 1, ChecksSupported: []string{"c1"}}, nil)

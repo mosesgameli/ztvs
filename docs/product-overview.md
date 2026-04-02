@@ -28,7 +28,7 @@ ZTVS ships a first-party `plugin-axios-mitigation` plugin that actively detects 
 | **Developer machine posture** | Continuous host auditing with on-install automation hooks across all major package managers |
 | **Regulatory & compliance alignment** | SARIF 2.1.0 output maps directly to CISA Zero Trust Maturity Model pillars |
 | **Vendor lock-in risk** | MIT/Apache 2.0 licensed; fully open source; no proprietary agents or cloud dependencies |
-| **Custom security rules** | First-party SDK enables internal teams to write organization-specific checks in Go or Python |
+| **Custom security rules** | First-party SDKs enable internal teams to write organization-specific checks in Go, Python, Rust, JavaScript, or Java |
 | **SIEM integration** | Structured JSON and SARIF output integrates with Splunk, Elastic, Microsoft Sentinel, and GitHub Advanced Security |
 | **Operational overhead** | One-command installation; automatic plugin updates via a managed remote registry |
 
@@ -79,15 +79,41 @@ This plugin requires a GitHub Personal Access Token with `repo`, `read:org`, and
 
 ## Extensibility: Build Your Own Security Rules
 
-ZTVS is designed to democratize security rule authorship. Any team in your organization — security, platform, application — can write a custom check in **fewer than 25 lines of code**. First-party SDKs are available for the two most common internal language stacks:
+ZTVS is designed to democratize security rule authorship. Any team in your organization — security, platform, application — can write a custom check in **fewer than 25 lines of code**. ZTVS officially supports **five languages** for plugin development:
 
-**Go SDK** (`github.com/mosesgameli/ztvs-sdk-go`): Produces a natively compiled binary. Ideal for performance-sensitive checks, low-level system inspection, and checks that must run on endpoints without a language runtime.
+| Language | Execution Model | Best For |
+|---|---|---|
+| **Go** | Natively compiled binary | Performance-sensitive checks, low-level system inspection, endpoints without a runtime |
+| **Python** | `python3` runtime binding | API-calling checks, structured data parsing, security ecosystem integrations (`bandit`, `semgrep`) |
+| **Rust** | Natively compiled binary | Memory-safe, high-performance checks; cryptographic or parsing-heavy rules |
+| **JavaScript** | `node` runtime binding | Ecosystem-native checks for Node.js environments, npm supply chain auditing |
+| **Java** | JVM runtime binding | Enterprise environment checks, JVM-based infrastructure auditing |
 
-**Python SDK** (`github.com/mosesgameli/ztvs-sdk-python`): Supports async execution and Pydantic-validated data models. Ideal for checks that call external APIs, parse structured data, or leverage the Python security ecosystem (e.g., `bandit`, `semgrep` integrations).
+First-party SDKs are available for the most common stacks:
 
-Both SDKs abstract the JSON-RPC protocol entirely. A developer implements one interface (`Run() → Finding`), and the SDK handles handshake, capability negotiation, error handling, and timeouts. Plugins that do not return within **30 seconds** are automatically killed by the host engine.
+**Go SDK** (`github.com/mosesgameli/ztvs-sdk-go`): Produces a natively compiled binary with a minimal interface — implement `Run() → Finding` and the SDK handles the rest.
 
-The plugin distribution model uses a cryptographically verified remote registry (`plugins.ztvs.dev`). Publishing a new internal check requires only a SHA-256 checksum and a `plugin.yaml` manifest — no proprietary signing infrastructure.
+**Python SDK** (`github.com/mosesgameli/ztvs-sdk-python`): Supports async execution and Pydantic-validated data models. Ideal for checks that call external APIs or leverage the Python security ecosystem.
+
+All SDKs abstract the JSON-RPC protocol entirely. A developer implements one interface (`Run() → Finding`), and the SDK handles handshake, capability negotiation, error handling, and timeouts. Plugins that do not return within **30 seconds** are automatically killed by the host engine.
+
+### Independent Plugin Development and Installation
+
+Plugins are fully self-contained artifacts and can be built, distributed, and installed independently of the ZTVS core engine. Any team can:
+
+1. Author a plugin in any supported language using the standard `plugin.yaml` manifest format
+2. Build and package it outside the main ZTVS release cycle
+3. Install it directly on any host with `zt plugin install <path-or-url>`
+
+```bash
+# Install a plugin from a local build
+zt plugin install ./my-check/
+
+# Install from a remote URL
+zt plugin install https://example.com/plugins/my-check-v1.0.0.zip
+```
+
+The plugin distribution model uses a cryptographically verified remote registry (`plugins.ztvs.dev`). Publishing a new internal check requires only a SHA-256 checksum and a `plugin.yaml` manifest — no proprietary signing infrastructure. Plugins installed from outside the official registry are subject to the same SHA-256 verification and capability policy enforcement as first-party plugins.
 
 ## Enterprise Integration and Reporting
 
@@ -192,7 +218,7 @@ The entire ZTVS ecosystem is open source. There are no proprietary binaries, no 
 
 1. **Proof of Concept**: Run a single-host pilot scan on a representative developer workstation using `zt scan`
 2. **Plugin Inventory**: Review the three first-party plugins against your current security coverage gaps
-3. **Custom Rule Assessment**: Identify two or three organization-specific security checks that could be built using the Go or Python SDK
+3. **Custom Rule Assessment**: Identify two or three organization-specific security checks that could be built using the Go, Python, Rust, JavaScript, or Java SDK and installed independently
 4. **SIEM Integration**: Evaluate SARIF output ingestion into your existing security tooling stack
 5. **Fleet Rollout Plan**: Define the MDM or configuration management strategy for `zt agent` deployment to server and developer fleets
 6. **Policy Configuration**: Draft the `config.yaml` capability policy appropriate for your security posture

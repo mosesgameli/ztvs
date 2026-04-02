@@ -16,7 +16,7 @@ ZTVS is a cross-platform, plugin-based host security auditing tool designed with
 
 ## For Developers
 
-- **[Plugin Development Guide](./plugin-guide.md)**: Learn how to build your own security checks in any language.
+- **[Plugin Development Guide](./plugin-guide.md)**: Learn how to build your own security checks in any of the five supported languages (Go, Python, Rust, JavaScript, Java) and install them independently.
 - **[JSON-RPC Protocol](./protocol.md)**: Specification for host-plugin communication.
 - **[Go SDK Reference](./sdk-go.md)**: Documentation for our first-party Go SDK.
 - **[Python SDK (External)](https://github.com/mosesgameli/ztvs-sdk-python)**: Our official Python SDK for plugin development.

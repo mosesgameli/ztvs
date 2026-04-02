@@ -171,4 +171,4 @@ func main() {
 We welcome community contributions. Please see our [Contributing Guidelines](CONTRIBUTING.md) for detailed technical guides on setup, style, and workflows.
 
 ## 📄 License
-Source code distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
+Source code distributed under the **Apache License 2.0**. See [`LICENSE`](LICENSE) for details.

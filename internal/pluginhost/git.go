@@ -18,6 +18,8 @@ import (
 	"os/exec"
 )
 
+var execCommand = exec.Command
+
 // Git defines the interface for git operations.
 type Git interface {
 	Clone(url, dest string) error
@@ -36,7 +38,7 @@ func (g *gitImpl) Clone(url, dest string) error {
 		return fmt.Errorf("git not found in PATH: %v", err)
 	}
 
-	cmd := exec.Command("git", "clone", url, dest)
+	cmd := execCommand("git", "clone", url, dest)
 	if output, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("git clone failed: %v\nOutput: %s", err, string(output))
 	}
@@ -44,7 +46,7 @@ func (g *gitImpl) Clone(url, dest string) error {
 }
 
 func (g *gitImpl) Pull(dest string) error {
-	cmd := exec.Command("git", "-C", dest, "pull")
+	cmd := execCommand("git", "-C", dest, "pull")
 	if output, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("git pull failed: %v\nOutput: %s", err, string(output))
 	}

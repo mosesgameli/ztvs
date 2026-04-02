@@ -20,11 +20,13 @@ import (
 
 	"github.com/mosesgameli/ztvs-sdk-go/rpc"
 	"github.com/pterm/pterm"
+	"sync"
 )
 
 type TerminalReporter struct {
 	findings map[string][]*rpc.Finding
 	output   io.Writer
+	mu       sync.RWMutex
 }
 
 func NewTerminal() *TerminalReporter {
@@ -39,10 +41,17 @@ func (r *TerminalReporter) SetOutput(w io.Writer) {
 }
 
 func (r *TerminalReporter) AddFinding(pluginName string, finding *rpc.Finding) {
+	if finding == nil {
+		return
+	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	r.findings[pluginName] = append(r.findings[pluginName], finding)
 }
 
 func (r *TerminalReporter) Flush() error {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 	pterm.SetDefaultOutput(r.output)
 	if len(r.findings) == 0 {
 		pterm.DefaultSection.Println("Scan Results")

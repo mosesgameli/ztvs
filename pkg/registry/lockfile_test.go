@@ -99,4 +99,28 @@ func TestLockfile(t *testing.T) {
 		err = lfBad.Save()
 		assert.Error(t, err)
 	}
+
+	// Test corrupt YAML for Load
+	p := filepath.Join(tmpDir, "corrupt.lock")
+	os.WriteFile(p, []byte("!!invalid yaml"), 0644)
+	_, err = LoadLockfile(p)
+	assert.Error(t, err)
+
+	// Test ReadFile error (Permission Denied)
+	if os.Getuid() != 0 {
+		readOnlyFile := filepath.Join(tmpDir, "noperm.lock")
+		os.WriteFile(readOnlyFile, []byte("data"), 0000)
+		defer os.Chmod(readOnlyFile, 0644)
+		_, err = LoadLockfile(readOnlyFile)
+		assert.Error(t, err)
+	}
+
+	// Test Save error: MkdirAll failure
+	conflictDir := filepath.Join(tmpDir, "conflict")
+	os.WriteFile(conflictDir, []byte("actually-a-file"), 0644)
+	badPath2 := filepath.Join(conflictDir, "sub", "plugins.lock")
+	lfBad2 := NewLockfile(badPath2)
+	err = lfBad2.Save()
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "not a directory")
 }

@@ -25,7 +25,7 @@ import (
 
 // RegistryRootKey is the pinned public key for the ZTVS Registry.
 // In a production build, this would be a real ECDSA public key.
-const RegistryRootKey = `-----BEGIN PUBLIC KEY-----
+var RegistryRootKey = `-----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzt8mI+R0D/H7t1h6u1NfXpYv0h5q
 kK7z9Xp3oY6v+9X8kLz7X9Xp3oY6v+9X8kLz7X9Xp3oY6v+9X8kLz7Q==
 -----END PUBLIC KEY-----`

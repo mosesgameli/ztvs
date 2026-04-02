@@ -119,4 +119,56 @@ func TestSARIFReporter(t *testing.T) {
 	buf.Reset()
 	r.Flush()
 	assert.Contains(t, buf.String(), "main.go")
+
+	// Test: Severities for full coverage
+	r.AddFinding("p3", &rpc.Finding{Severity: "critical"})
+	r.AddFinding("p4", &rpc.Finding{Severity: "info"})
+	r.AddFinding("p5", nil) // Covered by defensive check
+	buf.Reset()
+	r.Flush()
+	assert.Contains(t, buf.String(), "error") // critical maps to error
+	assert.Contains(t, buf.String(), "note")  // info maps to note
+}
+
+func TestReport_EvidenceComplex(t *testing.T) {
+	// 1. JSON with complex evidence
+	rj := NewJSON()
+	rj.AddFinding("p1", &rpc.Finding{
+		ID: "F1",
+		Evidence: map[string]interface{}{
+			"nested": map[string]string{"key": "val"},
+			"list":   []int{1, 2, 3},
+		},
+	})
+	var buf bytes.Buffer
+	rj.SetOutput(&buf)
+	rj.Flush()
+	assert.Contains(t, buf.String(), "nested")
+	assert.Contains(t, buf.String(), "list")
+
+	// 2. Terminal with nil finding (defensive check)
+	rt := NewTerminal()
+	rt.AddFinding("p1", nil)
+	buf.Reset()
+	rt.SetOutput(&buf)
+	rt.Flush()
+	assert.Contains(t, buf.String(), "No vulnerabilities found")
+	
+	// 3. SARIF with complex evidence
+	rs := NewSARIF()
+	rs.AddFinding("p1", &rpc.Finding{
+		ID:          "F1",
+		CheckID:     "C1",
+		Title:       "Test Title",
+		Description: "Test Desc",
+		Evidence: map[string]interface{}{
+			"snippet": "code",
+			"nested":  map[string]string{"foo": "bar"},
+		},
+	})
+	buf.Reset()
+	rs.SetOutput(&buf)
+	rs.Flush()
+	assert.Contains(t, buf.String(), "C1")
+	assert.Contains(t, buf.String(), "Test Title")
 }

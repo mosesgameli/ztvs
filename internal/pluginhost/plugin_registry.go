@@ -19,7 +19,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -204,7 +203,7 @@ func (r *hostRegistry) buildPlugin(dir, name string) error {
 	// 1. Try building from cmd/ (standard layout)
 	cmdDir := filepath.Join(dir, "cmd")
 	if _, err := os.Stat(filepath.Join(cmdDir, "main.go")); err == nil {
-		cmd := exec.Command("go", "build", "-o", name, "./cmd/...")
+		cmd := execCommand("go", "build", "-o", name, "./cmd/...")
 		cmd.Dir = dir
 		if output, err := cmd.CombinedOutput(); err != nil {
 			return fmt.Errorf("build error (cmd): %v\nOutput: %s", err, string(output))
@@ -213,7 +212,7 @@ func (r *hostRegistry) buildPlugin(dir, name string) error {
 	}
 
 	// 2. Fallback to building from root
-	cmd := exec.Command("go", "build", "-o", name, ".")
+	cmd := execCommand("go", "build", "-o", name, ".")
 	cmd.Dir = dir
 	if output, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("build error (root): %v\nOutput: %s", err, string(output))

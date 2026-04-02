@@ -27,7 +27,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var host = pluginhost.New()
+var host pluginhost.PluginHost = pluginhost.New()
+var registryClient pluginhost.Registry = pluginhost.NewRegistry()
 
 var pluginCmd = &cobra.Command{
 	Use:   "plugin",
@@ -37,11 +38,8 @@ var pluginCmd = &cobra.Command{
 var pluginInitCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize ZTVS configuration (~/.ztvs/config.yaml)",
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := runPluginInit(); err != nil {
-			pterm.Error.Printf("initialization error: %v\n", err)
-			os.Exit(1)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runPluginInit()
 	},
 }
 
@@ -57,11 +55,8 @@ func runPluginInit() error {
 var pluginListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List installed plugins",
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := runPluginList(); err != nil {
-			pterm.Error.Printf("list error: %v\n", err)
-			os.Exit(1)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runPluginList()
 	},
 }
 
@@ -108,15 +103,12 @@ var pluginSearchCmd = &cobra.Command{
 	Use:   "search [query]",
 	Short: "Search for remote plugins",
 	Args:  cobra.MaximumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		query := ""
 		if len(args) > 0 {
 			query = args[0]
 		}
-		if err := runPluginSearch(pluginhost.NewRegistry(), query); err != nil {
-			pterm.Error.Printf("search error: %v\n", err)
-			os.Exit(1)
-		}
+		return runPluginSearch(registryClient, query)
 	},
 }
 
@@ -147,11 +139,8 @@ var pluginInfoCmd = &cobra.Command{
 	Use:   "info <name>",
 	Short: "Show remote plugin details",
 	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := runPluginInfo(pluginhost.NewRegistry(), args[0]); err != nil {
-			pterm.Error.Printf("info error: %v\n", err)
-			os.Exit(1)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runPluginInfo(registryClient, args[0])
 	},
 }
 
@@ -179,11 +168,8 @@ var pluginEnableCmd = &cobra.Command{
 	Use:   "enable <name>",
 	Short: "Enable a plugin",
 	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := runPluginToggle(args[0], true); err != nil {
-			pterm.Error.Printf("enable error: %v\n", err)
-			os.Exit(1)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runPluginToggle(args[0], true)
 	},
 }
 
@@ -191,11 +177,8 @@ var pluginDisableCmd = &cobra.Command{
 	Use:   "disable <name>",
 	Short: "Disable a plugin",
 	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := runPluginToggle(args[0], false); err != nil {
-			pterm.Error.Printf("disable error: %v\n", err)
-			os.Exit(1)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runPluginToggle(args[0], false)
 	},
 }
 
@@ -204,7 +187,10 @@ func runPluginToggle(name string, enabled bool) error {
 	lock, ok := lf.Get(name)
 	if !ok {
 		ctx := context.Background()
-		plugins, _ := host.Discover(ctx)
+		plugins, err := host.Discover(ctx)
+		if err != nil {
+			return err
+		}
 		found := false
 		for _, p := range plugins {
 			if m, ok := host.GetManifest(p); ok && m.Name == name {
@@ -240,11 +226,8 @@ var pluginInstallCmd = &cobra.Command{
 	Use:   "install <name>",
 	Short: "Install a remote plugin",
 	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := runPluginInstall(pluginhost.NewRegistry(), args[0]); err != nil {
-			pterm.Error.Printf("install error: %v\n", err)
-			os.Exit(1)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runPluginInstall(registryClient, args[0])
 	},
 }
 
@@ -281,11 +264,8 @@ func runPluginInstall(reg pluginhost.Registry, name string) error {
 var pluginUpdateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Update installed plugins to the latest version",
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := runPluginUpdate(pluginhost.NewRegistry()); err != nil {
-			pterm.Error.Printf("update error: %v\n", err)
-			os.Exit(1)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runPluginUpdate(registryClient)
 	},
 }
 

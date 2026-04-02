@@ -4,6 +4,10 @@ Welcome to the official documentation for **Zero Trust Vulnerability Scanner (ZT
 
 ZTVS is a cross-platform, plugin-based host security auditing tool designed with a Zero Trust philosophy. It executes plugins in isolated processes and communicates via a standard JSON-RPC protocol.
 
+## For Technology Leadership
+
+- **[Product Overview](./product-overview.md)**: Executive brief on ZTVS capabilities, architecture, and org-wide adoption.
+
 ## Getting Started
 
 - **[Installation Guide](./installation.md)**: How to get ZTVS running on your system.

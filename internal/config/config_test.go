@@ -31,8 +31,8 @@ func TestDefaultConfig(t *testing.T) {
 func TestConfigDir(t *testing.T) {
 	tempHome := t.TempDir()
 	origHome := os.Getenv("HOME")
-	os.Setenv("HOME", tempHome)
-	defer os.Setenv("HOME", origHome)
+	_ = os.Setenv("HOME", tempHome)
+	defer func() { _ = os.Setenv("HOME", origHome) }()
 
 	dir := ConfigDir()
 	expected := filepath.Join(tempHome, ".ztvs")
@@ -44,8 +44,8 @@ func TestConfigDir(t *testing.T) {
 func TestLoadSave(t *testing.T) {
 	tempHome := t.TempDir()
 	origHome := os.Getenv("HOME")
-	os.Setenv("HOME", tempHome)
-	defer os.Setenv("HOME", origHome)
+	_ = os.Setenv("HOME", tempHome)
+	defer func() { _ = os.Setenv("HOME", origHome) }()
 
 	// 1. Test Load non-existent
 	cfg, err := Load()
@@ -88,7 +88,7 @@ func TestLoadSave(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Chmod failed: %v", err)
 	}
-	defer os.Chmod(configPath, 0644)
+	defer func() { _ = os.Chmod(configPath, 0644) }()
 	_, err = Load()
 	if err == nil {
 		t.Error("expected Load() to fail with permission denied")

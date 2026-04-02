@@ -304,7 +304,7 @@ func TestRunPluginToggle_Errors(t *testing.T) {
 	
 	// Force Save error by making the directory non-writable
 	_ = os.Chmod(tmpDir, 0555) // Read and execute only
-	defer os.Chmod(tmpDir, 0755)
+	defer func() { _ = os.Chmod(tmpDir, 0755) }()
 	
 	err = runPluginToggle("p1", true)
 	assert.Error(t, err)
@@ -337,8 +337,8 @@ func TestRunPluginInstall_ManifestHandling(t *testing.T) {
 	defer func() { registryClient = originalRegistry }()
 
 	tmpDir := t.TempDir()
-	os.Setenv("ZTVS_HOME", tmpDir)
-	defer os.Unsetenv("ZTVS_HOME")
+	_ = os.Setenv("ZTVS_HOME", tmpDir)
+	defer func() { _ = os.Unsetenv("ZTVS_HOME") }()
 
 	// Test: Successful install but manifest file missing (no error, just skipped info)
 	mockReg.On("Install", mock.Anything, "p1", mock.Anything).Return(nil)

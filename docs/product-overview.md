@@ -4,15 +4,15 @@
 
 ## Executive Summary
 
-The Zero Trust Vulnerability Scanner (ZTVS) is an open-source, enterprise-grade host security scanning platform built on a Zero Trust execution model. It continuously audits every host in your organization — developer workstations, CI/CD runners, and production servers alike — detecting configuration weaknesses, supply chain compromises, and active indicators of compromise (IOCs) before they escalate into incidents.
+The Zero Trust Vulnerability Scanner (ZTVS) is an open-source, enterprise-grade host security scanning platform built on a Zero Trust execution model. It continuously audits every host in your organization, including developer workstations, CI/CD runners, and production servers, detecting configuration weaknesses, supply chain compromises, and active indicators of compromise (IOCs) before they escalate into incidents.
 
-Unlike legacy monolithic security agents, ZTVS treats every security check as an untrusted, isolated process. No single vulnerability in a scanning rule can compromise the scanner itself or pivot laterally across your infrastructure. This design is not a feature — it is a foundational architectural constraint.
+Unlike legacy monolithic security agents, ZTVS treats every security check as an untrusted, isolated process. No single vulnerability in a scanning rule can compromise the scanner itself or pivot laterally across your infrastructure. This design is not a feature; it is a foundational architectural constraint.
 
 ZTVS is production-ready today, with native support for **Windows, macOS, and Linux**, one-command deployment, and enterprise output formats for immediate SIEM and CI/CD integration.
 
 ## The Threat Landscape That Motivated ZTVS
 
-Software supply chain attacks have become the defining threat of the mid-2020s. The 2026 Axios Supply Chain RAT attack — where a widely trusted JavaScript HTTP library was hijacked to deliver a Remote Access Trojan to millions of developer machines and production servers — demonstrated a new class of risk that traditional endpoint agents are structurally unable to detect:
+Software supply chain attacks have become the defining threat of the mid-2020s. The 2026 Axios Supply Chain RAT attack, where a widely trusted JavaScript HTTP library was hijacked to deliver a Remote Access Trojan to millions of developer machines and production servers, demonstrated a new class of risk that traditional endpoint agents are structurally unable to detect:
 
 - Standard antivirus cannot distinguish between a legitimate npm package and a maliciously modified one
 - SAST/DAST tools scan code at build time but miss runtime host-level IOCs planted after deployment
@@ -34,7 +34,7 @@ ZTVS ships a first-party `plugin-axios-mitigation` plugin that actively detects 
 
 ## Architecture: Why Zero Trust Matters Here
 
-Traditional security agents run as monolithic processes. A single crashing rule, a vulnerable parser, or a compromised detection module can take down the entire agent — or worse, be exploited as a foothold. ZTVS enforces a fundamentally different model:
+Traditional security agents run as monolithic processes. A single crashing rule, a vulnerable parser, or a compromised detection module can take down the entire agent, or worse, be exploited as a foothold. ZTVS enforces a fundamentally different model:
 
 **Every security check runs as a separate, isolated child process.** The core engine communicates with each check over a restricted JSON-RPC 2.0 channel on standard I/O. Each check must declare, in a cryptographically verified manifest (`plugin.yaml`), the exact capabilities it requires:
 
@@ -47,29 +47,29 @@ capabilities:
 
 The host engine enforces these declarations against a central policy file (`~/.ztvs/config.yaml`). A check that attempts to access the network without declaring `network_access` is denied at the OS call level. A check that crashes is isolated to its own process and does not interrupt the scan or affect other checks.
 
-This architecture satisfies the **Least Privilege** and **Assume Breach** pillars of the NIST SP 800-207 Zero Trust standard — applied to the security tooling layer itself.
+This architecture satisfies the **Least Privilege** and **Assume Breach** pillars of the NIST SP 800-207 Zero Trust standard, applied to the security tooling layer itself.
 
 ## Plugin Ecosystem: Security Coverage Out of the Box
 
 ZTVS ships with three production-quality first-party plugins covering the most critical org-wide risk surfaces:
 
-### `plugin-os` — Host Operating System Hardening
+### `plugin-os`: Host Operating System Hardening
 A high-performance compiled Go plugin that audits core OS security configuration:
 
 - **SSH hardening**: Detects permissive `sshd_config` settings (root login, password auth, empty passwords)
 - **Password policy enforcement**: Validates system-level password strength and expiration controls
 - **User account auditing**: Flags unauthorized accounts, privilege escalation vectors, and stale sessions
 
-This plugin requires only `read_files` and `execute_commands` capabilities — it performs no network activity and writes nothing to disk.
+This plugin requires only `read_files` and `execute_commands` capabilities; it performs no network activity and writes nothing to disk.
 
-### `plugin-axios-mitigation` — Supply Chain Attack Response
+### `plugin-axios-mitigation`: Supply Chain Attack Response
 A three-vector Go plugin built as a direct, incident-response-grade answer to the 2026 Axios supply chain compromise:
 
 - **`axios_dependency_audit`**: Scans all Node.js dependency manifests and lockfiles for compromised axios versions and the malicious `plain-crypto-js@4.2.1` payload
 - **`axios_host_ioc`**: Scans the host filesystem for IOC artifacts (known malicious file paths, suspicious executables) left by the RAT dropper
 - **`axios_c2_network`**: Probes for active outbound connections to known C2 infrastructure associated with the 2026 campaign
 
-### `plugin-axios-github-scan` — GitHub Organization Exposure Audit
+### `plugin-axios-github-scan`: GitHub Organization Exposure Audit
 A Python-based plugin that extends scanning beyond the local host to your entire GitHub organization:
 
 - **`axios-github-inventory-audit`**: Inventories every repository in your GitHub org, identifies those using vulnerable axios versions, correlates with recent CI activity to assess actual exposure, and detects the `plain-crypto-js` payload in lockfiles
@@ -79,7 +79,7 @@ This plugin requires a GitHub Personal Access Token with `repo`, `read:org`, and
 
 ## Extensibility: Build Your Own Security Rules
 
-ZTVS is designed to democratize security rule authorship. Any team in your organization — security, platform, application — can write a custom check in **fewer than 25 lines of code**. ZTVS officially supports **five languages** for plugin development:
+ZTVS is designed to democratize security rule authorship. Any team in your organization (security, platform, or application) can write a custom check in **fewer than 25 lines of code**. ZTVS officially supports **five languages** for plugin development:
 
 | Language | Execution Model | Best For |
 |---|---|---|
@@ -89,13 +89,15 @@ ZTVS is designed to democratize security rule authorship. Any team in your organ
 | **JavaScript** | `node` runtime binding | Ecosystem-native checks for Node.js environments, npm supply chain auditing |
 | **Java** | JVM runtime binding | Enterprise environment checks, JVM-based infrastructure auditing |
 
-First-party SDKs are available for the most common stacks:
+First-party SDKs are available for Go and Python. SDKs for Rust, JavaScript, and Java are currently in development:
 
-**Go SDK** (`github.com/mosesgameli/ztvs-sdk-go`): Produces a natively compiled binary with a minimal interface — implement `Run() → Finding` and the SDK handles the rest.
+**Go SDK** (`github.com/mosesgameli/ztvs-sdk-go`): Produces a natively compiled binary with a minimal interface. Implement `Run() -> Finding` and the SDK handles handshake, capability negotiation, error handling, and timeouts.
 
 **Python SDK** (`github.com/mosesgameli/ztvs-sdk-python`): Supports async execution and Pydantic-validated data models. Ideal for checks that call external APIs or leverage the Python security ecosystem.
 
-All SDKs abstract the JSON-RPC protocol entirely. A developer implements one interface (`Run() → Finding`), and the SDK handles handshake, capability negotiation, error handling, and timeouts. Plugins that do not return within **30 seconds** are automatically killed by the host engine.
+**Rust, JavaScript, and Java SDKs** (work in progress): Plugins in these languages can be authored directly against the JSON-RPC 2.0 protocol today; dedicated SDKs are planned for a future release.
+
+The Go and Python SDKs abstract the JSON-RPC protocol entirely. Plugins that do not return within **30 seconds** are automatically killed by the host engine.
 
 ### Independent Plugin Development and Installation
 
@@ -113,7 +115,7 @@ zt plugin install ./my-check/
 zt plugin install https://example.com/plugins/my-check-v1.0.0.zip
 ```
 
-The plugin distribution model uses a cryptographically verified remote registry (`plugins.ztvs.dev`). Publishing a new internal check requires only a SHA-256 checksum and a `plugin.yaml` manifest — no proprietary signing infrastructure. Plugins installed from outside the official registry are subject to the same SHA-256 verification and capability policy enforcement as first-party plugins.
+The plugin distribution model uses a cryptographically verified remote registry (`plugins.ztvs.dev`). Publishing a new internal check requires only a SHA-256 checksum and a `plugin.yaml` manifest, with no proprietary signing infrastructure. Plugins installed from outside the official registry are subject to the same SHA-256 verification and capability policy enforcement as first-party plugins.
 
 ## Enterprise Integration and Reporting
 
@@ -147,8 +149,10 @@ A single, blocking scan of the local host. Suitable for:
 - Pre-commit or pre-push hooks
 - One-time incident response sweeps
 
-### Continuous Agent Mode (`zt agent`)
-A lightweight background daemon that runs as an isolated scheduled process. Suitable for:
+### Continuous Agent Mode (`zt agent`) - In Development
+A lightweight background daemon that runs as an isolated scheduled process. **Note: this mode is not yet fully operational and is under active development.**
+
+When available, it will be suitable for:
 - Production servers and long-lived infrastructure
 - CI/CD build runners
 - Shared developer environments
@@ -220,7 +224,7 @@ The entire ZTVS ecosystem is open source. There are no proprietary binaries, no 
 2. **Plugin Inventory**: Review the three first-party plugins against your current security coverage gaps
 3. **Custom Rule Assessment**: Identify two or three organization-specific security checks that could be built using the Go, Python, Rust, JavaScript, or Java SDK and installed independently
 4. **SIEM Integration**: Evaluate SARIF output ingestion into your existing security tooling stack
-5. **Fleet Rollout Plan**: Define the MDM or configuration management strategy for `zt agent` deployment to server and developer fleets
+5. **Fleet Rollout Plan**: Plan for `zt agent` deployment to server and developer fleets once the continuous agent mode reaches general availability
 6. **Policy Configuration**: Draft the `config.yaml` capability policy appropriate for your security posture
 
 For technical deep-dives, see the [Architecture Overview](./architecture/README.md) and the [Protocol Specification](./protocol/README.md).

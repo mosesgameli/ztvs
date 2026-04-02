@@ -93,7 +93,7 @@ make build
 
 ## 🔁 Automatic Scanning on Package Install
 
-ZTVS can hook into your shell so that `zt scan` runs automatically whenever you install packages — catching supply chain threats the moment new dependencies land on your machine.
+ZTVS can hook into your shell so that `zt scan` runs automatically whenever you install packages, catching supply chain threats the moment new dependencies land on your machine.
 
 ### Linux & macOS
 

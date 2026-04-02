@@ -1,0 +1,43 @@
+name: Automated Testing
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.1'
+          cache: true
+
+      - name: Build
+        run: go build -o zt ./cmd/zt
+
+      - name: Unit & Integration Tests
+        run: go test -v -coverprofile=coverage.out ./...
+
+      - name: Verify Code Coverage
+        run: |
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | grep -Eo '[0-9]+\.[0-9]+')
+          echo "Current coverage: $COVERAGE%"
+          if (( $(echo "$COVERAGE < 85.0" | bc -l) )); then
+            echo "Error: Code coverage is below 85% ($COVERAGE%)"
+            exit 1
+          fi
+        shell: bash
+
+      - name: Upload Coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.out

@@ -9,8 +9,9 @@
 set -e
 
 REPO="mosesgameli/ztvs"
-INSTALL_BIN="/usr/local/bin"
-PLUGIN_DIR="$HOME/.ztvs/plugins"
+INSTALL_BIN="${ZTVS_INSTALL_BIN:-/usr/local/bin}"
+ZTVS_HOME="${ZTVS_HOME:-$HOME/.ztvs}"
+PLUGIN_DIR="$ZTVS_HOME/plugins"
 
 # ── helpers ────────────────────────────────────────────────────────────────
 red()   { printf '\033[0;31m%s\033[0m\n' "$*"; }
@@ -122,9 +123,8 @@ main() {
   done
 
   # ── bootstrap config if first install ────────────────────────────────────
-  CONFIG_DIR="$HOME/.ztvs"
-  if [ ! -f "${CONFIG_DIR}/config.yaml" ]; then
-    info "Bootstrapping ~/.ztvs/config.yaml ..."
+  if [ ! -f "${ZTVS_HOME}/config.yaml" ]; then
+    info "Bootstrapping ${ZTVS_HOME}/config.yaml ..."
     "${INSTALL_BIN}/zt${BIN_EXT}" plugin init 2>/dev/null || true
   fi
 

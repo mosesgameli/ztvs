@@ -16,9 +16,9 @@ $ErrorActionPreference = "Stop"
 
 # ── config ─────────────────────────────────────────────────────────────────
 $Repo      = "mosesgameli/ztvs"
-$InstallDir = "$env:LOCALAPPDATA\Programs\ztvs"   # no admin required
-$PluginDir  = "$env:USERPROFILE\.ztvs\plugins"
-$ConfigDir  = "$env:USERPROFILE\.ztvs"
+$InstallDir = if ($env:ZTVS_INSTALL_BIN) { $env:ZTVS_INSTALL_BIN } else { "$env:LOCALAPPDATA\Programs\ztvs" }
+$ConfigDir  = if ($env:ZTVS_HOME) { $env:ZTVS_HOME } else { "$env:USERPROFILE\.ztvs" }
+$PluginDir  = Join-Path $ConfigDir "plugins"
 
 # ── helpers ─────────────────────────────────────────────────────────────────
 function Write-Step  { param($msg) Write-Host "  -> $msg" -ForegroundColor Cyan   }

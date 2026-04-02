@@ -19,3 +19,4 @@ plugins/plugin-axios-mitigation/plugin-axios-mitigation
 *.exe
 *.test
 bin/
+*.out

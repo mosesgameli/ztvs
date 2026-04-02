@@ -71,7 +71,7 @@ func TestRegistry_Search(t *testing.T) {
 	}
 	idxData, _ := json.Marshal(idx)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write(idxData)
+		_, _ = w.Write(idxData)
 	}))
 	defer server.Close()
 
@@ -95,8 +95,8 @@ func TestRegistry_Install(t *testing.T) {
 	ctx := context.Background()
 	tmpDir := t.TempDir()
 	originalHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpDir)
-	defer os.Setenv("HOME", originalHome)
+	_ = os.Setenv("HOME", tmpDir)
+	defer func() { _ = os.Setenv("HOME", originalHome) }()
 
 	// 1. Setup mock index
 	pluginName := "test-plugin"
@@ -112,7 +112,7 @@ func TestRegistry_Install(t *testing.T) {
 	idxData, _ := json.Marshal(idx)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(idxData)
+		_, _ = w.Write(idxData)
 	}))
 	defer server.Close()
 
@@ -133,8 +133,8 @@ func TestRegistry_Install(t *testing.T) {
 		dest := args.String(1)
 		pluginDir := filepath.Join(dest, pluginName)
 		os.MkdirAll(pluginDir, 0755)
-		os.WriteFile(filepath.Join(pluginDir, "plugin.yaml"), []byte("runtime:\n  type: python\n  entrypoint: main.py"), 0644)
-		os.WriteFile(filepath.Join(pluginDir, "main.py"), []byte("print('ok')"), 0644)
+		_ = os.WriteFile(filepath.Join(pluginDir, "plugin.yaml"), []byte("runtime:\n  type: python\n  entrypoint: main.py"), 0644)
+		_ = os.WriteFile(filepath.Join(pluginDir, "main.py"), []byte("print('ok')"), 0644)
 	})
 
 	err := reg.Install(ctx, pluginName, host)
@@ -155,8 +155,8 @@ func TestRegistry_CheckAndUpdateAll(t *testing.T) {
 	ctx := context.Background()
 	tmpDir := t.TempDir()
 	originalHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpDir)
-	defer os.Setenv("HOME", originalHome)
+	_ = os.Setenv("HOME", tmpDir)
+	defer func() { _ = os.Setenv("HOME", originalHome) }()
 
 	pluginName := "test-plugin"
 	idx := registry.Index{
@@ -170,7 +170,7 @@ func TestRegistry_CheckAndUpdateAll(t *testing.T) {
 	}
 	idxData, _ := json.Marshal(idx)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write(idxData)
+		_, _ = w.Write(idxData)
 	}))
 	defer server.Close()
 
@@ -195,7 +195,7 @@ func TestRegistry_CheckAndUpdateAll(t *testing.T) {
 		dest := args.String(1)
 		pluginDir := filepath.Join(dest, pluginName)
 		os.MkdirAll(pluginDir, 0755)
-		os.WriteFile(filepath.Join(pluginDir, "plugin.yaml"), []byte("runtime:\n  type: python"), 0644)
+		_ = os.WriteFile(filepath.Join(pluginDir, "plugin.yaml"), []byte("runtime:\n  type: python"), 0644)
 	})
 
 	err := reg.CheckAndUpdateAll(ctx, host, "safe")
@@ -209,8 +209,8 @@ func TestRegistry_PerformAtomicUpdate(t *testing.T) {
 	ctx := context.Background()
 	tmpDir := t.TempDir()
 	originalHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpDir)
-	defer os.Setenv("HOME", originalHome)
+	_ = os.Setenv("HOME", tmpDir)
+	defer func() { _ = os.Setenv("HOME", originalHome) }()
 
 	pluginName := "test-plugin"
 	meta := &registry.PluginMetadata{
@@ -226,7 +226,7 @@ func TestRegistry_PerformAtomicUpdate(t *testing.T) {
 	// Create existing plugin dir
 	pluginDir := filepath.Join(tmpDir, ".ztvs", "plugins", pluginName)
 	os.MkdirAll(pluginDir, 0755)
-	os.WriteFile(filepath.Join(pluginDir, "old.txt"), []byte("old"), 0644)
+	_ = os.WriteFile(filepath.Join(pluginDir, "old.txt"), []byte("old"), 0644)
 
 	mockGit := new(MockGit)
 	reg := &hostRegistry{git: mockGit}
@@ -235,8 +235,8 @@ func TestRegistry_PerformAtomicUpdate(t *testing.T) {
 		dest := args.String(1)
 		pluginSrcDir := filepath.Join(dest, pluginName)
 		os.MkdirAll(pluginSrcDir, 0755)
-		os.WriteFile(filepath.Join(pluginSrcDir, "new.txt"), []byte("new"), 0644)
-		os.WriteFile(filepath.Join(pluginSrcDir, "plugin.yaml"), []byte("runtime:\n  type: python"), 0644)
+		_ = os.WriteFile(filepath.Join(pluginSrcDir, "new.txt"), []byte("new"), 0644)
+		_ = os.WriteFile(filepath.Join(pluginSrcDir, "plugin.yaml"), []byte("runtime:\n  type: python"), 0644)
 	})
 
 	err := reg.PerformAtomicUpdate(ctx, pluginName, host, meta)
@@ -306,8 +306,8 @@ func TestRegistry_Errors(t *testing.T) {
 	ctx := context.Background()
 	tmpDir := t.TempDir()
 	originalHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpDir)
-	defer os.Setenv("HOME", originalHome)
+	_ = os.Setenv("HOME", tmpDir)
+	defer func() { _ = os.Setenv("HOME", originalHome) }()
 	
 	t.Run("FetchIndex_HTTPError", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -321,7 +321,7 @@ func TestRegistry_Errors(t *testing.T) {
 
 	t.Run("FetchIndex_InvalidJSON", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("not-json"))
+			_, _ = w.Write([]byte("not-json"))
 		}))
 		defer server.Close()
 		reg := &hostRegistry{BaseURL: server.URL}
@@ -341,7 +341,7 @@ func TestRegistry_Errors(t *testing.T) {
 
 	t.Run("Install_MissingFromIndex", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte(`{"plugins":[]}`))
+			_, _ = w.Write([]byte(`{"plugins":[]}`))
 		}))
 		defer server.Close()
 		reg := &hostRegistry{BaseURL: server.URL}
@@ -359,7 +359,7 @@ func TestRegistry_Errors(t *testing.T) {
 		}
 		idxData, _ := json.Marshal(idx)
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Write(idxData)
+			_, _ = w.Write(idxData)
 		}))
 		defer server.Close()
 
@@ -395,7 +395,7 @@ func TestRegistry_Errors(t *testing.T) {
 		
 		idx := registry.Index{Plugins: []registry.PluginMetadata{{Name: "test-plugin", Repo: "url"}}}
 		idxData, _ := json.Marshal(idx)
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write(idxData) }))
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { _, _ = w.Write(idxData) }))
 		defer server.Close()
 
 		pluginDir := filepath.Join(tmpHome, ".ztvs", "plugins", "test-plugin")
@@ -411,7 +411,7 @@ func TestRegistry_Errors(t *testing.T) {
 	t.Run("Install_NonGoRuntime", func(t *testing.T) {
 		idx := registry.Index{Plugins: []registry.PluginMetadata{{Name: "py", Repo: "url", LatestVersion: "1"}}}
 		idxData, _ := json.Marshal(idx)
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write(idxData) }))
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { _, _ = w.Write(idxData) }))
 		defer server.Close()
 
 		mockGit := new(MockGit)
@@ -420,7 +420,7 @@ func TestRegistry_Errors(t *testing.T) {
 			dest := args.String(1)
 			pDir := filepath.Join(dest, "py")
 			os.MkdirAll(pDir, 0755)
-			os.WriteFile(filepath.Join(pDir, "plugin.yaml"), []byte("runtime:\n  type: python"), 0644)
+			_ = os.WriteFile(filepath.Join(pDir, "plugin.yaml"), []byte("runtime:\n  type: python"), 0644)
 		})
 		
 		host := New()
@@ -437,7 +437,7 @@ func TestRegistry_Errors(t *testing.T) {
 
 		idx := registry.Index{Plugins: []registry.PluginMetadata{{Name: "test", Repo: "url", LatestVersion: "1"}}}
 		idxData, _ := json.Marshal(idx)
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write(idxData) }))
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { _, _ = w.Write(idxData) }))
 		defer server.Close()
 
 		mockGit := new(MockGit)
@@ -446,7 +446,7 @@ func TestRegistry_Errors(t *testing.T) {
 			dest := args.String(1)
 			pDir := filepath.Join(dest, "test")
 			os.MkdirAll(pDir, 0755)
-			os.WriteFile(filepath.Join(pDir, "Makefile"), []byte("all:\n\tfalse"), 0644)
+			_ = os.WriteFile(filepath.Join(pDir, "Makefile"), []byte("all:\n\tfalse"), 0644)
 		})
 		
 		host := New()
@@ -481,7 +481,7 @@ func TestRegistry_Errors(t *testing.T) {
 		
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("data"))
+			_, _ = w.Write([]byte("data"))
 		}))
 		defer server.Close()
 		err = DownloadFile("/non-existent/path/file", server.URL)
@@ -500,12 +500,12 @@ func TestRegistry_Errors(t *testing.T) {
 	t.Run("FetchIndex_MkdirError", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		// Make cache dir a file to force MkdirAll to fail
-		os.WriteFile(filepath.Join(tmpDir, "cache"), []byte("file"), 0644)
+		_ = os.WriteFile(filepath.Join(tmpDir, "cache"), []byte("file"), 0644)
 		reg := &hostRegistry{BaseURL: "http://any"}
 		
 		originalHome := os.Getenv("HOME")
-		os.Setenv("HOME", tmpDir)
-		defer os.Setenv("HOME", originalHome)
+		_ = os.Setenv("HOME", tmpDir)
+		defer func() { _ = os.Setenv("HOME", originalHome) }()
 
 		_, err := reg.FetchIndex(ctx)
 		assert.Error(t, err)
@@ -514,7 +514,7 @@ func TestRegistry_Errors(t *testing.T) {
 	t.Run("Install_VerifyIntegrityError", func(t *testing.T) {
 		idx := registry.Index{Plugins: []registry.PluginMetadata{{Name: "bad", Repo: "url", Checksum: "sha256:wrong"}}}
 		idxData, _ := json.Marshal(idx)
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write(idxData) }))
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { _, _ = w.Write(idxData) }))
 		defer server.Close()
 
 		mockGit := new(MockGit)
@@ -523,8 +523,8 @@ func TestRegistry_Errors(t *testing.T) {
 			dest := args.String(1)
 			pDir := filepath.Join(dest, "bad")
 			os.MkdirAll(pDir, 0755)
-			os.WriteFile(filepath.Join(pDir, "bad"), []byte("data"), 0644)
-			os.WriteFile(filepath.Join(pDir, "plugin.yaml"), []byte("runtime:\n  type: python"), 0644)
+			_ = os.WriteFile(filepath.Join(pDir, "bad"), []byte("data"), 0644)
+			_ = os.WriteFile(filepath.Join(pDir, "plugin.yaml"), []byte("runtime:\n  type: python"), 0644)
 		})
 		
 		host := New()
@@ -550,9 +550,9 @@ func TestRegistry_Errors(t *testing.T) {
 		
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasSuffix(r.URL.Path, "index.json") {
-				w.Write(idxData)
+				_, _ = w.Write(idxData)
 			} else if strings.HasSuffix(r.URL.Path, ".sig") {
-				w.Write([]byte("invalid-sig"))
+				_, _ = w.Write([]byte("invalid-sig"))
 			}
 		}))
 		defer server.Close()

@@ -1,9 +1,8 @@
 ---
-description: test
+description: Execute the phased testing strategy.
 ---
 
 // turbo-all
-description: Execute the phased testing strategy.
 
 1. Run unit tests with coverage report (Target: 95%+):
 `go test -v -coverprofile=coverage.out ./internal/... ./pkg/...`

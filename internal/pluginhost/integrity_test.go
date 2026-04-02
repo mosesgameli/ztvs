@@ -31,7 +31,7 @@ func TestVerifyIntegrity(t *testing.T) {
 	require.NoError(t, err)
 
 	h := sha256.New()
-	h.Write(content)
+	_, _ = h.Write(content)
 	checksum := hex.EncodeToString(h.Sum(nil))
 
 	t.Run("valid checksum", func(t *testing.T) {

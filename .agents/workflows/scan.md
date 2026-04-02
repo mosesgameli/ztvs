@@ -1,8 +1,7 @@
 ---
-description: scan
+description: Build and run a vulnerability scan along with security quality gates.
 ---
 
-description: Build and run a vulnerability scan along with security quality gates.
 
 1. Build the engine and all plugins:
 // turbo

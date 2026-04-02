@@ -64,11 +64,11 @@ func (r *PythonRunner) Supports(runtimeType string) bool {
 
 func (r *PythonRunner) Validate(entrypoint string) error {
 	if _, err := os.Stat(entrypoint); err != nil {
-		return fmt.Errorf("Python script not found: %s", entrypoint)
+		return fmt.Errorf("python script not found: %s", entrypoint)
 	}
 	// Check for uv in PATH
 	if _, err := exec.LookPath("uv"); err != nil {
-		return fmt.Errorf("uv runtime not found in PATH. Please install uv (https://astral.sh/uv)")
+		return fmt.Errorf("uv runtime not found in PATH. please install uv (https://astral.sh/uv)")
 	}
 	return nil
 }
@@ -110,11 +110,11 @@ func (r *NodeRunner) Supports(runtimeType string) bool {
 
 func (r *NodeRunner) Validate(entrypoint string) error {
 	if _, err := os.Stat(entrypoint); err != nil {
-		return fmt.Errorf("Node.js script not found: %s", entrypoint)
+		return fmt.Errorf("node.js script not found: %s", entrypoint)
 	}
 	// Check for node in PATH
 	if _, err := exec.LookPath("node"); err != nil {
-		return fmt.Errorf("Node.js runtime not found in PATH")
+		return fmt.Errorf("node.js runtime not found in PATH")
 	}
 	return nil
 }

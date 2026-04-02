@@ -1,8 +1,7 @@
 ---
-description: pr
+description: Create, view, and manage Pull Requests on GitHub.
 ---
 
-description: Create, view, and manage Pull Requests on GitHub.
 
 1. Generate a Pull Request via GitHub CLI:
 // turbo

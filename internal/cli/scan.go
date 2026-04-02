@@ -33,7 +33,7 @@ var scanCmd = &cobra.Command{
 	},
 }
 
-func runScan(ctx context.Context) error {
+func runScan(_ context.Context) error {
 	cfg, err := config.Load()
 	if err != nil {
 		return fmt.Errorf("config error: %w", err)

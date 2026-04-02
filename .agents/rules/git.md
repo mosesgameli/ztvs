@@ -1,6 +1,6 @@
- 
+
 trigger: always_on
- 
+
 
 # ZTVS Git Standards & Best Practices
 

@@ -1,0 +1,2 @@
+ztvs-sdk-python @ git+https://github.com/mosesgameli/ztvs-sdk-python.git
+pydantic>=2.0.0

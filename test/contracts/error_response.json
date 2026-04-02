@@ -1,0 +1,18 @@
+{
+  "request": {
+    "jsonrpc": "2.0",
+    "id": "req-003",
+    "method": "run_check",
+    "params": {
+      "check_id": "non_existent_check"
+    }
+  },
+  "response": {
+    "jsonrpc": "2.0",
+    "id": "req-003",
+    "error": {
+      "code": 4002,
+      "message": "invalid check id"
+    }
+  }
+}

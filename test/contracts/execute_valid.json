@@ -1,0 +1,29 @@
+{
+  "request": {
+    "jsonrpc": "2.0",
+    "id": "req-002",
+    "method": "run_check",
+    "params": {
+      "check_id": "ssh_config"
+    }
+  },
+  "response": {
+    "jsonrpc": "2.0",
+    "id": "req-002",
+    "result": {
+      "status": "fail",
+      "finding": {
+        "id": "F-SSH-001",
+        "check_id": "ssh_config",
+        "severity": "high",
+        "title": "Root login enabled",
+        "description": "PermitRootLogin is enabled in sshd_config",
+        "evidence": {
+          "file": "/etc/ssh/sshd_config",
+          "value": "PermitRootLogin yes"
+        },
+        "remediation": "Set PermitRootLogin no in sshd_config"
+      }
+    }
+  }
+}

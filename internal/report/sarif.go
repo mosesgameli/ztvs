@@ -104,9 +104,10 @@ func (r *SARIFReporter) AddFinding(pluginName string, finding *rpc.Finding) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	level := "warning"
-	if finding.Severity == "critical" || finding.Severity == "high" {
+	switch finding.Severity {
+	case "critical", "high":
 		level = "error"
-	} else if finding.Severity == "info" {
+	case "info":
 		level = "note"
 	}
 

@@ -1,8 +1,6 @@
- 
-description: build
 ---
-
 description: Build the ZTVS host and all first-party plugins for the current platform.
+---
 
 1. Compile the host and first-party plugins:
 // turbo

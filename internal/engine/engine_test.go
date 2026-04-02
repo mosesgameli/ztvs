@@ -93,8 +93,8 @@ func TestEngine_All(t *testing.T) {
 	t.Run("preflightCapabilityCheck_GrantSuccess", func(t *testing.T) {
 		tmp := t.TempDir()
 		oldHome := os.Getenv("HOME")
-		os.Setenv("HOME", tmp)
-		defer os.Setenv("HOME", oldHome)
+		_ = os.Setenv("HOME", tmp)
+		defer func() { _ = os.Setenv("HOME", oldHome) }()
 
 		cfg := config.DefaultConfig()
 		cfg.Policy.BlockedCapabilities = []string{"net"}
@@ -114,12 +114,12 @@ func TestEngine_All(t *testing.T) {
 	t.Run("preflightCapabilityCheck_SaveError", func(t *testing.T) {
 		tmpHome := t.TempDir()
 		oldHome := os.Getenv("HOME")
-		os.Setenv("HOME", tmpHome)
-		defer os.Setenv("HOME", oldHome)
+		_ = os.Setenv("HOME", tmpHome)
+		defer func() { _ = os.Setenv("HOME", oldHome) }()
 
 		// Create .ztvs as a FILE to force MkdirAll failure
 		configDir := filepath.Join(tmpHome, ".ztvs")
-		os.WriteFile(configDir, []byte("not-a-dir"), 0644)
+		_ = os.WriteFile(configDir, []byte("not-a-dir"), 0644)
 
 		cfg := config.DefaultConfig()
 		cfg.Policy.BlockedCapabilities = []string{"net"}

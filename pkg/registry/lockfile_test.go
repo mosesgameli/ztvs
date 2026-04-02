@@ -26,7 +26,7 @@ func TestLockfile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	lockPath := filepath.Join(tmpDir, "plugins.lock")
 	lf := NewLockfile(lockPath)
@@ -85,7 +85,7 @@ func TestLockfile(t *testing.T) {
 
 	// Test invalid YAML load
 	invalidPath := filepath.Join(tmpDir, "invalid.lock")
-	os.WriteFile(invalidPath, []byte("invalid: yaml: :"), 0644)
+	_ = os.WriteFile(invalidPath, []byte("invalid: yaml: :"), 0644)
 	_, err = LoadLockfile(invalidPath)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "parse lockfile")
@@ -93,7 +93,7 @@ func TestLockfile(t *testing.T) {
 	// Test Save error (Permission Denied)
 	if os.Getuid() != 0 { // Skip if running as root
 		readOnlyDir := filepath.Join(tmpDir, "readonly")
-		os.MkdirAll(readOnlyDir, 0555)
+		_ = os.MkdirAll(readOnlyDir, 0555)
 		badPath := filepath.Join(readOnlyDir, "plugins.lock")
 		lfBad := NewLockfile(badPath)
 		err = lfBad.Save()
@@ -102,22 +102,22 @@ func TestLockfile(t *testing.T) {
 
 	// Test corrupt YAML for Load
 	p := filepath.Join(tmpDir, "corrupt.lock")
-	os.WriteFile(p, []byte("!!invalid yaml"), 0644)
+	_ = os.WriteFile(p, []byte("!!invalid yaml"), 0644)
 	_, err = LoadLockfile(p)
 	assert.Error(t, err)
 
 	// Test ReadFile error (Permission Denied)
 	if os.Getuid() != 0 {
 		readOnlyFile := filepath.Join(tmpDir, "noperm.lock")
-		os.WriteFile(readOnlyFile, []byte("data"), 0000)
-		defer os.Chmod(readOnlyFile, 0644)
+		_ = os.WriteFile(readOnlyFile, []byte("data"), 0000)
+		defer func() { _ = os.Chmod(readOnlyFile, 0644) }()
 		_, err = LoadLockfile(readOnlyFile)
 		assert.Error(t, err)
 	}
 
 	// Test Save error: MkdirAll failure
 	conflictDir := filepath.Join(tmpDir, "conflict")
-	os.WriteFile(conflictDir, []byte("actually-a-file"), 0644)
+	_ = os.WriteFile(conflictDir, []byte("actually-a-file"), 0644)
 	badPath2 := filepath.Join(conflictDir, "sub", "plugins.lock")
 	lfBad2 := NewLockfile(badPath2)
 	err = lfBad2.Save()

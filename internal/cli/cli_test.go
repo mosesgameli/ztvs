@@ -108,8 +108,8 @@ func (m *MockHost) RegisterRunner(r pluginhost.Runner) {
 func TestRunPluginInit(t *testing.T) {
 	tmpDir := t.TempDir()
 	originalHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpDir)
-	defer os.Setenv("HOME", originalHome)
+	_ = os.Setenv("HOME", tmpDir)
+	defer func() { _ = os.Setenv("HOME", originalHome) }()
 
 	err := runPluginInit()
 	assert.NoError(t, err)
@@ -121,8 +121,8 @@ func TestRunPluginInit(t *testing.T) {
 func TestRunPluginList(t *testing.T) {
 	tmpDir := t.TempDir()
 	originalHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpDir)
-	defer os.Setenv("HOME", originalHome)
+	_ = os.Setenv("HOME", tmpDir)
+	defer func() { _ = os.Setenv("HOME", originalHome) }()
 
 	oldHost := host
 	host = pluginhost.New()
@@ -163,8 +163,8 @@ func TestRunPluginInfo(t *testing.T) {
 func TestRunPluginToggle(t *testing.T) {
 	tmpDir := t.TempDir()
 	originalHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpDir)
-	defer os.Setenv("HOME", originalHome)
+	_ = os.Setenv("HOME", tmpDir)
+	defer func() { _ = os.Setenv("HOME", originalHome) }()
 
 	oldHost := host
 	host = pluginhost.New()
@@ -179,8 +179,8 @@ func TestRunPluginToggle(t *testing.T) {
 func TestRunPluginInstall(t *testing.T) {
 	tmpDir := t.TempDir()
 	originalHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpDir)
-	defer os.Setenv("HOME", originalHome)
+	_ = os.Setenv("HOME", tmpDir)
+	defer func() { _ = os.Setenv("HOME", originalHome) }()
 
 	oldHost := host
 	host = pluginhost.New()
@@ -198,8 +198,8 @@ func TestRunPluginInstall(t *testing.T) {
 func TestRunPluginUpdate(t *testing.T) {
 	tmpDir := t.TempDir()
 	originalHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpDir)
-	defer os.Setenv("HOME", originalHome)
+	_ = os.Setenv("HOME", tmpDir)
+	defer func() { _ = os.Setenv("HOME", originalHome) }()
 
 	_ = runPluginInit()
 
@@ -245,8 +245,8 @@ func TestRunPluginInfo_Error(t *testing.T) {
 func TestRunAgent(t *testing.T) {
 	tmpDir := t.TempDir()
 	originalHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpDir)
-	defer os.Setenv("HOME", originalHome)
+	_ = os.Setenv("HOME", tmpDir)
+	defer func() { _ = os.Setenv("HOME", originalHome) }()
 
 	_ = runPluginInit()
 
@@ -424,8 +424,8 @@ func TestRunPluginList_Success(t *testing.T) {
 func TestRoot_Commands(t *testing.T) {
 	tmpDir := t.TempDir()
 	originalHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpDir)
-	defer os.Setenv("HOME", originalHome)
+	_ = os.Setenv("HOME", tmpDir)
+	defer func() { _ = os.Setenv("HOME", originalHome) }()
 
 	mockHost := new(MockHost)
 	mockReg := new(MockRegistry)
@@ -490,8 +490,8 @@ func TestRunScan_Mocks(t *testing.T) {
 	// Test: engine.New error (via unreadable config file)
 	tmpHome := t.TempDir()
 	originalHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpHome)
-	defer os.Setenv("HOME", originalHome)
+	_ = os.Setenv("HOME", tmpHome)
+	defer func() { _ = os.Setenv("HOME", originalHome) }()
 	
 	configDir := filepath.Join(tmpHome, ".ztvs")
 	os.MkdirAll(configDir, 0755)
@@ -502,8 +502,8 @@ func TestRunScan_Mocks(t *testing.T) {
 	assert.Error(t, err)
 
 	// Test: CheckAndUpdateAll failure (should be caught and logged as warning, not return error)
-	os.Setenv("HOME", tmpHome) // Reset to avoid config error first
-	os.RemoveAll(filepath.Join(tmpHome, ".ztvs", "config.yaml"))
+	_ = os.Setenv("HOME", tmpHome) // Reset to avoid config error first
+	_ = os.RemoveAll(filepath.Join(tmpHome, ".ztvs", "config.yaml"))
 	mockReg.ExpectedCalls = nil
 	mockReg.On("CheckAndUpdateAll", mock.Anything, mock.Anything, mock.Anything).Return(errors.New("update failed"))
 	err = runScan(context.Background())

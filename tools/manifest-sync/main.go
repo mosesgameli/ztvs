@@ -77,7 +77,7 @@ func run(args []string) error {
 		lines = append(lines, fmt.Sprintf("checksum: %s", checksum))
 	}
 
-	if err := os.WriteFile(manifestPath, []byte(strings.Join(lines, "\n")), 0644); err != nil {
+	if err := os.WriteFile(manifestPath, []byte(strings.Join(lines, "\n")), 0600); err != nil {
 		return fmt.Errorf("writing manifest: %v", err)
 	}
 

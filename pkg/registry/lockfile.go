@@ -77,7 +77,7 @@ func (lf *Lockfile) Save() error {
 		return err
 	}
 
-	return os.WriteFile(lf.path, data, 0644)
+	return os.WriteFile(lf.path, data, 0600)
 }
 
 func (lf *Lockfile) Get(name string) (PluginLock, bool) {

@@ -6,13 +6,13 @@ pre-commit:
   commands:
     lint:
       tags: linter
-      run: golangci-lint run --timeout=5m
+      run: ./bin/golangci-lint run --timeout=5m
     gosec:
       tags: security
-      run: gosec ./...
+      run: ./bin/gosec ./...
     govulncheck:
       tags: security
-      run: govulncheck ./...
+      run: ./bin/govulncheck ./...
 
 pre-push:
   commands:

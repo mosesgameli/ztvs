@@ -96,7 +96,7 @@ func TestLoadSave(t *testing.T) {
 
 	// 6. Test Save MkdirAll error
 	// Create a file where the .ztvs directory should be
-	os.RemoveAll(filepath.Join(tempHome, ".ztvs"))
+	_ = os.RemoveAll(filepath.Join(tempHome, ".ztvs"))
 	err = os.WriteFile(filepath.Join(tempHome, ".ztvs"), []byte("not a dir"), 0644)
 	if err != nil {
 		t.Fatalf("WriteFile failed: %v", err)

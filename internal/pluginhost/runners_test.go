@@ -27,7 +27,7 @@ func TestHelperProcess(t *testing.T) {
 	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
 		return
 	}
-	fmt.Fprint(os.Stdout, "{\"jsonrpc\":\"2.0\",\"id\":\"1\",\"result\":{\"status\":\"ok\"}}")
+	_, _ = fmt.Fprint(os.Stdout, "{\"jsonrpc\":\"2.0\",\"id\":\"1\",\"result\":{\"status\":\"ok\"}}")
 	os.Exit(0)
 }
 
@@ -99,8 +99,8 @@ func TestPythonRunner(t *testing.T) {
 		
 		// 3. Mock PATH to not find python3
 		oldPath := os.Getenv("PATH")
-		os.Setenv("PATH", "")
-		defer os.Setenv("PATH", oldPath)
+		_ = os.Setenv("PATH", "")
+		defer func() { _ = os.Setenv("PATH", oldPath) }()
 		err = r.Validate(scriptPath)
 		assert.Error(t, err)
 		// It might be "uv not found" or "python3 not found". Check for "not found"

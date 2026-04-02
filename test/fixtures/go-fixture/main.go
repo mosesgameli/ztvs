@@ -32,6 +32,10 @@ func (c *GoCheck) Run(ctx context.Context) (*sdk.Finding, error) {
 }
 
 func main() {
+	RunPlugin()
+}
+
+func RunPlugin() {
 	sdk.Run(sdk.Metadata{
 		Name:       "go-fixture",
 		Version:    "1.0.0",

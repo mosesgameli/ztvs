@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sync"
 
 	"github.com/mosesgameli/ztvs-sdk-go/rpc"
 )
@@ -68,6 +69,7 @@ type SARIFArtifactLocation struct {
 type SARIFReporter struct {
 	report SARIFReport
 	output io.Writer
+	mu     sync.RWMutex
 }
 
 func NewSARIF() *SARIFReporter {
@@ -96,6 +98,11 @@ func (r *SARIFReporter) SetOutput(w io.Writer) {
 }
 
 func (r *SARIFReporter) AddFinding(pluginName string, finding *rpc.Finding) {
+	if finding == nil {
+		return
+	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	level := "warning"
 	if finding.Severity == "critical" || finding.Severity == "high" {
 		level = "error"
@@ -128,6 +135,8 @@ func (r *SARIFReporter) AddFinding(pluginName string, finding *rpc.Finding) {
 }
 
 func (r *SARIFReporter) Flush() error {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 	encoder := json.NewEncoder(r.output)
 	encoder.SetIndent("", "  ")
 	return encoder.Encode(r.report)

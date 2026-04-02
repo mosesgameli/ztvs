@@ -22,16 +22,26 @@ import (
 	"encoding/asn1"
 	"encoding/json"
 	"encoding/pem"
+	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/mosesgameli/ztvs/pkg/registry"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
+
+func TestNewRegistry(t *testing.T) {
+	r := NewRegistry()
+	assert.NotNil(t, r)
+	assert.Contains(t, r.(*hostRegistry).BaseURL, "githubusercontent.com")
+}
 
 type MockGit struct {
 	mock.Mock
@@ -240,6 +250,30 @@ func TestRegistry_PerformAtomicUpdate(t *testing.T) {
 	assert.Equal(t, "1.1.0", l.Version)
 }
 
+func TestRegistry_BuildPlugin(t *testing.T) {
+	oldExec := execCommand
+	defer func() { execCommand = oldExec }()
+
+	execCommand = func(command string, args ...string) *exec.Cmd {
+		return exec.Command(os.Args[0], append([]string{"-test.run=TestHelperProcess", "--", command}, args...)...)
+	}
+
+	tmpDir := t.TempDir()
+	err := os.MkdirAll(filepath.Join(tmpDir, "cmd"), 0755)
+	assert.NoError(t, err)
+	err = os.WriteFile(filepath.Join(tmpDir, "cmd", "main.go"), []byte("package main\nfunc main(){}"), 0644)
+	assert.NoError(t, err)
+
+	reg := &hostRegistry{}
+	err = reg.buildPlugin(tmpDir, "test-plugin")
+	assert.NoError(t, err)
+
+	// Fallback case
+	_ = os.RemoveAll(filepath.Join(tmpDir, "cmd"))
+	err = reg.buildPlugin(tmpDir, "test-plugin")
+	assert.NoError(t, err)
+}
+
 func TestVerifySignature_Logic(t *testing.T) {
 	priv, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	data := []byte("hello world")
@@ -266,4 +300,265 @@ func TestVerifySignature_Logic(t *testing.T) {
 	if err == nil {
 		t.Error("expected signature violation for pinned key, got success")
 	}
+}
+
+func TestRegistry_Errors(t *testing.T) {
+	ctx := context.Background()
+	tmpDir := t.TempDir()
+	originalHome := os.Getenv("HOME")
+	os.Setenv("HOME", tmpDir)
+	defer os.Setenv("HOME", originalHome)
+	
+	t.Run("FetchIndex_HTTPError", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer server.Close()
+		reg := &hostRegistry{BaseURL: server.URL}
+		_, err := reg.FetchIndex(ctx)
+		assert.Error(t, err)
+	})
+
+	t.Run("FetchIndex_InvalidJSON", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("not-json"))
+		}))
+		defer server.Close()
+		reg := &hostRegistry{BaseURL: server.URL}
+		_, err := reg.FetchIndex(ctx)
+		assert.Error(t, err)
+	})
+
+	t.Run("Install_GitError", func(t *testing.T) {
+		mockGit := new(MockGit)
+		reg := &hostRegistry{git: mockGit}
+		mockGit.On("Clone", mock.Anything, mock.Anything).Return(errors.New("git clone failed"))
+		
+		host := New()
+		err := reg.Install(ctx, "test", host)
+		assert.Error(t, err)
+	})
+
+	t.Run("Install_MissingFromIndex", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte(`{"plugins":[]}`))
+		}))
+		defer server.Close()
+		reg := &hostRegistry{BaseURL: server.URL}
+		host := New()
+		err := reg.Install(ctx, "missing", host)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "plugin missing not found in registry")
+	})
+
+	t.Run("Install_SubdirNotFound", func(t *testing.T) {
+		idx := registry.Index{
+			Plugins: []registry.PluginMetadata{
+				{Name: "test", LatestVersion: "1.0.0", Repo: "url"},
+			},
+		}
+		idxData, _ := json.Marshal(idx)
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Write(idxData)
+		}))
+		defer server.Close()
+
+		mockGit := new(MockGit)
+		reg := &hostRegistry{BaseURL: server.URL, git: mockGit}
+		mockGit.On("Clone", mock.Anything, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+			// Don't create the plugin subdir
+			dest := args.String(1)
+			os.MkdirAll(dest, 0755)
+		})
+		
+		host := New()
+		err := reg.Install(ctx, "test", host)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "plugin subdirectory \"test\" not found")
+	})
+
+	t.Run("Install_GitCloneError", func(t *testing.T) {
+		mockGit := new(MockGit)
+		reg := &hostRegistry{BaseURL: "url", git: mockGit}
+		mockGit.On("Clone", mock.Anything, mock.Anything).Return(fmt.Errorf("clone failed"))
+		host := New()
+		err := reg.Install(ctx, "test", host)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "clone failed")
+	})
+
+	t.Run("Install_AlreadyInstalled", func(t *testing.T) {
+		tmpHome := t.TempDir()
+		oldHome := os.Getenv("HOME")
+		os.Setenv("HOME", tmpHome)
+		defer os.Setenv("HOME", oldHome)
+		
+		idx := registry.Index{Plugins: []registry.PluginMetadata{{Name: "test-plugin", Repo: "url"}}}
+		idxData, _ := json.Marshal(idx)
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write(idxData) }))
+		defer server.Close()
+
+		pluginDir := filepath.Join(tmpHome, ".ztvs", "plugins", "test-plugin")
+		os.MkdirAll(pluginDir, 0755)
+		
+		mockGit := new(MockGit)
+		reg := &hostRegistry{BaseURL: server.URL, git: mockGit}
+		host := New()
+		err := reg.Install(ctx, "test-plugin", host)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Install_NonGoRuntime", func(t *testing.T) {
+		idx := registry.Index{Plugins: []registry.PluginMetadata{{Name: "py", Repo: "url", LatestVersion: "1"}}}
+		idxData, _ := json.Marshal(idx)
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write(idxData) }))
+		defer server.Close()
+
+		mockGit := new(MockGit)
+		reg := &hostRegistry{BaseURL: server.URL, git: mockGit}
+		mockGit.On("Clone", mock.Anything, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+			dest := args.String(1)
+			pDir := filepath.Join(dest, "py")
+			os.MkdirAll(pDir, 0755)
+			os.WriteFile(filepath.Join(pDir, "plugin.yaml"), []byte("runtime:\n  type: python"), 0644)
+		})
+		
+		host := New()
+		err := reg.Install(ctx, "py", host)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Install_BuildError", func(t *testing.T) {
+		oldExec := execCommand
+		defer func() { execCommand = oldExec }()
+		execCommand = func(command string, args ...string) *exec.Cmd {
+			return exec.Command("false")
+		}
+
+		idx := registry.Index{Plugins: []registry.PluginMetadata{{Name: "test", Repo: "url", LatestVersion: "1"}}}
+		idxData, _ := json.Marshal(idx)
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write(idxData) }))
+		defer server.Close()
+
+		mockGit := new(MockGit)
+		reg := &hostRegistry{BaseURL: server.URL, git: mockGit}
+		mockGit.On("Clone", mock.Anything, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+			dest := args.String(1)
+			pDir := filepath.Join(dest, "test")
+			os.MkdirAll(pDir, 0755)
+			os.WriteFile(filepath.Join(pDir, "Makefile"), []byte("all:\n\tfalse"), 0644)
+		})
+		
+		host := New()
+		err := reg.Install(ctx, "test", host)
+		assert.Error(t, err)
+	})
+
+	t.Run("PerformAtomicUpdate_BuildError", func(t *testing.T) {
+		oldExec := execCommand
+		defer func() { execCommand = oldExec }()
+		execCommand = func(command string, args ...string) *exec.Cmd {
+			cmd := exec.Command(os.Args[0], append([]string{"-test.run=TestHelperProcessFailure", "--", command}, args...)...)
+			cmd.Env = append(os.Environ(), "GO_WANT_HELPER_PROCESS=1")
+			return cmd
+		}
+
+		mockGit := new(MockGit)
+		reg := &hostRegistry{git: mockGit}
+		mockGit.On("Clone", mock.Anything, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+			dest := args.String(1)
+			os.MkdirAll(filepath.Join(dest, "test"), 0755)
+		})
+
+		host := New()
+		err := reg.PerformAtomicUpdate(ctx, "test", host, &registry.PluginMetadata{Name: "test", Repo: "url"})
+		assert.Error(t, err)
+	})
+
+	t.Run("DownloadFile_Errors", func(t *testing.T) {
+		err := DownloadFile("/non-existent/path", "http://invalid-url")
+		assert.Error(t, err)
+		
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("data"))
+		}))
+		defer server.Close()
+		err = DownloadFile("/non-existent/path/file", server.URL)
+		assert.Error(t, err)
+	})
+
+	t.Run("ExtractRuntimeType_EdgeCases", func(t *testing.T) {
+		assert.Equal(t, "", extractRuntimeType([]byte("not-yaml")))
+		assert.Equal(t, "python", extractRuntimeType([]byte("runtime:\n  type: python\nother: key")))
+		assert.Equal(t, "", extractRuntimeType([]byte("runtime:\nother: key")))
+		assert.Equal(t, "python", extractRuntimeType([]byte("runtime:\n  type: python\nstop: true\n  type: nested")))
+		// Test stop condition
+		assert.Equal(t, "", extractRuntimeType([]byte("runtime:\nstop: true\n  type: nested")))
+	})
+
+	t.Run("FetchIndex_MkdirError", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		// Make cache dir a file to force MkdirAll to fail
+		os.WriteFile(filepath.Join(tmpDir, "cache"), []byte("file"), 0644)
+		reg := &hostRegistry{BaseURL: "http://any"}
+		
+		originalHome := os.Getenv("HOME")
+		os.Setenv("HOME", tmpDir)
+		defer os.Setenv("HOME", originalHome)
+
+		_, err := reg.FetchIndex(ctx)
+		assert.Error(t, err)
+	})
+
+	t.Run("Install_VerifyIntegrityError", func(t *testing.T) {
+		idx := registry.Index{Plugins: []registry.PluginMetadata{{Name: "bad", Repo: "url", Checksum: "sha256:wrong"}}}
+		idxData, _ := json.Marshal(idx)
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write(idxData) }))
+		defer server.Close()
+
+		mockGit := new(MockGit)
+		reg := &hostRegistry{BaseURL: server.URL, git: mockGit}
+		mockGit.On("Clone", mock.Anything, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+			dest := args.String(1)
+			pDir := filepath.Join(dest, "bad")
+			os.MkdirAll(pDir, 0755)
+			os.WriteFile(filepath.Join(pDir, "bad"), []byte("data"), 0644)
+			os.WriteFile(filepath.Join(pDir, "plugin.yaml"), []byte("runtime:\n  type: python"), 0644)
+		})
+		
+		host := New()
+		err := reg.Install(ctx, "bad", host)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "integrity check failed")
+	})
+
+	t.Run("CheckAndUpdateAll_Locked", func(t *testing.T) {
+		reg := &hostRegistry{}
+		err := reg.CheckAndUpdateAll(ctx, nil, "locked")
+		assert.NoError(t, err)
+	})
+
+	t.Run("FetchIndex_SignatureWarning", func(t *testing.T) {
+		tmpHome := t.TempDir()
+		oldHome := os.Getenv("HOME")
+		os.Setenv("HOME", tmpHome)
+		defer os.Setenv("HOME", oldHome)
+
+		idx := registry.Index{Plugins: []registry.PluginMetadata{}}
+		idxData, _ := json.Marshal(idx)
+		
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if strings.HasSuffix(r.URL.Path, "index.json") {
+				w.Write(idxData)
+			} else if strings.HasSuffix(r.URL.Path, ".sig") {
+				w.Write([]byte("invalid-sig"))
+			}
+		}))
+		defer server.Close()
+
+		reg := &hostRegistry{BaseURL: server.URL}
+		_, err := reg.FetchIndex(ctx)
+		assert.NoError(t, err) // Warning should be printed to stderr, not return error
+	})
 }

@@ -16,6 +16,7 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/mosesgameli/ztvs-sdk-go/rpc"
@@ -30,6 +31,7 @@ type JSONReport struct {
 type JSONReporter struct {
 	report JSONReport
 	output io.Writer
+	mu     sync.RWMutex
 }
 
 func NewJSON() *JSONReporter {
@@ -44,11 +46,18 @@ func NewJSON() *JSONReporter {
 }
 
 func (r *JSONReporter) AddFinding(pluginName string, finding *rpc.Finding) {
+	if finding == nil {
+		return
+	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	r.report.Findings[pluginName] = append(r.report.Findings[pluginName], finding)
 	r.report.Summary[finding.Severity]++
 }
 
 func (r *JSONReporter) Flush() error {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 	encoder := json.NewEncoder(r.output)
 	encoder.SetIndent("", "  ")
 	return encoder.Encode(r.report)

@@ -15,11 +15,9 @@ package cli
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/mosesgameli/ztvs/internal/config"
 	"github.com/mosesgameli/ztvs/internal/engine"
-	"github.com/mosesgameli/ztvs/internal/pluginhost"
 	"github.com/mosesgameli/ztvs/internal/report"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -30,11 +28,8 @@ var formatFlag string
 var scanCmd = &cobra.Command{
 	Use:   "scan",
 	Short: "Run vulnerability scans across all enabled plugins",
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := runScan(cmd.Context()); err != nil {
-			pterm.Error.Printf("scan failure: %v\n", err)
-			os.Exit(1)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runScan(cmd.Context())
 	},
 }
 
@@ -54,7 +49,7 @@ func runScan(ctx context.Context) error {
 		r = report.NewTerminal()
 	}
 
-	eng := engine.New(cfg, pluginhost.New(), r, pluginhost.NewRegistry())
+	eng := engine.New(cfg, host, r, registryClient)
 	eng.Interactive = true
 
 	pterm.Info.Println("Initializing global security scan...")

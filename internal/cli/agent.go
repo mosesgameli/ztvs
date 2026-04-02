@@ -22,7 +22,6 @@ import (
 
 	"github.com/mosesgameli/ztvs/internal/config"
 	"github.com/mosesgameli/ztvs/internal/engine"
-	"github.com/mosesgameli/ztvs/internal/pluginhost"
 	"github.com/mosesgameli/ztvs/internal/report"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -31,11 +30,8 @@ import (
 var agentCmd = &cobra.Command{
 	Use:   "agent",
 	Short: "Start the background audit agent",
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := runAgent(cmd.Context()); err != nil {
-			pterm.Error.Printf("agent failure: %v\n", err)
-			os.Exit(1)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runAgent(cmd.Context())
 	},
 }
 
@@ -48,7 +44,7 @@ func runAgent(ctx context.Context) error {
 	pterm.Success.Println("🚀 ZTVS Audit Agent starting...")
 
 	r := report.NewTerminal()
-	eng := engine.New(cfg, pluginhost.New(), r, pluginhost.NewRegistry())
+	eng := engine.New(cfg, host, r, registryClient)
 	eng.Interactive = false
 
 	interval, err := time.ParseDuration(cfg.Agent.Interval)

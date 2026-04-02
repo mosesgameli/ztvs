@@ -31,6 +31,13 @@ func TestHelperProcess(t *testing.T) {
 	os.Exit(0)
 }
 
+func TestHelperProcessFailure(t *testing.T) {
+	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
+		return
+	}
+	os.Exit(1)
+}
+
 func TestBinaryRunner(t *testing.T) {
 	r := &BinaryRunner{}
 	assert.Equal(t, "Binary", r.Name())
@@ -89,11 +96,15 @@ func TestPythonRunner(t *testing.T) {
 		// 2. Valid file (requires uv in path for success)
 		err = os.WriteFile(scriptPath, []byte("print('hi')"), 0644)
 		require.NoError(t, err)
+		
+		// 3. Mock PATH to not find python3
+		oldPath := os.Getenv("PATH")
+		os.Setenv("PATH", "")
+		defer os.Setenv("PATH", oldPath)
 		err = r.Validate(scriptPath)
-		// We accept "uv not found" as a successful validation of the script existence check
-		if err != nil {
-			assert.Contains(t, err.Error(), "uv runtime not found")
-		}
+		assert.Error(t, err)
+		// It might be "uv not found" or "python3 not found". Check for "not found"
+		assert.Contains(t, err.Error(), "not found")
 	})
 
 	t.Run("Execute", func(t *testing.T) {

@@ -44,5 +44,15 @@ func TestIndex_JSON(t *testing.T) {
 	require.Len(t, idx.Plugins, 1)
 	assert.Equal(t, "test-plugin", idx.Plugins[0].Name)
 	assert.Equal(t, "1.2.3", idx.Plugins[0].LatestVersion)
+	assert.Equal(t, "https://github.com/example/test", idx.Plugins[0].Repo)
+	assert.Equal(t, "abc12345", idx.Plugins[0].Checksum)
+	assert.Equal(t, "sig-789", idx.Plugins[0].Signature)
 	assert.Equal(t, "verified", idx.Plugins[0].AuditStatus)
+
+	// Test empty index
+	var emptyIdx Index
+	err = json.Unmarshal([]byte(`{"version":"2.0","plugins":[]}`), &emptyIdx)
+	assert.NoError(t, err)
+	assert.Equal(t, "2.0", emptyIdx.Version)
+	assert.Empty(t, emptyIdx.Plugins)
 }
